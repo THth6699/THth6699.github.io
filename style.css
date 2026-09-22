@@ -1,64 +1,64 @@
 /* ===== 基础重置 ===== */
-* { margin: 0; padding: 0; box-sizing: border-box; }
-html { scroll-behavior: smooth; }
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
-  background: #0b0b14;
-  color: #eaeaf2;
-  overflow-x: hidden;
-  line-height: 1.6;
+*{边距：0；填充：0；框大小：边框框；交替边缘 箱体尺寸: 边框框; }
+超文本标记语言{滚动行为:smooth；}{ 滚动行为: 光滑的; }
+正文{{
+字体系列：苹果系统、BlinkMacSystemFont、“Segoe UI”、“Pingfang SC”、“微软雅黑”、无衬线；字体系列：-苹果-系统，BlinkMacSystemFont，"Segoe UI", "平方SC", "Microsoft Yahei"，无衬线；
+背景：#0b0b14；background：#0b0b14；
+颜色：#eaeaf2；颜色：#eaeaf2；
+overflow-x：隐藏；overflow-x：隐藏的；
+线高：1.6；线高：1.6；
 }
-a { text-decoration: none; color: inherit; }
-ul { list-style: none; }
-img { max-width: 100%; display: block; }
+{文字装饰：无；颜色:inherit；}{ 文字装饰: 没有一个; 颜色: 继承; }
+UL{列表式:none；}{ 列表式: 没有一个; }
+IMG{最大宽度：100%；显示：块；}{ 最大宽度: 100%; 显示: 块; }
 
 /* ===== 背景层 ===== */
-.bg-image {
-  position: fixed; inset: 0; z-index: -1;
-  background-image: url('assets/images/bg.jpg');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  opacity: 0.15; /* 背景图透明度 */
-  filter: blur(3px); /* 背景图模糊度 */
+.bg-image{{
+位置：固定；插入：0；z索引：-1；位置: 确定的; 插图: 0; Z指数: -1;
+背景图像：URL('assets/images/bg.jpg')；背景图像: URL('assets/images/bg.jpg');
+背景尺寸：封面；背景尺寸: 覆盖;
+背景位置：中心；背景位置: 中心;
+背景重复：无重复；背景重复: 无重复;
+不透明度:0.15；/*背景图透明度*/不透明度: 0.15; /*背景图透明度*/
+过滤器:模糊(3PX)；/*背景图形胶稠度*/过滤器: 模糊(3PX); /* 背景图模糊度 */
 }
-.bg-grid {
-  position: fixed; inset: 0;
-  background-image: linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
-  background-size: 50px 50px;
-  pointer-events: none; z-index: 0;
+.bg-grid{{
+位置：固定；内插：0；位置: 确定的; 插图: 0;
+背景图像：线性梯度(RGBA(255,255,255,.03)1PX，透明1PX)，线性梯度(90度，RGBA(255,255,255,.03)1PX，透明1px)；背景图像: 线性梯度(RGBA(255,255,255,.03) 1PX, 透明的 1PX), 线性梯度(90deg, RGBA(255,255,255,.03) 1PX, 透明的 1PX);
+背景尺寸：50px；background-size: 50PX 50PX;
+指针事件：无；z索引：0；pointer-events: 没有一个; Z指数: 0;
 }
-.glow {
-  position: fixed; border-radius: 50%;
-  filter: blur(120px); opacity: .35;
-  pointer-events: none; z-index: 0;
-  animation: float 10s ease-in-out infinite alternate;
+.glow{{
+位置：固定；边界半径：50%；位置: 确定的; 边界半径: 50%;
+滤镜：模糊(120PX)；不透明度：.35；过滤器：模糊(120px); 不透明度: .35;
+指针事件：无；z索引：0；pointer-events: 没有一个; Z指数: 0;
+动画：浮点10s轻松进出无限交替；动画: 漂浮 10s 易进易出 无限的 交替;
 }
-.glow-1 { width: 400px; height: 400px; background: #7b2ff7; top: -100px; left: -100px; }
-.glow-2 { width: 350px; height: 350px; background: #f107a3; bottom: 10%; right: -50px; animation-delay: -3s; }
-.glow-3 { width: 300px; height: 300px; background: #00e5ff; top: 40%; left: 30%; animation-delay: -6s; opacity: .2; }
+.glow-1 {容忍度：400px；高度：400PX；背景：#7b2ff7；顶端：-100PX；左：-100PX；}
+.glow-2{ 宽度: 350PX; 高度: 350PX；背景：#f107a3；底部：10%；正确的: -50PX; 动画延迟: -3s; }
+.glow-3{ 宽度: 300PX; 高度: 300PX；背景：#00e5ff；顶端：40%；左: 30%;动画延迟: -6s; 不透明度: .2; }
 
-@keyframes float {
-  0% { transform: translate(0, 0) scale(1); }
-  100% { transform: translate(30px, -30px) scale(1.1); }
+@keyframes漂浮{
+  0% { 改变: 翻译(0, 0) 规模(1); }
+  100% { 改变: 翻译(30PX, -30PX) 规模(1.1); }
 }
-#particles { position: fixed; inset: 0; pointer-events: none; z-index: 1; }
+#粒子{ 位置: 确定的; 插图: 0; 指针事件: 没有一个; Z指数: 1; }
 
 /* ===== 导航栏 ===== */
-.nav {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-  transition: background .3s, backdrop-filter .3s;
+.nav{
+  位置: 确定的; 顶端: 0; 左: 0; 正确的: 0; Z指数: 100;
+  过渡: 背景 .3s, 背景滤光镜 .3s;
 }
-.nav.scrolled { background: rgba(11,11,20,.75); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(255,255,255,.06); }
-.nav-inner { max-width: 1100px; margin: 0 auto; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; }
-.logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 1.2rem; }
-.logo-mark {
-  width: 34px; height: 34px; border-radius: 10px;
-  background: linear-gradient(135deg, #7b2ff7, #f107a3);
-  display: grid; place-items: center; font-size: 1rem; color: #fff;
-  box-shadow: 0 0 18px rgba(123,47,247,.6);
+.nav.scrolled{ 背景: RGBA(11,11,20,.75); 背景滤光镜: 模糊(16PX); 下边框: 1PX 固体 RGBA(255,255,255,.06); }
+.nav-inner{ 最大宽度: 1100PX; 边缘: 0 自动; 填充: 16PX 24PX; 显示: 弯曲; 对齐项目: 中心; justify-content: 间距; }
+.logo{ 显示: 弯曲; 对齐项目: 中心; 差距: 10PX; 字体粗细: 800; 字体大小: 1.2REM; }
+.logo-mark{
+  宽度: 34PX; 高度: 34PX; 边界半径: 10PX;
+  背景: 线性梯度(135deg, #7b2ff7, #f107a3);
+  显示: 网格; place-items: 中心; 字体大小: 1REM；颜色：#FFF；
+箱形阴影: 0 0 18PX RGBA(123,47,247,.6);
 }
-.logo-mark.small { width: 28px; height: 28px; border-radius: 8px; font-size: .85rem; }
+.logo-mark.small{ 宽度: 28PX; 高度: 28PX; 边界半径: 8PX; 字体大小: .85REM; }
 .logo-text em { font-style: normal; color: #f107a3; }
 
 .nav-links { display: flex; gap: 28px; font-size: .95rem; font-weight: 500; }
@@ -162,7 +162,7 @@ img { max-width: 100%; display: block; }
 .footer-copy { font-size: .85rem; color: #8888a0; }
 
 /* ===== 滚动动画 ===== */
-.reveal { opacity: 0; transform: translateY(30px); transition: all .7s cubic-bezier(.22,.61,.36,1); }
+.reveal { opacity: 1; transform: translateY(30px); transition: all .7s cubic-bezier(.22,.61,.36,1); }
 .reveal.show { opacity: 1; transform: translateY(0); }
 
 /* ===== APlayer 音乐播放器位置调整（左下角悬浮） ===== */
