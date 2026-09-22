@@ -1,191 +1,140 @@
-/* ===== 基础重置 ===== */
-* { margin: 0; padding: 0; box-sizing: border-box; }
-html { scroll-behavior: smooth; }
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
-  background: #0b0b14;
-  color: #eaeaf2;
-  overflow-x: hidden;
-  line-height: 1.6;
+// ===== 1. 导航栏滚动效果 =====
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => { nav.classList.toggle('scrolled', window.scrollY > 40); });
+
+// ===== 2. 移动端菜单切换 =====
+const navToggle = document.getElementById('navToggle');
+const navLinks = document.getElementById('navLinks');
+navToggle.addEventListener('click', () => {
+  const isOpen = navLinks.classList.toggle('open');
+  navToggle.setAttribute('aria-expanded', isOpen);
+});
+navLinks.querySelectorAll('a').forEach(link => {
+  link.addEventListener('click', () => { navLinks.classList.remove('open'); });
+});
+
+// ===== 3. 滚动入场动画 =====
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('show'); });
+}, { threshold: 0.15 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// ===== 4. 数字滚动动画 =====
+const counters = document.querySelectorAll('.stat strong');
+const counterObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const el = entry.target; const target = +el.dataset.count;
+      const start = performance.now(); const duration = 1500;
+      const update = (now) => {
+        const progress = Math.min((now - start) / duration, 1);
+        el.textContent = Math.floor((1 - Math.pow(1 - progress, 3)) * target);
+        if (progress < 1) requestAnimationFrame(update); else el.textContent = target;
+      };
+      requestAnimationFrame(update); counterObserver.unobserve(el);
+    }
+  });
+}, { threshold: 0.5 });
+counters.forEach(c => counterObserver.observe(c));
+
+// ===== 5. 整活粒子背景 & 樱花飘落 =====
+const canvas = document.getElementById('particles');
+const ctx = canvas.getContext('2d');
+let W, H; let particles = [];
+function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+window.addEventListener('resize', resize); resize();
+const memes = ['有内鬼', '用爱发电', '前方高能', '已阅', '下次一定', 'DD斩首', '咕咕咕', '整活！'];
+const colors = ['#7b2ff7', '#f107a3', '#00e5ff', '#ffcc00', '#ffffff'];
+
+class Particle {
+  constructor() { this.reset(); this.y = Math.random() * H; }
+  reset() {
+    this.x = Math.random() * W; this.y = -20; this.size = Math.random() * 8 + 4;
+    this.speed = Math.random() * 1.5 + 0.5; this.opacity = Math.random() * 0.5 + 0.2;
+    this.rotate = Math.random() * Math.PI * 2; this.rotateSpeed = (Math.random() - 0.5) * 0.05;
+    this.isMeme = Math.random() > 0.85; this.memeText = memes[Math.floor(Math.random() * memes.length)];
+    this.color = colors[Math.floor(Math.random() * colors.length)];
+  }
+  update() { this.y += this.speed; this.rotate += this.rotateSpeed; if (this.y > H + 20) this.reset(); }
+  draw() {
+    ctx.save(); ctx.translate(this.x, this.y); ctx.rotate(this.rotate); ctx.globalAlpha = this.opacity;
+    if (this.isMeme) { ctx.font = 'bold 14px sans-serif'; ctx.fillStyle = this.color; ctx.textAlign = 'center'; ctx.fillText(this.memeText, 0, 0); }
+    else { ctx.beginPath(); ctx.moveTo(0, 0); ctx.bezierCurveTo(this.size/2, -this.size/2, this.size, 0, 0, this.size); ctx.bezierCurveTo(-this.size, 0, -this.size/2, -this.size/2, 0, 0); ctx.fillStyle = '#f107a3'; ctx.fill(); }
+    ctx.restore();
+  }
 }
-a { text-decoration: none; color: inherit; }
-ul { list-style: none; }
-img { max-width: 100%; display: block; }
+function initParticles() { const count = Math.min(60, Math.floor(W / 15)); particles = []; for (let i = 0; i < count; i++) particles.push(new Particle()); }
+function animate() { ctx.clearRect(0, 0, W, H); particles.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(animate); }
+initParticles(); animate();
 
-/* ===== 背景层 ===== */
-.bg-image {
-  position: fixed; inset: 0; z-index: -1;
-  background-image: url('assets/images/bg.jpg');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  opacity: 0.15; /* 背景图透明度 */
-  filter: blur(3px); /* 背景图模糊度 */
+// ===== 6. 模拟注册/登录逻辑 =====
+const authModal = document.getElementById('authModal');
+const loginBtn = document.getElementById('loginBtn');
+const modalClose = document.getElementById('modalClose');
+const switchAuthBtn = document.getElementById('switchAuthBtn');
+const switchAuthText = document.getElementById('switchAuthText');
+const modalTitle = document.getElementById('modalTitle');
+const submitAuthBtn = document.getElementById('submitAuthBtn');
+const authForm = document.getElementById('authForm');
+const registerExtra = document.getElementById('registerExtra');
+const userInfo = document.getElementById('userInfo');
+const userNameDisplay = document.getElementById('userNameDisplay');
+const userAvatar = document.getElementById('userAvatar');
+const logoutBtn = document.getElementById('logoutBtn');
+let isRegisterMode = false;
+
+function checkLoginState() {
+  const user = JSON.parse(localStorage.getItem('acg_lab_user'));
+  if (user) showUserInfo(user); else showLoginBtn();
 }
-.bg-grid {
-  position: fixed; inset: 0;
-  background-image: linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
-  background-size: 50px 50px;
-  pointer-events: none; z-index: 0;
+function showUserInfo(user) {
+  loginBtn.style.display = 'none'; userInfo.style.display = 'flex';
+  userNameDisplay.textContent = user.username;
+  const avatars = { '绘画': '🎨', 'Cos': '👗', '观影': '📺', '全能': '✨' };
+  userAvatar.textContent = avatars[user.direction] || '👤';
 }
-.glow {
-  position: fixed; border-radius: 50%;
-  filter: blur(120px); opacity: .35;
-  pointer-events: none; z-index: 0;
-  animation: float 10s ease-in-out infinite alternate;
+function showLoginBtn() { loginBtn.style.display = 'inline-block'; userInfo.style.display = 'none'; }
+function openModal(mode) {
+  isRegisterMode = mode === 'register';
+  modalTitle.textContent = isRegisterMode ? '注册次元账号' : '登录次元账号';
+  submitAuthBtn.textContent = isRegisterMode ? '注 册' : '登 录';
+  switchAuthText.textContent = isRegisterMode ? '已有账号？' : '还没有账号？';
+  switchAuthBtn.textContent = isRegisterMode ? '去登录' : '立即注册';
+  registerExtra.style.display = isRegisterMode ? 'block' : 'none';
+  authModal.classList.add('active');
 }
-.glow-1 { width: 400px; height: 400px; background: #7b2ff7; top: -100px; left: -100px; }
-.glow-2 { width: 350px; height: 350px; background: #f107a3; bottom: 10%; right: -50px; animation-delay: -3s; }
-.glow-3 { width: 300px; height: 300px; background: #00e5ff; top: 40%; left: 30%; animation-delay: -6s; opacity: .2; }
+function closeModal() { authModal.classList.remove('active'); authForm.reset(); }
 
-@keyframes float {
-  0% { transform: translate(0, 0) scale(1); }
-  100% { transform: translate(30px, -30px) scale(1.1); }
-}
-#particles { position: fixed; inset: 0; pointer-events: none; z-index: 1; }
+loginBtn.addEventListener('click', () => openModal('login'));
+modalClose.addEventListener('click', closeModal);
+authModal.addEventListener('click', (e) => { if (e.target === authModal) closeModal(); });
+switchAuthBtn.addEventListener('click', (e) => { e.preventDefault(); openModal(isRegisterMode ? 'login' : 'register'); });
 
-/* ===== 导航栏 ===== */
-.nav {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-  transition: background .3s, backdrop-filter .3s;
-}
-.nav.scrolled { background: rgba(11,11,20,.75); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(255,255,255,.06); }
-.nav-inner { max-width: 1100px; margin: 0 auto; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; }
-.logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 1.2rem; }
-.logo-mark {
-  width: 34px; height: 34px; border-radius: 10px;
-  background: linear-gradient(135deg, #7b2ff7, #f107a3);
-  display: grid; place-items: center; font-size: 1rem; color: #fff;
-  box-shadow: 0 0 18px rgba(123,47,247,.6);
-}
-.logo-mark.small { width: 28px; height: 28px; border-radius: 8px; font-size: .85rem; }
-.logo-text em { font-style: normal; color: #f107a3; }
+authForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const username = document.getElementById('authUsername').value.trim();
+  const password = document.getElementById('authPassword').value.trim();
+  if (!username || !password) return;
 
-.nav-links { display: flex; gap: 28px; font-size: .95rem; font-weight: 500; }
-.nav-links a { color: #b8b8cc; transition: color .2s; position: relative; }
-.nav-links a:hover { color: #fff; }
-.nav-links a::after { content: ""; position: absolute; left: 0; bottom: -4px; width: 0; height: 2px; background: linear-gradient(90deg, #7b2ff7, #f107a3); transition: width .3s; }
-.nav-links a:hover::after { width: 100%; }
+  if (isRegisterMode) {
+    const direction = document.getElementById('authDirection').value;
+    const user = { username, password, direction };
+    localStorage.setItem('acg_lab_user', JSON.stringify(user));
+    alert(`注册成功！欢迎加入次元整研社，${username} 同学！`);
+    showUserInfo(user); closeModal();
+  } else {
+    const savedUser = JSON.parse(localStorage.getItem('acg_lab_user'));
+    if (savedUser && savedUser.username === username && savedUser.password === password) {
+      alert(`欢迎回来，${username}！`); showUserInfo(savedUser); closeModal();
+    } else { alert('账号或密码错误！或者你还没有注册，请先点击下方“立即注册”。'); }
+  }
+});
 
-.nav-toggle { display: none; background: none; border: none; cursor: pointer; flex-direction: column; gap: 5px; }
-.nav-toggle span { display: block; width: 22px; height: 2px; background: #fff; border-radius: 2px; transition: .3s; }
+logoutBtn.addEventListener('click', () => {
+  localStorage.removeItem('acg_lab_user'); showLoginBtn();
+  alert('已安全退出次元。期待你的下次光临！');
+});
+checkLoginState();
 
-/* ===== 登录注册区域 ===== */
-.nav-auth { display: flex; align-items: center; gap: 10px; margin-left: 20px; }
-.btn-sm { padding: 8px 16px; font-size: 0.85rem; }
-.user-info { display: flex; align-items: center; gap: 8px; background: rgba(123,47,247,.15); padding: 4px 12px; border-radius: 999px; border: 1px solid rgba(123,47,247,.3); }
-.user-avatar { font-size: 1.1rem; }
-.user-name { font-size: 0.85rem; font-weight: 700; color: #c4a4ff; max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.btn-logout { background: none; border: none; color: #8888a0; cursor: pointer; font-size: 0.8rem; padding: 2px; transition: color .2s; }
-.btn-logout:hover { color: #f107a3; }
-
-/* ===== 通用 Section ===== */
-.section { position: relative; z-index: 2; padding: 100px 24px; }
-.section-alt { background: rgba(255,255,255,.015); }
-.container { max-width: 1100px; margin: 0 auto; }
-.section-label { text-align: center; font-size: .8rem; letter-spacing: 4px; color: #7b2ff7; font-weight: 700; margin-bottom: 12px; }
-.section-title { text-align: center; font-size: clamp(1.8rem, 4vw, 2.5rem); font-weight: 800; margin-bottom: 16px; }
-.section-desc { text-align: center; color: #a8a8be; max-width: 680px; margin: 0 auto 56px; }
-.section-desc strong { color: #eaeaf2; }
-.grad { background: linear-gradient(135deg, #7b2ff7, #f107a3, #00e5ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; background-size: 200% 200%; animation: gradShift 6s ease infinite; }
-@keyframes gradShift { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
-
-/* ===== 卡片网格 ===== */
-.grid { display: grid; gap: 24px; }
-.grid-3 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
-.card { background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.07); border-radius: 20px; padding: 32px 28px; transition: all .35s; position: relative; overflow: hidden; }
-.card:hover { transform: translateY(-6px); background: rgba(255,255,255,.06); border-color: rgba(123,47,247,.4); box-shadow: 0 20px 40px rgba(0,0,0,.3); }
-.card-icon { font-size: 2.2rem; margin-bottom: 18px; }
-.card h3 { font-size: 1.15rem; font-weight: 700; margin-bottom: 10px; }
-.card p { font-size: .92rem; color: #a8a8be; }
-.card-line::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: linear-gradient(180deg, #7b2ff7, #f107a3); border-radius: 3px 0 0 3px; }
-.tag { display: inline-block; font-size: .7rem; font-weight: 700; padding: 3px 10px; border-radius: 999px; background: rgba(0,229,255,.15); color: #00e5ff; margin-bottom: 14px; letter-spacing: .5px; }
-
-/* ===== 画廊 ===== */
-.gallery-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
-.gallery-item { border-radius: 16px; overflow: hidden; position: relative; aspect-ratio: 16 / 9; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); }
-.gallery-item img { width: 100%; height: 100%; object-fit: cover; transition: transform .4s ease; }
-.gallery-item:hover img { transform: scale(1.1); }
-
-/* ===== 加入区域 ===== */
-.join-box { background: linear-gradient(135deg, rgba(123,47,247,.12), rgba(241,7,163,.08)); border: 1px solid rgba(123,47,247,.25); border-radius: 28px; padding: 64px 32px; text-align: center; }
-.join-actions, .social-matrix { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-top: 32px; }
-.btn-qq { background: linear-gradient(135deg, #12b7f5, #0099ff); color: #fff; box-shadow: 0 8px 30px rgba(18,183,245,.4); }
-.btn-qq:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(18,183,245,.5); }
-.btn-bilibili { background: linear-gradient(135deg, #fb7299, #ff9db5); color: #fff; box-shadow: 0 8px 30px rgba(251,114,153,.4); }
-.btn-bilibili:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(251,114,153,.5); }
-.join-note { margin-top: 24px; font-size: .85rem; color: #8888a0; }
-
-/* ===== 按钮 ===== */
-.btn { display: inline-block; padding: 14px 32px; border-radius: 999px; font-weight: 700; font-size: .95rem; transition: all .3s; cursor: pointer; border: none; }
-.btn-primary { background: linear-gradient(135deg, #7b2ff7, #f107a3); color: #fff; box-shadow: 0 8px 30px rgba(123,47,247,.45); }
-.btn-primary:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(241,7,163,.55); }
-.btn-ghost { background: rgba(255,255,255,.05); color: #eaeaf2; border: 1px solid rgba(255,255,255,.15); }
-.btn-ghost:hover { background: rgba(255,255,255,.1); border-color: rgba(255,255,255,.3); }
-.btn-block { width: 100%; padding: 16px; font-size: 1rem; }
-
-/* ===== Hero ===== */
-.hero { position: relative; z-index: 2; min-height: 100vh; display: flex; align-items: center; justify-content: center; text-align: center; padding: 100px 24px 60px; }
-.hero-inner { max-width: 800px; }
-.hero-badge { display: inline-block; padding: 6px 16px; border-radius: 999px; background: rgba(123,47,247,.15); border: 1px solid rgba(123,47,247,.4); font-size: .85rem; color: #c4a4ff; margin-bottom: 24px; letter-spacing: .5px; }
-.hero-title { font-size: clamp(2.8rem, 8vw, 5rem); font-weight: 900; letter-spacing: 2px; margin-bottom: 20px; }
-.hero-sub { font-size: 1.15rem; color: #a8a8be; margin-bottom: 36px; }
-.hero-actions { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-bottom: 56px; }
-.hero-stats { display: flex; justify-content: center; gap: 48px; flex-wrap: wrap; }
-.stat { text-align: center; }
-.stat strong { display: block; font-size: 2rem; font-weight: 900; background: linear-gradient(135deg, #7b2ff7, #f107a3); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-.stat span { font-size: .85rem; color: #8888a0; }
-
-/* ===== 模态框 ===== */
-.modal-overlay { position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,.7); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity .3s; }
-.modal-overlay.active { opacity: 1; pointer-events: auto; }
-.modal-card { background: #151522; border: 1px solid rgba(123,47,247,.3); border-radius: 24px; padding: 40px; width: 90%; max-width: 420px; position: relative; transform: translateY(20px) scale(.95); transition: all .3s cubic-bezier(.22,.61,.36,1); box-shadow: 0 20px 60px rgba(0,0,0,.5); }
-.modal-overlay.active .modal-card { transform: translateY(0) scale(1); }
-.modal-close { position: absolute; top: 16px; right: 16px; background: none; border: none; color: #8888a0; font-size: 1.2rem; cursor: pointer; transition: color .2s; }
-.modal-close:hover { color: #fff; }
-.modal-header { text-align: center; margin-bottom: 28px; }
-.modal-header h2 { font-size: 1.5rem; font-weight: 800; margin-bottom: 8px; }
-.modal-subtitle { font-size: .85rem; color: #8888a0; }
-.input-group { margin-bottom: 20px; text-align: left; }
-.input-group label { display: block; font-size: .8rem; color: #b8b8cc; margin-bottom: 8px; font-weight: 600; }
-.input-group input, .input-group select { width: 100%; padding: 14px 16px; border-radius: 12px; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); color: #fff; font-size: .95rem; outline: none; transition: border .2s; font-family: inherit; }
-.input-group input:focus, .input-group select:focus { border-color: #7b2ff7; }
-.input-group select option { background: #151522; color: #fff; }
-.modal-footer { text-align: center; margin-top: 24px; font-size: .85rem; color: #8888a0; }
-.modal-footer a { color: #f107a3; font-weight: 700; margin-left: 6px; }
-.modal-footer a:hover { text-decoration: underline; }
-
-/* ===== 页脚 ===== */
-.footer { position: relative; z-index: 2; border-top: 1px solid rgba(255,255,255,.06); padding: 32px 24px; }
-.footer-inner { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
-.footer-brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: .95rem; }
-.footer-copy { font-size: .85rem; color: #8888a0; }
-
-/* ===== 滚动动画 ===== */
-.reveal { opacity: 0; transform: translateY(30px); transition: all .7s cubic-bezier(.22,.61,.36,1); }
-.reveal.show { opacity: 1; transform: translateY(0); }
-
-/* ===== APlayer 音乐播放器位置调整（左下角悬浮） ===== */
-.aplayer {
-  background: rgba(21, 21, 34, 0.9) !important;
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(123,47,247,.3);
-  color: #eaeaf2 !important;
-}
-.aplayer .aplayer-info .aplayer-music .aplayer-title { color: #fff !important; }
-.aplayer .aplayer-info .aplayer-music .aplayer-author { color: #8888a0 !important; }
-.aplayer .aplayer-list ol li { border-top: 1px solid rgba(255,255,255,.05) !important; }
-.aplayer .aplayer-list ol li:hover { background: rgba(123,47,247,.2) !important; }
-.aplayer .aplayer-list ol li.aplayer-list-light { background: rgba(123,47,247,.3) !important; }
-
-/* ===== 响应式 ===== */
-@media (max-width: 768px) {
-  .nav-toggle { display: flex; }
-  .nav-links { position: fixed; top: 64px; left: 0; right: 0; background: rgba(11,11,20,.96); backdrop-filter: blur(16px); flex-direction: column; padding: 24px; gap: 20px; transform: translateY(-120%); transition: transform .35s; border-bottom: 1px solid rgba(255,255,255,.08); }
-  .nav-links.open { transform: translateY(0); }
-  .hero-stats { gap: 28px; }
-  .join-box { padding: 48px 20px; }
-  .footer-inner { flex-direction: column; text-align: center; }
-  .nav-auth { margin-left: 0; margin-right: 15px; }
-  .user-name { max-width: 60px; }
-}
+// ===== 7. 年份自动更新 =====
+document.getElementById('year').textContent = new Date().getFullYear();
