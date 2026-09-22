@@ -1,43 +1,44 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" translate="no">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ACG Lab · 次元文化社</title>
-  <meta name="description" content="ACG Lab —— 动画、漫画与游戏的次元基地。追番、面基、创作、开黑，欢迎每一个热爱二次元的人。" />
-  <meta name="theme-color" content="#0a0a12" />
+  <!-- 强制禁止浏览器翻译代码 -->
+  <meta name="google" content="notranslate">
+  <title>次元整研社 | 仙居技师学院二次元文化研究社</title>
+  <meta name="description" content="仙居技师学院二次元文化研究社——次元整研社。绘画、Cos、观影，用爱发电，专注整活！" />
+  <meta name="theme-color" content="#0b0b14" />
 
   <!-- Open Graph -->
-  <meta property="og:title" content="ACG Lab · 次元文化社" />
-  <meta property="og:description" content="动画、漫画与游戏的次元基地。欢迎每一个热爱二次元的人。" />
+  <meta property="og:title" content="次元整研社 - 仙居技师学院二次元文化研究社" />
+  <meta property="og:description" content="绘画、Cos、观影，用爱发电，专注整活！" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://acg-lab.xyz" />
 
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌸</text></svg>" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✨</text></svg>" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-  <!-- 背景光晕 -->
+  <!-- 动态背景层 -->
+  <div class="bg-grid"></div>
   <div class="glow glow-1"></div>
   <div class="glow glow-2"></div>
   <div class="glow glow-3"></div>
-
-  <!-- 樱花飘落 canvas -->
-  <canvas id="petals" aria-hidden="true"></canvas>
+  <canvas id="particles" aria-hidden="true"></canvas>
 
   <!-- 导航栏 -->
   <header class="nav" id="nav">
     <div class="nav-inner">
       <a href="#home" class="logo">
-        <span class="logo-mark">A</span>
-        <span class="logo-text">ACG<em>Lab</em></span>
+        <span class="logo-mark">整</span>
+        <span class="logo-text">次元<em>整研社</em></span>
       </a>
 
       <nav class="nav-links" id="navLinks">
         <a href="#home">首页</a>
         <a href="#about">关于</a>
-        <a href="#activities">活动</a>
+        <a href="#activities">搞事</a>
         <a href="#join">加入</a>
       </nav>
 
@@ -49,159 +50,154 @@
 
   <main>
 
-    <!-- Hero -->
+    <!-- Hero 首屏 -->
     <section class="hero" id="home">
       <div class="hero-inner">
-        <p class="hero-badge reveal">🌸 次元基地 · 已开启</p>
+        <p class="hero-badge reveal">✨ 仙居技师学院 · 二次元文化研究社</p>
 
         <h1 class="hero-title reveal">
-          <span class="grad">ACG LAB</span>
+          <span class="grad">次元整研社</span>
         </h1>
 
         <p class="hero-sub reveal">
-          动画 · 漫画 · 游戏 · 同人创作<br />
-          这里是每一个二次元灵魂的落脚点
+          绘画 · Cos · 观影 · 专注整活<br />
+          用爱发电，不负热爱，这里是我们共同的次元基地！
         </p>
 
         <div class="hero-actions reveal">
-          <a href="#join" class="btn btn-primary">加入我们</a>
-          <a href="#activities" class="btn btn-ghost">看看活动</a>
+          <a href="#join" class="btn btn-primary">申请入社</a>
+          <a href="#activities" class="btn btn-ghost">看看我们在搞什么</a>
         </div>
 
         <div class="hero-stats reveal">
           <div class="stat">
-            <strong data-count="128">0</strong>
-            <span>在册成员</span>
+            <strong data-count="88">0</strong>
+            <span>在册同好</span>
           </div>
           <div class="stat">
-            <strong data-count="36">0</strong>
-            <span>年度活动</span>
+            <strong data-count="24">0</strong>
+            <span>年度整活</span>
           </div>
           <div class="stat">
-            <strong data-count="2019">0</strong>
-            <span>创立于</span>
+            <strong data-count="3">0</strong>
+            <span>核心方向</span>
           </div>
         </div>
       </div>
-
-      <div class="scroll-hint" aria-hidden="true">
-        <span></span>
-      </div>
     </section>
 
-    <!-- 关于 -->
+    <!-- 关于我们 -->
     <section class="section" id="about">
       <div class="container">
         <p class="section-label reveal">ABOUT US</p>
-        <h2 class="section-title reveal">关于 <span class="grad">ACG Lab</span></h2>
+        <h2 class="section-title reveal">什么是<span class="grad">次元整研社</span>？</h2>
         <p class="section-desc reveal">
-          我们是一个由动画、漫画、游戏爱好者组成的次元文化社团。
-          不管是每周追新番、深夜开黑，还是自己动笔写同人、做 MAD，
-          在这里都能找到同频的人。
+          我们是仙居技师学院的一群二次元浓度超标患者。在这里，你可以是画手太太，可以是女装大佬（或帅气coser），也可以是深夜追番的吐槽役。我们核心宗旨是：<strong>拒绝内卷，专注整活，快乐二次元！</strong>
         </p>
 
         <div class="grid grid-3">
           <article class="card reveal">
-            <div class="card-icon">📺</div>
-            <h3>一起追番</h3>
-            <p>每季新番同步讨论，线下放映会，看完还能吵上两小时剧情。</p>
-          </article>
-
-          <article class="card reveal">
             <div class="card-icon">🎨</div>
-            <h3>一起创作</h3>
-            <p>插画、同人文、MAD、翻唱、手书——你的脑洞，这里有人接得住。</p>
+            <h3>绘画 · 产粮</h3>
+            <p>板绘、手绘、摸鱼、同人，只要你画，我们就疯狂打call！偶尔掉落线下绘茶会。</p>
           </article>
 
           <article class="card reveal">
-            <div class="card-icon">🎮</div>
-            <h3>一起开黑</h3>
-            <p>主机、PC、手游都有分队，周末组队，赛季冲分不掉线。</p>
+            <div class="card-icon">👗</div>
+            <h3>Cos · 变装</h3>
+            <p>出c、试妆、场照、漫展组团。男扮女装不是梦，女扮男装帅断腿，这里没有社恐！</p>
+          </article>
+
+          <article class="card reveal">
+            <div class="card-icon">📺</div>
+            <h3>观影 · 吐槽</h3>
+            <p>新番同步追，老番补习班。线下放映会，实行“禁止打架但可以激情互喷”的弹幕式观影。</p>
           </article>
         </div>
       </div>
     </section>
 
-    <!-- 活动 -->
+    <!-- 活动整活 -->
     <section class="section section-alt" id="activities">
       <div class="container">
         <p class="section-label reveal">ACTIVITIES</p>
-        <h2 class="section-title reveal">我们在<span class="grad">搞什么</span></h2>
-        <p class="section-desc reveal">从每周的日常到一年一度的大型企划，总有一款适合你。</p>
+        <h2 class="section-title reveal">我们的<span class="grad">搞事日常</span></h2>
+        <p class="section-desc reveal">不定时掉落各种活动，主打一个随心所欲，惊喜连连。</p>
 
         <div class="grid grid-3">
           <article class="card card-line reveal">
-            <span class="tag">每周</span>
-            <h3>新番鉴赏会</h3>
-            <p>当季热门同步看，弹幕级吐槽现场，附赠安利与避雷指南。</p>
+            <span class="tag">常驻</span>
+            <h3>周末摸鱼局</h3>
+            <p>周末带上画本或者平板，在奶茶店/教室相聚，边画边聊，互相催更。</p>
           </article>
 
           <article class="card card-line reveal">
-            <span class="tag">每月</span>
-            <h3>同人创作展</h3>
-            <p>插画、同人文、手书投稿，优秀作品会在官网和社刊展示。</p>
-          </article>
-
-          <article class="card card-line reveal">
-            <span class="tag">每季</span>
-            <h3>游戏开黑赛</h3>
-            <p>友谊第一，比赛第二，但赢了还是很爽。奖品是社内限定周边。</p>
-          </article>
-
-          <article class="card card-line reveal">
-            <span class="tag">年度</span>
+            <span class="tag">重头戏</span>
             <h3>漫展远征队</h3>
-            <p>组团逛展、出 cos、拍场照，包车包住宿，人多热闹不迷路。</p>
+            <p>周边漫展组团出发，包车、帮妆、看行李一条龙，专业后勤保障你的展子体验。</p>
           </article>
 
-          <文章 班级="卡片卡片线显示">
-            <跨度 班级="标签">常驻</跨度>
-            <H3>声优应援部</H3>
-            <p>广播剧翻配、角色语音模仿，偶尔也会有正经的配音教学。</p>
-          </文章>
+          <article class="card card-line reveal">
+            <span class="tag">热门</span>
+            <h3>新番首映会</h3>
+            <p>当季霸权番开播，组织线下集体观看，提供零食，自带吐槽技能，气氛组就位。</p>
+          </article>
 
-          <文章 班级="卡片卡片线显示">
-            <跨度 班级="标签">常驻</跨度>
-            <H3>技术支援组</H3>
-            <p>维护本站、做工具、写爬虫，用代码给社团整点新活。</p>
-          </文章>
+          <article class="card card-line reveal">
+            <span class="tag">整活</span>
+            <h3>社团表情包大赛</h3>
+            <p>收集群友黑历史，制作专属表情包，冠军将获得“社死大礼包”一份。</p>
+          </article>
+
+          <article class="card card-line reveal">
+            <span class="tag">出片</span>
+            <h3>校园外景团建</h3>
+            <p>结合仙居本地风景，组织Cos外景拍摄和绘画写生，出片率极高。</p>
+          </article>
+
+          <article class="card card-line reveal">
+            <span class="tag">无门槛</span>
+            <h3>深夜开黑车队</h3>
+            <p>PC、手游、主机平台不限，各游戏分部随时发车，不压力只娱乐。</p>
+          </article>
         </div>
       </div>
-    </部分>
+    </section>
 
-    <! -- 加入 -->
-    <部分 班级="节" 身份标识="加入">
-      <div 班级="容器">
-        <div 班级="连接框显示">
-          <p 班级="节标签">加入我们</p>
-          <H2 班级="节标题">准备好<跨度 班级="grad">穿越次元</跨度>了吗？</H2>
-          <p 班级="section-desc">
-            我们不限年龄、不限资历，只要你热爱 ACG，就是自己人。
-            加群时请备注来意，比如「新番党」「画手」「开黑」。
+    <!-- 加入我们 -->
+    <section class="section" id="join">
+      <div class="container">
+        <div class="join-box reveal">
+          <p class="section-label">JOIN US</p>
+          <h2 class="section-title">准备好<span class="grad">穿越次元</span>了吗？</h2>
+          <p class="section-desc">
+            仙居技师学院在校生，不限专业、不限年级、零基础也完全OK！
+            只要你热爱二次元，就是我们自己人。<br /><br />
+            <strong>加入方式：</strong>请咨询社团负责人，或直接发送邮件到下方邮箱。
           </p>
 
-          <div 班级="连接操作">
-            <一个 班级="btn btn-primary" href="mailto:hello@acg-lab.xyz">您好@acg-lab.xyz</一个>
-            <一个 班级="btn btn-ghost" href="https://github.com/" 目标="_空白" rel="noopener">GitHub仓库</一个>
+          <div class="join-actions">
+            <a class="btn btn-primary" href="mailto:hello@acg-lab.xyz">联系社长（邮箱）</a>
+            <a class="btn btn-ghost" href="#" target="_blank" rel="noopener">加入QQ群（建设中）</a>
           </div>
 
-          <p 班级="连接注释">📮邮件我们会尽量在48小时内回复</p>
+          <p class="join-note">📮 邮件我们会尽量在 48 小时内回复，备注来意如「绘画」「Cos」「观影」</p>
         </div>
       </div>
-    </部分>
+    </section>
 
-  </主要的>
+  </main>
 
-  <页脚 班级="页脚">
-    <div 班级="容器页脚-内">
-      <div 班级="页脚品牌">
-        <跨度 班级="logo-mark small">A</跨度>
-        <跨度>ACG Lab·次元文化社</跨度>
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <span class="logo-mark small">整</span>
+        <span>次元整研社 · 仙居技师学院</span>
       </div>
-      <p 班级="页脚复制">©<跨度 身份标识="年份">2025</跨度>acg-lab.XYZ·由ACG实验室用 🌸 制成</p>
+      <p class="footer-copy">© <span id="year">2025</span> acg-lab.xyz · 用爱发电，Made with ✨</p>
     </div>
-  </页脚>
+  </footer>
 
-  <脚本 src="main.js"></脚本>
-</身体>
-</超文本标记语言>
+  <script src="main.js"></script>
+</body>
+</html>
