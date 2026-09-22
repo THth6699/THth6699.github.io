@@ -87,7 +87,7 @@ img { max-width: 100%; display: block; }
 .section-title { text-align: center; font-size: clamp(1.8rem, 4vw, 2.5rem); font-weight: 800; margin-bottom: 16px; }
 .section-desc { text-align: center; color: #a8a8be; max-width: 680px; margin: 0 auto 56px; }
 .section-desc strong { color: #eaeaf2; }
-.grad { background: linear-gradient(135deg, #7b2ff7, #f107a3, #00e5ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; background-size: 200% 200%; animation: gradShift 6s ease infinite; }
+.grad { background: linear-gradient(135deg, #39c5bb, #0008b8b, #00ffcc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; background-size: 200% 200%; animation: gradShift 6s ease infinite; }
 @keyframes gradShift { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
 
 /* ===== 卡片网格 ===== */
