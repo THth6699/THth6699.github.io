@@ -20,72 +20,72 @@
 
   <!-- 背景光晕 -->
   <div class="glow glow-1"></div>
-  <div 班级="辉光辉光-2"></div>
-  <div 班级="辉光辉光-3"></div>
+  <div class="glow glow-2"></div>
+  <div class="glow glow-3"></div>
 
-  <！--樱花飘落画布-->
-  <帆布 身份标识="花瓣" 咏叹调隐藏="真"></帆布>
+  <!-- 樱花飘落 canvas -->
+  <canvas id="petals" aria-hidden="true"></canvas>
 
-<! -- 导航栏 -->
-  <页眉 班级="导航" 身份标识="导航">
-    <div 班级="导航内部">
-      <一个 href="#home" 班级="徽标">
-        <跨度 班级="徽标标记">A</跨度>
-        <跨度 班级="徽标-文本">ACG<他们>实验室</他们></跨度>
-      </一个>
+  <!-- 导航栏 -->
+  <header class="nav" id="nav">
+    <div class="nav-inner">
+      <a href="#home" class="logo">
+        <span class="logo-mark">A</span>
+        <span class="logo-text">ACG<em>Lab</em></span>
+      </a>
 
-      <NAV 班级="导航链接" 身份标识="导航链接">
-        <一个 href="#home">首页</一个>
-        <一个 href="#关于">关于</一个>
-        <一个 href="#个活动">活动</一个>
-        <一个 href="#join">加入</一个>
-      </NAV>
+      <nav class="nav-links" id="navLinks">
+        <a href="#home">首页</a>
+        <a href="#about">关于</a>
+        <a href="#activities">活动</a>
+        <a href="#join">加入</a>
+      </nav>
 
-      <按钮 班级="导航切换" 身份标识="navToggle" 咏叹调标签="打开菜单" 咏叹调扩展="假">
-        <跨度></跨度><跨度></跨度><跨度></跨度>
-      </按钮>
+      <button class="nav-toggle" id="navToggle" aria-label="打开菜单" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
     </div>
-  </页眉>
+  </header>
 
-  <主要的>
+  <main>
 
-    <！--英雄-->
-    <部分 班级="英雄" 身份标识="主页">
-      <div 班级="英雄本色">
-        <p 班级="英雄徽章揭晓">🌸 次元基地 · 已开启</p>
+    <!-- Hero -->
+    <section class="hero" id="home">
+      <div class="hero-inner">
+        <p class="hero-badge reveal">🌸 次元基地 · 已开启</p>
 
-        <H1 班级="英雄称号揭晓">
-          <跨度 班级="grad">ACG实验室</跨度>
-        </H1>
+        <h1 class="hero-title reveal">
+          <span class="grad">ACG LAB</span>
+        </h1>
 
-        <p 班级="英雄-次揭示">
-动画 · 漫画 · 游戏 · 同人创作<溴 />
+        <p class="hero-sub reveal">
+          动画 · 漫画 · 游戏 · 同人创作<br />
           这里是每一个二次元灵魂的落脚点
         </p>
 
-        <div 班级="英雄行动揭示">
-          <一个 href="#join" 班级="btn btn-primary">加入我们</一个>
-          <一个 href="#个活动" 班级="btn btn-ghost">看看活动</一个>
+        <div class="hero-actions reveal">
+          <a href="#join" class="btn btn-primary">加入我们</a>
+          <a href="#activities" class="btn btn-ghost">看看活动</a>
         </div>
 
-        <div 班级="英雄统计揭示">
-          <div 班级="统计">
-            <强大的 数计数="128">0</强大的>
-            <跨度>在册成员</跨度>
+        <div class="hero-stats reveal">
+          <div class="stat">
+            <strong data-count="128">0</strong>
+            <span>在册成员</span>
           </div>
-          <div 班级="统计">
-            <强大的 数据计数="36">0</强大的>
-            <跨度>年度活动</跨度>
+          <div class="stat">
+            <strong data-count="36">0</strong>
+            <span>年度活动</span>
           </div>
-          <div 班级="统计">
-            <强大的 数据计数="2019">0</强大的>
-            <跨度>创立于</跨度>
+          <div class="stat">
+            <strong data-count="2019">0</strong>
+            <span>创立于</span>
           </div>
         </div>
       </div>
 
-      <div 班级="滚动提示" 咏叹调隐藏="真">
-        <跨度></跨度>
+      <div class="scroll-hint" aria-hidden="true">
+        <span></span>
       </div>
     </section>
 
@@ -103,7 +103,7 @@
         <div class="grid grid-3">
           <article class="card reveal">
             <div class="card-icon">📺</div>
-            <H3>一起追番</H3>
+            <h3>一起追番</h3>
             <p>每季新番同步讨论，线下放映会，看完还能吵上两小时剧情。</p>
           </article>
 
@@ -127,34 +127,34 @@
       <div class="container">
         <p class="section-label reveal">ACTIVITIES</p>
         <h2 class="section-title reveal">我们在<span class="grad">搞什么</span></h2>
-        <p 班级="section-desc reveal">从每周的日常到一年一度的大型企划，总有一款适合你。</p>
+        <p class="section-desc reveal">从每周的日常到一年一度的大型企划，总有一款适合你。</p>
 
-        <div 班级="网格网格3">
-          <文章 班级="卡片卡片线显示">
-            <span 班级="tag">每周</span>
-            <H3>新番鉴赏会</H3>
+        <div class="grid grid-3">
+          <article class="card card-line reveal">
+            <span class="tag">每周</span>
+            <h3>新番鉴赏会</h3>
             <p>当季热门同步看，弹幕级吐槽现场，附赠安利与避雷指南。</p>
-          </文章>
+          </article>
 
-          <文章 班级="卡片卡片线显示">
-            <span 班级="tag">每月</span>
-            <H3>同人创作展</H3>
+          <article class="card card-line reveal">
+            <span class="tag">每月</span>
+            <h3>同人创作展</h3>
             <p>插画、同人文、手书投稿，优秀作品会在官网和社刊展示。</p>
-          </文章>
+          </article>
 
-          <文章 班级="卡片卡片线显示">
-            <span 班级="tag">每季</span>
-            <H3>游戏开黑赛</H3>
+          <article class="card card-line reveal">
+            <span class="tag">每季</span>
+            <h3>游戏开黑赛</h3>
             <p>友谊第一，比赛第二，但赢了还是很爽。奖品是社内限定周边。</p>
-          </文章>
+          </article>
+
+          <article class="card card-line reveal">
+            <span class="tag">年度</span>
+            <h3>漫展远征队</h3>
+            <p>组团逛展、出 cos、拍场照，包车包住宿，人多热闹不迷路。</p>
+          </article>
 
           <文章 班级="卡片卡片线显示">
-            <span 班级="tag">年度</span>
-            <H3>漫展远征队</H3>
-            <p>组团逛展、出 cos、拍场照，包车包住宿，人多热闹不迷路。</p>
-          </文章>
-
-<！doctype html>！doctype html><文章 班级="卡片卡片线显示">
             <跨度 班级="标签">常驻</跨度>
             <H3>声优应援部</H3>
             <p>广播剧翻配、角色语音模仿，偶尔也会有正经的配音教学。</p>
@@ -169,7 +169,7 @@
       </div>
     </部分>
 
-<! -- 加入 -->
+    <! -- 加入 -->
     <部分 班级="节" 身份标识="加入">
       <div 班级="容器">
         <div 班级="连接框显示">
@@ -180,8 +180,8 @@
             加群时请备注来意，比如「新番党」「画手」「开黑」。
           </p>
 
-</</ 班级
-="连接操作"><一个 班级="btn btn-primary" href="mailto:hello@acg-lab.xyz">您好@acg-lab.xyz</一个>
+          <div 班级="连接操作">
+            <一个 班级="btn btn-primary" href="mailto:hello@acg-lab.xyz">您好@acg-lab.xyz</一个>
             <一个 班级="btn btn-ghost" href="https://github.com/" 目标="_空白" rel="noopener">GitHub仓库</一个>
           </div>
 
@@ -190,7 +190,7 @@
       </div>
     </部分>
 
-</主要的>
+  </主要的>
 
   <页脚 班级="页脚">
     <div 班级="容器页脚-内">
@@ -204,4 +204,4 @@
 
   <脚本 src="main.js"></脚本>
 </身体>
->
+</超文本标记语言>
