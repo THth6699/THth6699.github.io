@@ -1,175 +1,203 @@
-/* ===== 基础重置 ===== */
-* { margin: 0; padding: 0; box-sizing: border-box; }
-html { scroll-behavior: smooth; }
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
-  background: #0b0b14;
-  color: #eaeaf2;
-  overflow-x: hidden;
-  line-height: 1.6;
-}
-a { text-decoration: none; color: inherit; }
-ul { list-style: none; }
-img { max-width: 100%; display: block; }
+<!DOCTYPE html>
+<html lang="zh-CN" translate="no">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="google" content="notranslate">
+  <title>次元整研社 | 仙居技师学院二次元文化研究社</title>
+  <meta name="description" content="仙居技师学院二次元文化研究社——次元整研社。绘画、Cos、观影，用爱发电，专注整活！" />
+  <meta name="theme-color" content="#0b0b14" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✨</text></svg>" />
+  
+  <!-- APlayer 音乐播放器样式 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
 
-/* ===== 背景层 ===== */
-.bg-image {
-  position: fixed; inset: 0; z-index: -1;
-  background-image: url('assets/images/bg.jpg');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  opacity: 0.15;
-  filter: blur(3px);
-}
-.bg-grid {
-  position: fixed; inset: 0;
-  background-image: linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
-  background-size: 50px 50px;
-  pointer-events: none; z-index: 0;
-}
-.glow {
-  position: fixed; border-radius: 50%;
-  filter: blur(120px); opacity: .35;
-  pointer-events: none; z-index: 0;
-  animation: float 10s ease-in-out infinite alternate;
-}
-.glow-1 { width: 400px; height: 400px; background: #7b2ff7; top: -100px; left: -100px; }
-.glow-2 { width: 350px; height: 350px; background: #f107a3; bottom: 10%; right: -50px; animation-delay: -3s; }
-.glow-3 { width: 300px; height: 300px; background: #00e5ff; top: 40%; left: 30%; animation-delay: -6s; opacity: .2; }
-@keyframes float {
-  0% { transform: translate(0, 0) scale(1); }
-  100% { transform: translate(30px, -30px) scale(1.1); }
-}
-#particles { position: fixed; inset: 0; pointer-events: none; z-index: 1; }
+  <!-- 全屏背景图 -->
+  <div class="bg-image"></div> 
+  <div class="bg-grid"></div>
+  <div class="glow glow-1"></div>
+  <div class="glow glow-2"></div>
+  <div class="glow glow-3"></div>
+  <canvas id="particles" aria-hidden="true"></canvas>
 
-/* ===== 导航栏 ===== */
-.nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; transition: background .3s, backdrop-filter .3s; }
-.nav.scrolled { background: rgba(11,11,20,.75); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(255,255,255,.06); }
-.nav-inner { max-width: 1100px; margin: 0 auto; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; }
-.logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 1.2rem; }
-.logo-mark { width: 34px; height: 34px; border-radius: 10px; background: linear-gradient(135deg, #7b2ff7, #f107a3); display: grid; place-items: center; font-size: 1rem; color: #fff; box-shadow: 0 0 18px rgba(123,47,247,.6); }
-.logo-mark.small { width: 28px; height: 28px; border-radius: 8px; font-size: .85rem; }
-.logo-text em { font-style: normal; color: #f107a3; }
-.nav-links { display: flex; gap: 28px; font-size: .95rem; font-weight: 500; }
-.nav-links a { color: #b8b8cc; transition: color .2s; position: relative; }
-.nav-links a:hover { color: #fff; }
-.nav-links a::after { content: ""; position: absolute; left: 0; bottom: -4px; width: 0; height: 2px; background: linear-gradient(90deg, #7b2ff7, #f107a3); transition: width .3s; }
-.nav-links a:hover::after { width: 100%; }
-.nav-toggle { display: none; background: none; border: none; cursor: pointer; flex-direction: column; gap: 5px; }
-.nav-toggle span { display: block; width: 22px; height: 2px; background: #fff; border-radius: 2px; transition: .3s; }
+  <!-- 导航栏 -->
+  <header class="nav" id="nav">
+    <div class="nav-inner">
+      <a href="#home" class="logo">
+        <span class="logo-mark">整</span>
+        <span class="logo-text">次元<em>整研社</em></span>
+      </a>
 
-/* ===== 登录注册区域 ===== */
-.nav-auth { display: flex; align-items: center; gap: 10px; margin-left: 20px; }
-.btn-sm { padding: 8px 16px; font-size: 0.85rem; }
-.user-info { display: flex; align-items: center; gap: 8px; background: rgba(123,47,247,.15); padding: 4px 12px; border-radius: 999px; border: 1px solid rgba(123,47,247,.3); }
-.user-avatar { font-size: 1.1rem; }
-.user-name { font-size: 0.85rem; font-weight: 700; color: #c4a4ff; max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.btn-logout { background: none; border: none; color: #8888a0; cursor: pointer; font-size: 0.8rem; padding: 2px; transition: color .2s; }
-.btn-logout:hover { color: #f107a3; }
+      <nav class="nav-links" id="navLinks">
+        <a href="#home">首页</a>
+        <a href="#about">关于</a>
+        <a href="#activities">搞事</a>
+        <a href="#gallery">画廊</a>
+        <a href="#join">加入</a>
+      </nav>
 
-/* ===== 通用 Section ===== */
-.section { position: relative; z-index: 2; padding: 100px 24px; }
-.section-alt { background: rgba(255,255,255,.015); }
-.container { max-width: 1100px; margin: 0 auto; }
-.section-label { text-align: center; font-size: .8rem; letter-spacing: 4px; color: #7b2ff7; font-weight: 700; margin-bottom: 12px; }
-.section-title { text-align: center; font-size: clamp(1.8rem, 4vw, 2.5rem); font-weight: 800; margin-bottom: 16px; }
-.section-desc { text-align: center; color: #a8a8be; max-width: 680px; margin: 0 auto 56px; }
-.section-desc strong { color: #eaeaf2; }
-.grad { background: linear-gradient(135deg, #7b2ff7, #f107a3, #00e5ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; background-size: 200% 200%; animation: gradShift 6s ease infinite; }
-@keyframes gradShift { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+      <div class="nav-auth">
+        <button class="btn btn-sm btn-primary" id="loginBtn">登录 / 注册</button>
+        <div class="user-info" id="userInfo" style="display:none;">
+          <span class="user-avatar" id="userAvatar">👤</span>
+          <span class="user-name" id="userNameDisplay">旅行者</span>
+          <button class="btn-logout" id="logoutBtn" title="退出登录">✕</button>
+        </div>
+      </div>
 
-/* ===== 卡片网格 ===== */
-.grid { display: grid; gap: 24px; }
-.grid-3 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
-.card { background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.07); border-radius: 20px; padding: 32px 28px; transition: all .35s; position: relative; overflow: hidden; }
-.card:hover { transform: translateY(-6px); background: rgba(255,255,255,.06); border-color: rgba(123,47,247,.4); box-shadow: 0 20px 40px rgba(0,0,0,.3); }
-.card-icon { font-size: 2.2rem; margin-bottom: 18px; }
-.card h3 { font-size: 1.15rem; font-weight: 700; margin-bottom: 10px; }
-.card p { font-size: .92rem; color: #a8a8be; }
-.card-line::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: linear-gradient(180deg, #7b2ff7, #f107a3); border-radius: 3px 0 0 3px; }
-.tag { display: inline-block; font-size: .7rem; font-weight: 700; padding: 3px 10px; border-radius: 999px; background: rgba(0,229,255,.15); color: #00e5ff; margin-bottom: 14px; letter-spacing: .5px; }
+      <button class="nav-toggle" id="navToggle" aria-label="打开菜单" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
 
-/* ===== 画廊 ===== */
-.gallery-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
-.gallery-item { border-radius: 16px; overflow: hidden; position: relative; aspect-ratio: 16 / 9; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); }
-.gallery-item img { width: 100%; height: 100%; object-fit: cover; transition: transform .4s ease; }
-.gallery-item:hover img { transform: scale(1.1); }
+  <main>
 
-/* ===== 加入区域 ===== */
-.join-box { background: linear-gradient(135deg, rgba(123,47,247,.12), rgba(241,7,163,.08)); border: 1px solid rgba(123,47,247,.25); border-radius: 28px; padding: 64px 32px; text-align: center; }
-.join-actions, .social-matrix { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-top: 32px; }
-.btn-qq { background: linear-gradient(135deg, #12b7f5, #0099ff); color: #fff; box-shadow: 0 8px 30px rgba(18,183,245,.4); }
-.btn-qq:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(18,183,245,.5); }
-.btn-bilibili { background: linear-gradient(135deg, #fb7299, #ff9db5); color: #fff; box-shadow: 0 8px 30px rgba(251,114,153,.4); }
-.btn-bilibili:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(251,114,153,.5); }
-.join-note { margin-top: 24px; font-size: .85rem; color: #8888a0; }
+    <!-- Hero 首屏 -->
+    <section class="hero" id="home">
+      <div class="hero-inner">
+        <p class="hero-badge reveal">✨ 仙居技师学院 · 二次元文化研究社</p>
+        <h1 class="hero-title reveal"><span class="grad">次元整研社</span></h1>
+        <p class="hero-sub reveal">绘画 · Cos · 观影 · 专注整活<br />用爱发电，不负热爱，这里是我们共同的次元基地！</p>
+        <div class="hero-actions reveal">
+          <a href="#join" class="btn btn-primary">申请入社</a>
+          <a href="#activities" class="btn btn-ghost">看看我们在搞什么</a>
+        </div>
+        <div class="hero-stats reveal">
+          <div class="stat"><strong data-count="88">0</strong><span>在册同好</span></div>
+          <div class="stat"><strong data-count="24">0</strong><span>年度整活</span></div>
+          <div class="stat"><strong data-count="3">0</strong><span>核心方向</span></div>
+        </div>
+      </div>
+    </section>
 
-/* ===== 按钮 ===== */
-.btn { display: inline-block; padding: 14px 32px; border-radius: 999px; font-weight: 700; font-size: .95rem; transition: all .3s; cursor: pointer; border: none; }
-.btn-primary { background: linear-gradient(135deg, #7b2ff7, #f107a3); color: #fff; box-shadow: 0 8px 30px rgba(123,47,247,.45); }
-.btn-primary:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(241,7,163,.55); }
-.btn-ghost { background: rgba(255,255,255,.05); color: #eaeaf2; border: 1px solid rgba(255,255,255,.15); }
-.btn-ghost:hover { background: rgba(255,255,255,.1); border-color: rgba(255,255,255,.3); }
-.btn-block { width: 100%; padding: 16px; font-size: 1rem; }
+    <!-- 关于我们 -->
+    <section class="section" id="about">
+      <div class="container">
+        <p class="section-label reveal">ABOUT US</p>
+        <h2 class="section-title reveal">什么是<span class="grad">次元整研社</span>？</h2>
+        <p class="section-desc reveal">我们是仙居技师学院的一群二次元浓度超标患者。在这里，你可以是画手太太，可以是女装大佬（或帅气coser），也可以是深夜追番的吐槽役。核心宗旨是：<strong>拒绝内卷，专注整活，快乐二次元！</strong></p>
+        <div class="grid grid-3">
+          <article class="card reveal"><div class="card-icon">🎨</div><h3>绘画 · 产粮</h3><p>板绘、手绘、摸鱼、同人，只要你画，我们就疯狂打call！偶尔掉落线下绘茶会。</p></article>
+          <article class="card reveal"><div class="card-icon">👗</div><h3>Cos · 变装</h3><p>出c、试妆、场照、漫展组团。男扮女装不是梦，女扮男装帅断腿，这里没有社恐！</p></article>
+          <article class="card reveal"><div class="card-icon">📺</div><h3>观影 · 吐槽</h3><p>新番同步追，老番补习班。线下放映会，实行“禁止打架但可以激情互喷”的弹幕式观影。</p></article>
+        </div>
+      </div>
+    </section>
 
-/* ===== Hero ===== */
-.hero { position: relative; z-index: 2; min-height: 100vh; display: flex; align-items: center; justify-content: center; text-align: center; padding: 100px 24px 60px; }
-.hero-inner { max-width: 800px; }
-.hero-badge { display: inline-block; padding: 6px 16px; border-radius: 999px; background: rgba(123,47,247,.15); border: 1px solid rgba(123,47,247,.4); font-size: .85rem; color: #c4a4ff; margin-bottom: 24px; letter-spacing: .5px; }
-.hero-title { font-size: clamp(2.8rem, 8vw, 5rem); font-weight: 900; letter-spacing: 2px; margin-bottom: 20px; }
-.hero-sub { font-size: 1.15rem; color: #a8a8be; margin-bottom: 36px; }
-.hero-actions { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-bottom: 56px; }
-.hero-stats { display: flex; justify-content: center; gap: 48px; flex-wrap: wrap; }
-.stat { text-align: center; }
-.stat strong { display: block; font-size: 2rem; font-weight: 900; background: linear-gradient(135deg, #7b2ff7, #f107a3); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-.stat span { font-size: .85rem; color: #8888a0; }
+    <!-- 搞事日常 -->
+    <section class="section section-alt" id="activities">
+      <div class="container">
+        <p class="section-label reveal">ACTIVITIES</p>
+        <h2 class="section-title reveal">我们的<span class="grad">搞事日常</span></h2>
+        <p class="section-desc reveal">不定时掉落各种活动，主打一个随心所欲，惊喜连连。</p>
+        <div class="grid grid-3">
+          <article class="card card-line reveal"><span class="tag">常驻</span><h3>周末摸鱼局</h3><p>周末带上画本或者平板，在奶茶店/教室相聚，边画边聊，互相催更。</p></article>
+          <article class="card card-line reveal"><span class="tag">重头戏</span><h3>漫展远征队</h3><p>周边漫展组团出发，包车、帮妆、看行李一条龙，专业后勤保障你的展子体验。</p></article>
+          <article class="card card-line reveal"><span class="tag">热门</span><h3>新番首映会</h3><p>当季霸权番开播，组织线下集体观看，提供零食，自带吐槽技能，气氛组就位。</p></article>
+        </div>
+      </div>
+    </section>
 
-/* ===== 模态框 ===== */
-.modal-overlay { position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,.7); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity .3s; }
-.modal-overlay.active { opacity: 1; pointer-events: auto; }
-.modal-card { background: #151522; border: 1px solid rgba(123,47,247,.3); border-radius: 24px; padding: 40px; width: 90%; max-width: 420px; position: relative; transform: translateY(20px) scale(.95); transition: all .3s cubic-bezier(.22,.61,.36,1); box-shadow: 0 20px 60px rgba(0,0,0,.5); }
-.modal-overlay.active .modal-card { transform: translateY(0) scale(1); }
-.modal-close { position: absolute; top: 16px; right: 16px; background: none; border: none; color: #8888a0; font-size: 1.2rem; cursor: pointer; transition: color .2s; }
-.modal-close:hover { color: #fff; }
-.modal-header { text-align: center; margin-bottom: 28px; }
-.modal-header h2 { font-size: 1.5rem; font-weight: 800; margin-bottom: 8px; }
-.modal-subtitle { font-size: .85rem; color: #8888a0; }
-.input-group { margin-bottom: 20px; text-align: left; }
-.input-group label { display: block; font-size: .8rem; color: #b8b8cc; margin-bottom: 8px; font-weight: 600; }
-.input-group input, .input-group select { width: 100%; padding: 14px 16px; border-radius: 12px; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); color: #fff; font-size: .95rem; outline: none; transition: border .2s; font-family: inherit; }
-.input-group input:focus, .input-group select:focus { border-color: #7b2ff7; }
-.input-group select option { background: #151522; color: #fff; }
-.modal-footer { text-align: center; margin-top: 24px; font-size: .85rem; color: #8888a0; }
-.modal-footer a { color: #f107a3; font-weight: 700; margin-left: 6px; }
-.modal-footer a:hover { text-decoration: underline; }
+    <!-- 画廊区 -->
+    <section class="section" id="gallery">
+      <div class="container">
+        <p class="section-label reveal">GALLERY</p>
+        <h2 class="section-title reveal">次元<span class="grad">记录</span></h2>
+        <p class="section-desc reveal">绘画作品、Cos场照、活动留影，欢迎投稿！</p>
+        <div class="gallery-grid reveal">
+          <div class="gallery-item"><img src="assets/images/gallery1.jpg" alt="绘画作品" loading="lazy"></div>
+          <div class="gallery-item"><img src="assets/images/gallery2.jpg" alt="Cos场照" loading="lazy"></div>
+          <div class="gallery-item"><img src="assets/images/gallery3.jpg" alt="活动留影" loading="lazy"></div>
+        </div>
+      </div>
+    </section>
 
-/* ===== 页脚 ===== */
-.footer { position: relative; z-index: 2; border-top: 1px solid rgba(255,255,255,.06); padding: 32px 24px; }
-.footer-inner { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
-.footer-brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: .95rem; }
-.footer-copy { font-size: .85rem; color: #8888a0; }
+    <!-- 加入我们 -->
+    <section class="section section-alt" id="join">
+      <div class="container">
+        <div class="join-box reveal">
+          <p class="section-label">JOIN US</p>
+          <h2 class="section-title">准备好<span class="grad">穿越次元</span>了吗？</h2>
+          <p class="section-desc">
+            仙居技师学院在校生，不限专业、不限年级、零基础也完全OK！<br />
+            加入官方群聊，获取第一手活动资讯。
+          </p>
 
-/* ===== 滚动动画 ===== */
-.reveal { opacity: 1; transform: translateY(0); transition: all .7s cubic-bezier(.22,.61,.36,1); } /* 防止白屏，默认显示 */
-.reveal.show { opacity: 1; transform: translateY(0); }
+          <div class="social-matrix">
+            <a href="https://qm.qq.com/cgi-bin/qm/qr?k=1124255837&jump_from=webapi" target="_blank" rel="noopener" class="btn btn-qq">🐧 一键加QQ群</a>
+            <a href="https://space.bilibili.com/485506870" target="_blank" rel="noopener" class="btn btn-bilibili">📺 B站主页</a>
+          </div>
+          <p class="join-note">📮 加群请备注：班级 + 昵称 + 方向（绘画/Cos/观影）</p>
+        </div>
+      </div>
+    </section>
 
-/* ===== APlayer 音乐播放器位置调整（左下角悬浮） ===== */
-.aplayer { background: rgba(21, 21, 34, 0.9) !important; backdrop-filter: blur(10px); border: 1px solid rgba(123,47,247,.3); color: #eaeaf2 !important; }
-.aplayer .aplayer-info .aplayer-music .aplayer-title { color: #fff !important; }
-.aplayer .aplayer-info .aplayer-music .aplayer-author { color: #8888a0 !important; }
-.aplayer .aplayer-list ol li { border-top: 1px solid rgba(255,255,255,.05) !important; }
-.aplayer .aplayer-list ol li:hover { background: rgba(123,47,247,.2) !important; }
-.aplayer .aplayer-list ol li.aplayer-list-light { background: rgba(123,47,247,.3) !important; }
+  </main>
 
-/* ===== 响应式 ===== */
-@media (max-width: 768px) {
-  .nav-toggle { display: flex; }
-  .nav-links { position: fixed; top: 64px; left: 0; right: 0; background: rgba(11,11,20,.96); backdrop-filter: blur(16px); flex-direction: column; padding: 24px; gap: 20px; transform: translateY(-120%); transition: transform .35s; border-bottom: 1px solid rgba(255,255,255,.08); }
-  .nav-links.open { transform: translateY(0); }
-  .hero-stats { gap: 28px; }
-  .join-box { padding: 48px 20px; }
-  .footer-inner { flex-direction: column; text-align: center; }
-  .nav-auth { margin-left: 0; margin-right: 15px; }
-  .user-name { max-width: 60px; }
-}
+  <!-- 页脚 -->
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <span class="logo-mark small">整</span>
+        <span>次元整研社 · 仙居技师学院</span>
+      </div>
+      <p class="footer-copy">© <span id="year">2025</span> acg-lab.xyz · 用爱发电，Made with ✨</p>
+    </div>
+  </footer>
+
+  <!-- ================= 登录/注册模态框 ================= -->
+  <div class="modal-overlay" id="authModal">
+    <div class="modal-card">
+      <button class="modal-close" id="modalClose">✕</button>
+      <div class="modal-header">
+        <h2 id="modalTitle">登录次元账号</h2>
+        <p class="modal-subtitle">记录你的专属次元ID</p>
+      </div>
+      <form id="authForm">
+        <div class="input-group">
+          <label for="authUsername">昵称 / 邮箱</label>
+          <input type="text" id="authUsername" placeholder="请输入你的圈名" required />
+        </div>
+        <div class="input-group">
+          <label for="authPassword">密码</label>
+          <input type="password" id="authPassword" placeholder="输入密码（随便设）" required />
+        </div>
+        <div class="input-group" id="registerExtra" style="display:none;">
+          <label for="authDirection">你的主攻方向</label>
+          <select id="authDirection">
+            <option value="绘画">🎨 绘画/产粮</option>
+            <option value="Cos">👗 Cos/变装</option>
+            <option value="观影">📺 观影/吐槽</option>
+            <option value="全能">✨ 全能/整活</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block" id="submitAuthBtn">登录</button>
+      </form>
+      <div class="modal-footer">
+        <span id="switchAuthText">还没有账号？</span>
+        <a href="#" id="switchAuthBtn">立即注册</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= APlayer 音乐播放器 ================= -->
+  <!-- 将 id 换成你的网易云歌单 ID，即可自动播放 -->
+  <meting-js
+    server="netease"
+    type="playlist"
+    id="13893147037" 
+    fixed="true"
+    autoplay="false"
+    theme="#7b2ff7">
+  </meting-js>
+
+  <!-- APlayer 和 MetingJS 核心脚本 -->
+  <script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>
