@@ -3,24 +3,20 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <!-- 强制禁止浏览器翻译代码 -->
   <meta name="google" content="notranslate">
   <title>次元整研社 | 仙居技师学院二次元文化研究社</title>
   <meta name="description" content="仙居技师学院二次元文化研究社——次元整研社。绘画、Cos、观影，用爱发电，专注整活！" />
   <meta name="theme-color" content="#0b0b14" />
-
-  <!-- Open Graph -->
-  <meta property="og:title" content="次元整研社 - 仙居技师学院二次元文化研究社" />
-  <meta property="og:description" content="绘画、Cos、观影，用爱发电，专注整活！" />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://acg-lab.xyz" />
-
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✨</text></svg>" />
+  
+  <!-- APlayer 音乐播放器样式 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css">
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-  <!-- 动态背景层 -->
+  <!-- 全屏背景图 -->
+  <div class="bg-image"></div> 
   <div class="bg-grid"></div>
   <div class="glow glow-1"></div>
   <div class="glow glow-2"></div>
@@ -39,8 +35,18 @@
         <a href="#home">首页</a>
         <a href="#about">关于</a>
         <a href="#activities">搞事</a>
+        <a href="#gallery">画廊</a>
         <a href="#join">加入</a>
       </nav>
+
+      <div class="nav-auth">
+        <button class="btn btn-sm btn-primary" id="loginBtn">登录 / 注册</button>
+        <div class="user-info" id="userInfo" style="display:none;">
+          <span class="user-avatar" id="userAvatar">👤</span>
+          <span class="user-name" id="userNameDisplay">旅行者</span>
+          <button class="btn-logout" id="logoutBtn" title="退出登录">✕</button>
+        </div>
+      </div>
 
       <button class="nav-toggle" id="navToggle" aria-label="打开菜单" aria-expanded="false">
         <span></span><span></span><span></span>
@@ -54,34 +60,16 @@
     <section class="hero" id="home">
       <div class="hero-inner">
         <p class="hero-badge reveal">✨ 仙居技师学院 · 二次元文化研究社</p>
-
-        <h1 class="hero-title reveal">
-          <span class="grad">次元整研社</span>
-        </h1>
-
-        <p class="hero-sub reveal">
-          绘画 · Cos · 观影 · 专注整活<br />
-          用爱发电，不负热爱，这里是我们共同的次元基地！
-        </p>
-
+        <h1 class="hero-title reveal"><span class="grad">次元整研社</span></h1>
+        <p class="hero-sub reveal">绘画 · Cos · 观影 · 专注整活<br />用爱发电，不负热爱，这里是我们共同的次元基地！</p>
         <div class="hero-actions reveal">
           <a href="#join" class="btn btn-primary">申请入社</a>
           <a href="#activities" class="btn btn-ghost">看看我们在搞什么</a>
         </div>
-
         <div class="hero-stats reveal">
-          <div class="stat">
-            <strong data-count="88">0</strong>
-            <span>在册同好</span>
-          </div>
-          <div class="stat">
-            <strong data-count="24">0</strong>
-            <span>年度整活</span>
-          </div>
-          <div class="stat">
-            <strong data-count="3">0</strong>
-            <span>核心方向</span>
-          </div>
+          <div class="stat"><strong data-count="88">0</strong><span>在册同好</span></div>
+          <div class="stat"><strong data-count="24">0</strong><span>年度整活</span></div>
+          <div class="stat"><strong data-count="3">0</strong><span>核心方向</span></div>
         </div>
       </div>
     </section>
@@ -91,103 +79,66 @@
       <div class="container">
         <p class="section-label reveal">ABOUT US</p>
         <h2 class="section-title reveal">什么是<span class="grad">次元整研社</span>？</h2>
-        <p class="section-desc reveal">
-          我们是仙居技师学院的一群二次元浓度超标患者。在这里，你可以是画手太太，可以是女装大佬（或帅气coser），也可以是深夜追番的吐槽役。我们核心宗旨是：<strong>拒绝内卷，专注整活，快乐二次元！</strong>
-        </p>
-
+        <p class="section-desc reveal">我们是仙居技师学院的一群二次元浓度超标患者。在这里，你可以是画手太太，可以是女装大佬（或帅气coser），也可以是深夜追番的吐槽役。核心宗旨是：<strong>拒绝内卷，专注整活，快乐二次元！</strong></p>
         <div class="grid grid-3">
-          <article class="card reveal">
-            <div class="card-icon">🎨</div>
-            <h3>绘画 · 产粮</h3>
-            <p>板绘、手绘、摸鱼、同人，只要你画，我们就疯狂打call！偶尔掉落线下绘茶会。</p>
-          </article>
-
-          <article class="card reveal">
-            <div class="card-icon">👗</div>
-            <h3>Cos · 变装</h3>
-            <p>出c、试妆、场照、漫展组团。男扮女装不是梦，女扮男装帅断腿，这里没有社恐！</p>
-          </article>
-
-          <article class="card reveal">
-            <div class="card-icon">📺</div>
-            <h3>观影 · 吐槽</h3>
-            <p>新番同步追，老番补习班。线下放映会，实行“禁止打架但可以激情互喷”的弹幕式观影。</p>
-          </article>
+          <article class="card reveal"><div class="card-icon">🎨</div><h3>绘画 · 产粮</h3><p>板绘、手绘、摸鱼、同人，只要你画，我们就疯狂打call！偶尔掉落线下绘茶会。</p></article>
+          <article class="card reveal"><div class="card-icon">👗</div><h3>Cos · 变装</h3><p>出c、试妆、场照、漫展组团。男扮女装不是梦，女扮男装帅断腿，这里没有社恐！</p></article>
+          <article class="card reveal"><div class="card-icon">📺</div><h3>观影 · 吐槽</h3><p>新番同步追，老番补习班。线下放映会，实行“禁止打架但可以激情互喷”的弹幕式观影。</p></article>
         </div>
       </div>
     </section>
 
-    <!-- 活动整活 -->
+    <!-- 搞事日常 -->
     <section class="section section-alt" id="activities">
       <div class="container">
         <p class="section-label reveal">ACTIVITIES</p>
         <h2 class="section-title reveal">我们的<span class="grad">搞事日常</span></h2>
         <p class="section-desc reveal">不定时掉落各种活动，主打一个随心所欲，惊喜连连。</p>
-
         <div class="grid grid-3">
-          <article class="card card-line reveal">
-            <span class="tag">常驻</span>
-            <h3>周末摸鱼局</h3>
-            <p>周末带上画本或者平板，在奶茶店/教室相聚，边画边聊，互相催更。</p>
-          </article>
+          <article class="card card-line reveal"><span class="tag">常驻</span><h3>周末摸鱼局</h3><p>周末带上画本或者平板，在奶茶店/教室相聚，边画边聊，互相催更。</p></article>
+          <article class="card card-line reveal"><span class="tag">重头戏</span><h3>漫展远征队</h3><p>周边漫展组团出发，包车、帮妆、看行李一条龙，专业后勤保障你的展子体验。</p></article>
+          <article class="card card-line reveal"><span class="tag">热门</span><h3>新番首映会</h3><p>当季霸权番开播，组织线下集体观看，提供零食，自带吐槽技能，气氛组就位。</p></article>
+        </div>
+      </div>
+    </section>
 
-          <article class="card card-line reveal">
-            <span class="tag">重头戏</span>
-            <h3>漫展远征队</h3>
-            <p>周边漫展组团出发，包车、帮妆、看行李一条龙，专业后勤保障你的展子体验。</p>
-          </article>
-
-          <article class="card card-line reveal">
-            <span class="tag">热门</span>
-            <h3>新番首映会</h3>
-            <p>当季霸权番开播，组织线下集体观看，提供零食，自带吐槽技能，气氛组就位。</p>
-          </article>
-
-          <article class="card card-line reveal">
-            <span class="tag">整活</span>
-            <h3>社团表情包大赛</h3>
-            <p>收集群友黑历史，制作专属表情包，冠军将获得“社死大礼包”一份。</p>
-          </article>
-
-          <article class="card card-line reveal">
-            <span class="tag">出片</span>
-            <h3>校园外景团建</h3>
-            <p>结合仙居本地风景，组织Cos外景拍摄和绘画写生，出片率极高。</p>
-          </article>
-
-          <article class="card card-line reveal">
-            <span class="tag">无门槛</span>
-            <h3>深夜开黑车队</h3>
-            <p>PC、手游、主机平台不限，各游戏分部随时发车，不压力只娱乐。</p>
-          </article>
+    <!-- 画廊区 -->
+    <section class="section" id="gallery">
+      <div class="container">
+        <p class="section-label reveal">GALLERY</p>
+        <h2 class="section-title reveal">次元<span class="grad">记录</span></h2>
+        <p class="section-desc reveal">绘画作品、Cos场照、活动留影，欢迎投稿！</p>
+        <div class="gallery-grid reveal">
+          <div class="gallery-item"><img src="assets/images/gallery1.jpg" alt="绘画作品" loading="lazy"></div>
+          <div class="gallery-item"><img src="assets/images/gallery2.jpg" alt="Cos场照" loading="lazy"></div>
+          <div class="gallery-item"><img src="assets/images/gallery3.jpg" alt="活动留影" loading="lazy"></div>
         </div>
       </div>
     </section>
 
     <!-- 加入我们 -->
-    <section class="section" id="join">
+    <section class="section section-alt" id="join">
       <div class="container">
         <div class="join-box reveal">
           <p class="section-label">JOIN US</p>
           <h2 class="section-title">准备好<span class="grad">穿越次元</span>了吗？</h2>
           <p class="section-desc">
-            仙居技师学院在校生，不限专业、不限年级、零基础也完全OK！
-            只要你热爱二次元，就是我们自己人。<br /><br />
-            <strong>加入方式：</strong>请咨询社团负责人，或直接发送邮件到下方邮箱。
+            仙居技师学院在校生，不限专业、不限年级、零基础也完全OK！<br />
+            加入官方群聊，获取第一手活动资讯。
           </p>
 
-          <div class="join-actions">
-            <a class="btn btn-primary" href="mailto:hello@acg-lab.xyz">联系社长（邮箱）</a>
-            <a class="btn btn-ghost" href="#" target="_blank" rel="noopener">加入QQ群（建设中）</a>
+          <div class="social-matrix">
+            <a href="https://qm.qq.com/cgi-bin/qm/qr?k=你的QQ群Key&jump_from=webapi" target="_blank" rel="noopener" class="btn btn-qq">🐧 一键加QQ群</a>
+            <a href="https://space.bilibili.com/你的B站UID" target="_blank" rel="noopener" class="btn btn-bilibili">📺 B站主页</a>
           </div>
-
-          <p class="join-note">📮 邮件我们会尽量在 48 小时内回复，备注来意如「绘画」「Cos」「观影」</p>
+          <p class="join-note">📮 加群请备注：班级 + 昵称 + 方向（绘画/Cos/观影）</p>
         </div>
       </div>
     </section>
 
   </main>
 
+  <!-- 页脚 -->
   <footer class="footer">
     <div class="container footer-inner">
       <div class="footer-brand">
@@ -198,6 +149,55 @@
     </div>
   </footer>
 
+  <!-- ================= 登录/注册模态框 ================= -->
+  <div class="modal-overlay" id="authModal">
+    <div class="modal-card">
+      <button class="modal-close" id="modalClose">✕</button>
+      <div class="modal-header">
+        <h2 id="modalTitle">登录次元账号</h2>
+        <p class="modal-subtitle">记录你的专属次元ID</p>
+      </div>
+      <form id="authForm">
+        <div class="input-group">
+          <label for="authUsername">昵称 / 邮箱</label>
+          <input type="text" id="authUsername" placeholder="请输入你的圈名" required />
+        </div>
+        <div class="input-group">
+          <label for="authPassword">密码</label>
+          <input type="password" id="authPassword" placeholder="输入密码（随便设）" required />
+        </div>
+        <div class="input-group" id="registerExtra" style="display:none;">
+          <label for="authDirection">你的主攻方向</label>
+          <select id="authDirection">
+            <option value="绘画">🎨 绘画/产粮</option>
+            <option value="Cos">👗 Cos/变装</option>
+            <option value="观影">📺 观影/吐槽</option>
+            <option value="全能">✨ 全能/整活</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block" id="submitAuthBtn">登录</button>
+      </form>
+      <div class="modal-footer">
+        <span id="switchAuthText">还没有账号？</span>
+        <a href="#" id="switchAuthBtn">立即注册</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= APlayer 音乐播放器 ================= -->
+  <!-- 将 id 换成你的网易云歌单 ID，即可自动播放 -->
+  <meting-js
+    server="netease"
+    type="playlist"
+    id="你的歌单ID" 
+    fixed="true"
+    autoplay="false"
+    theme="#7b2ff7">
+  </meting-js>
+
+  <!-- APlayer 和 MetingJS 核心脚本 -->
+  <script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js"></script>
   <script src="main.js"></script>
 </body>
 </html>
