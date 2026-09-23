@@ -148,7 +148,7 @@ const ctx = canvas.getContext('2d');
 let W, H; let particles = [];
 function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
 window.addEventListener('resize', resize); resize();
-const memes = ['有内鬼', '用爱发电', '前方高能', '已阅', '下次一定', 'DD斩首', '咕咕咕', '整活！'];
+const memes = ['有内鬼', '用爱发电', '前方高能', '已阅', '下次一定', 'DD斩首', '咕咕咕', '整活！''喔喔喔'];
 const colors = ['#ff0033', '#1a1a1a', '#00e5ff', '#ffcc00', '#ffffff'];
 
 class Particle {
@@ -195,7 +195,7 @@ function checkLoginState() {
 function showUserInfo(user) {
   loginBtn.style.display = 'none'; userInfo.style.display = 'flex';
   userNameDisplay.textContent = user.username;
-  const avatars = { '绘画': '🎨', 'Cos': '👗', '观影': '📺', '全能': '✨' };
+  const avatars = { '产粮': '🎨', 'Cos': '👗', '观影': '📺', '全能': '✨' };
   userAvatar.textContent = avatars[user.direction] || '👤';
 }
 function showLoginBtn() { loginBtn.style.display = 'inline-block'; userInfo.style.display = 'none'; }
