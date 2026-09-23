@@ -138,3 +138,34 @@ checkLoginState();
 
 // ===== 7. 年份自动更新 =====
 document.getElementById('year').textContent = new Date().getFullYear();
+// ===== 8. 图片灯箱功能 =====
+const galleryImages = document.querySelectorAll('.gallery-item img');
+if (galleryImages.length > 0) {
+  // 动态创建灯箱
+  const overlay = document.createElement('div');
+  overlay.className = 'lightbox-overlay';
+  overlay.innerHTML = '<button class="lightbox-close">✕</button><img src="" alt="Preview">';
+  document.body.appendChild(overlay);
+  
+  const overlayImg = overlay.querySelector('img');
+  const closeBtn = overlay.querySelector('.lightbox-close');
+
+  galleryImages.forEach(img => {
+    img.style.cursor = 'pointer';
+    img.addEventListener('click', () => {
+      overlayImg.src = img.src;
+      overlay.classList.add('active');
+      document.body.style.overflow = 'hidden'; // 防止背景滚动
+    });
+  });
+
+  const closeLightbox = () => {
+    overlay.classList.remove('active');
+    document.body.style.overflow = '';
+  };
+
+  closeBtn.addEventListener('click', closeLightbox);
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) closeLightbox();
+  });
+}
