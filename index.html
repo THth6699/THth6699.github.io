@@ -9,13 +9,12 @@
   <meta name="theme-color" content="#0b0b14" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✨</text></svg>" />
   
-  <!-- APlayer 音乐播放器样式 -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css">
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-  <!-- 全屏背景图 -->
+  <!-- 背景层 -->
   <div class="bg-image"></div> 
   <div class="bg-grid"></div>
   <div class="glow glow-1"></div>
@@ -34,6 +33,7 @@
       <nav class="nav-links" id="navLinks">
         <a href="#home">首页</a>
         <a href="#about">关于</a>
+        <a href="#departments">部门</a>
         <a href="#activities">搞事</a>
         <a href="#gallery">画廊</a>
         <a href="#join">加入</a>
@@ -41,6 +41,19 @@
       </nav>
 
       <div class="nav-auth">
+        <!-- ⭐ 主题切换按钮 -->
+        <div class="theme-switcher">
+          <button class="theme-toggle" id="themeToggle" title="一键换肤">🎨</button>
+          <div class="theme-panel" id="themePanel">
+            <p class="theme-panel-title">选择主题</p>
+            <button class="theme-option active" data-theme="eva">🟥 EVA 红黑</button>
+            <button class="theme-option" data-theme="miku">🟩 初音未来</button>
+            <button class="theme-option" data-theme="genshin">🟨 原神星空</button>
+            <button class="theme-option" data-theme="sakura">🌸 樱花治愈</button>
+            <button class="theme-option" data-theme="cyber">⚡ 赛博朋克</button>
+          </div>
+        </div>
+
         <button class="btn btn-sm btn-primary" id="loginBtn">登录 / 注册</button>
         <div class="user-info" id="userInfo" style="display:none;">
           <span class="user-avatar" id="userAvatar">👤</span>
@@ -56,8 +69,7 @@
   </header>
 
   <main>
-
-    <!-- Hero 首屏 -->
+    <!-- Hero -->
     <section class="hero" id="home">
       <div class="hero-inner">
         <p class="hero-badge reveal">✨ 仙居技师学院 · 二次元文化研究社</p>
@@ -70,7 +82,7 @@
         <div class="hero-stats reveal">
           <div class="stat"><strong data-count="88">0</strong><span>在册同好</span></div>
           <div class="stat"><strong data-count="24">0</strong><span>年度整活</span></div>
-          <div class="stat"><strong data-count="3">0</strong><span>核心方向</span></div>
+          <div class="stat"><strong data-count="5">0</strong><span>特色部门</span></div>
         </div>
       </div>
     </section>
@@ -84,13 +96,48 @@
         <div class="grid grid-3">
           <article class="card reveal"><div class="card-icon">🎨</div><h3>绘画 · 产粮</h3><p>板绘、手绘、摸鱼、同人，只要你画，我们就疯狂打call！偶尔掉落线下绘茶会。</p></article>
           <article class="card reveal"><div class="card-icon">👗</div><h3>Cos · 变装</h3><p>出c、试妆、场照、漫展组团。男扮女装不是梦，女扮男装帅断腿，这里没有社恐！</p></article>
-          <article class="card reveal"><div class="card-icon">📺</div><h3>观影 · 吐槽</h3><p>新番同步追，老番补习班。线下放映会，实行“禁止打架但可以激情互喷”的弹幕式观影。</p></article>
+          <article class="card reveal"><div class="card-icon">📺</div><h3>观影 · 吐槽</h3><p>新番同步追，老番补习班。线下放映会，实行"禁止打架但可以激情互喷"的弹幕式观影。</p></article>
+        </div>
+      </div>
+    </section>
+
+    <!-- 部门介绍 -->
+    <section class="section section-alt" id="departments">
+      <div class="container">
+        <p class="section-label reveal">DEPARTMENTS</p>
+        <h2 class="section-title reveal">加入我们<span class="grad">的部门</span></h2>
+        <p class="section-desc reveal">不论你是大触还是萌新，总有一个部门适合你摸鱼！点击卡片查看详情。</p>
+        <div class="grid grid-3">
+          <article class="card reveal dept-card" data-dept="绘画部">
+            <div class="card-icon">🎨</div><h3>产粮部</h3>
+            <p>社团的产粮主力！负责绘制海报、周边、插画。只要你敢画，我们就敢疯狂打call！</p>
+          </article>
+          <article class="card reveal dept-card" data-dept="观影吐槽部">
+            <div class="card-icon">📺</div><h3>观影吐槽部</h3>
+            <p>追番先锋队！组织线上放映会，负责弹幕式吐槽，在群里安利神作、排雷烂片。</p>
+          </article>
+          <article class="card reveal dept-card" data-dept="Cos变装部">
+            <div class="card-icon">👗</div><h3>Cos变装部</h3>
+            <p>出片担当！负责漫展组团、试妆、场照。无论男扮女装还是女扮男装，这里零门槛！</p>
+          </article>
+          <article class="card reveal dept-card" data-dept="技术支援部">
+            <div class="card-icon">💻</div><h3>技术支援部</h3>
+            <p>极客聚集地！负责网站维护、代码整活、工具开发。用技术给社团开挂！</p>
+          </article>
+          <article class="card reveal dept-card" data-dept="什么都不干部">
+            <div class="card-icon">🛋️</div><h3>什么都不干部</h3>
+            <p>社团的灵魂部门！负责围观、聊天、当气氛组。我们负责用爱发电，你负责吃瓜点赞。</p>
+          </article>
+          <article class="card reveal dept-card" data-dept="加入方式">
+            <div class="card-icon">✨</div><h3>加入方式</h3>
+            <p>在QQ群发言，或直接联系群主/各部部长。不限专业、不限年级，只要你热爱二次元！</p>
+          </article>
         </div>
       </div>
     </section>
 
     <!-- 搞事日常 -->
-    <section class="section section-alt" id="activities">
+    <section class="section" id="activities">
       <div class="container">
         <p class="section-label reveal">ACTIVITIES</p>
         <h2 class="section-title reveal">我们的<span class="grad">搞事日常</span></h2>
@@ -103,8 +150,8 @@
       </div>
     </section>
 
-    <!-- 画廊区 -->
-    <section class="section" id="gallery">
+    <!-- 画廊 -->
+    <section class="section section-alt" id="gallery">
       <div class="container">
         <p class="section-label reveal">GALLERY</p>
         <h2 class="section-title reveal">次元<span class="grad">记录</span></h2>
@@ -116,23 +163,22 @@
         </div>
       </div>
     </section>
-    <!-- 每日二次元 -->
-<section class="section section-alt" id="daily">
-  <div class="container">
-    <div class="join-box reveal" style="padding: 40px 24px;">
-      <p class="section-label">DAILY ACG</p>
-      <h2 class="section-title">今日<span class="grad">次元运势</span></h2>
-      <p class="section-desc" style="margin-bottom: 24px;">点击下方按钮，抽取你的今日专属动漫安利！</p>
-      
-      <div id="daily-acg-box" style="background: rgba(0,0,0,.3); padding: 24px; border-radius: 16px; border: 1px dashed rgba(255,0,51,.4); margin: 0 auto; max-width: 500px; min-height: 120px; display: flex; flex-direction: column; justify-content: center; align-items: center;">
-        <p id="daily-acg-text" style="font-size: 1.1rem; color: #eaeaf2; text-align: center;">准备好了吗？</p>
-        <p id="daily-acg-author" style="font-size: .85rem; color: #8888a0; margin-top: 8px;"></p>
-      </div>
 
-      <button id="daily-acg-btn" class="btn btn-primary" style="margin-top: 24px;">🎲 抽取今日番剧</button>
-    </div>
-  </div>
-</section>
+    <!-- 每日二次元 -->
+    <section class="section" id="daily">
+      <div class="container">
+        <div class="join-box reveal" style="padding: 40px 24px;">
+          <p class="section-label">DAILY ACG</p>
+          <h2 class="section-title">今日<span class="grad">次元运势</span></h2>
+          <p class="section-desc" style="margin-bottom: 24px;">点击下方按钮，抽取你的今日专属动漫安利！</p>
+          <div id="daily-acg-box" style="background: rgba(0,0,0,.3); padding: 24px; border-radius: 16px; border: 1px dashed rgba(var(--primary-rgb), .4); margin: 0 auto; max-width: 500px; min-height: 120px; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+            <p id="daily-acg-text" style="font-size: 1.1rem; color: var(--text-main); text-align: center;">准备好了吗？</p>
+            <p id="daily-acg-author" style="font-size: .85rem; color: var(--text-dim); margin-top: 8px;"></p>
+          </div>
+          <button id="daily-acg-btn" class="btn btn-primary" style="margin-top: 24px;">🎲 抽取今日番剧</button>
+        </div>
+      </div>
+    </section>
 
     <!-- 加入我们 -->
     <section class="section section-alt" id="join">
@@ -143,43 +189,41 @@
           <p class="section-desc">
             仙居技师学院在校生，不限专业、不限年级、零基础也完全OK！<br />
             加入官方群聊，获取第一手活动资讯。
-            一键加QQ群（若无法跳转，请手动搜索群号：1124255837)
           </p>
-
           <div class="social-matrix">
             <a href="assets/images/qq-group.png" target="_blank" class="btn btn-qq">🐧 一键加QQ群（长按识别）</a>
             <a href="https://space.bilibili.com/485506870" target="_blank" rel="noopener" class="btn btn-bilibili">📺 B站主页</a>
           </div>
-          <p class="join-note">📮 加群请备注：班级 + 昵称 + 方向（绘画/Cos/观影）</p>
+          <p class="join-note">📮 加群请备注：班级 + 昵称 + 方向（绘画/Cos/观影）。群号：1124255837</p>
         </div>
       </div>
     </section>
 
-  <!-- ================= 留言板 ================= -->
-<section class="section section-alt" id="comments">
-  <div class="container">
-    <p class="section-label reveal">MESSAGES</p>
-    <h2 class="section-title reveal">次元<span class="grad">留言板</span></h2>
-    <p class="section-desc reveal">有什么想对社团说的？在这里留下你的足迹吧！（需 GitHub 账号登录）</p>
-    <div class="giscus-container reveal" style="margin-top: 40px;">
-      <script src="https://giscus.app/client.js"
-        data-repo="THth6699/THth6699.github.io"
-        data-repo-id="R_kgDOUlDihw"
-        data-category="Announcements"
-        data-category-id="DIC_kwDOUlDih84DGNsG"
-        data-mapping="pathname"
-        data-strict="0"
-        data-reactions-enabled="1"
-        data-emit-metadata="0"
-        data-input-position="bottom"
-        data-theme="preferred_color_scheme"
-        data-lang="zh-CN"
-        crossorigin="anonymous"
-        async>
-      </script>
-    </div>
-  </div>
-</section>
+    <!-- 留言板 -->
+    <section class="section" id="comments">
+      <div class="container">
+        <p class="section-label reveal">MESSAGES</p>
+        <h2 class="section-title reveal">次元<span class="grad">留言板</span></h2>
+        <p class="section-desc reveal">有什么想对社团说的？在这里留下你的足迹吧！（需 GitHub 账号登录）</p>
+        <div class="giscus-container reveal" style="margin-top: 40px;">
+          <script src="https://giscus.app/client.js"
+            data-repo="THth6699/THth6699.github.io"
+            data-repo-id="R_kgDOUlDihw"
+            data-category="Announcements"
+            data-category-id="DIC_kwDOUlDih84DGNsG"
+            data-mapping="pathname"
+            data-strict="0"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="top"
+            data-theme="dark_dimmed"
+            data-lang="zh-CN"
+            crossorigin="anonymous"
+            async>
+          </script>
+        </div>
+      </div>
+    </section>
   </main>
 
   <!-- 页脚 -->
@@ -190,13 +234,13 @@
         <span>次元整研社 · 仙居技师学院</span>
       </div>
       <p class="footer-copy">
-  © <span id="year">2025</span> acg-lab.xyz · 用爱发电，Made with ✨ <br>
-  <span id="busuanzi_container_site_pv" style="font-size:0.75rem; opacity:0.7;">本站总访问量 <span id="busuanzi_value_site_pv">0</span> 次</span>
+        © <span id="year">2025</span> acg-lab.xyz · 用爱发电，Made with ✨ <br>
+        <span id="busuanzi_container_site_pv" style="font-size:0.75rem; opacity:0.7;">本站总访问量 <span id="busuanzi_value_site_pv">0</span> 次</span>
       </p>
     </div>
   </footer>
 
-  <!-- ================= 登录/注册模态框 ================= -->
+  <!-- 登录注册模态框 -->
   <div class="modal-overlay" id="authModal">
     <div class="modal-card">
       <button class="modal-close" id="modalClose">✕</button>
@@ -231,21 +275,34 @@
     </div>
   </div>
 
-  <!-- ================= APlayer 音乐播放器 ================= -->
-  <!-- 将 id 换成你的网易云歌单 ID，即可自动播放 -->
+  <!-- 部门详情弹窗 -->
+  <div class="modal-overlay" id="deptModal">
+    <div class="modal-card" style="max-width: 600px; text-align: left;">
+      <button class="modal-close" id="deptModalClose">✕</button>
+      <div class="modal-header" style="text-align: center;">
+        <div id="deptModalIcon" style="font-size: 3rem; margin-bottom: 10px;"></div>
+        <h2 id="deptModalTitle" style="font-size: 1.8rem; color: var(--primary);"></h2>
+      </div>
+      <div id="deptModalContent" style="color: var(--text-muted); line-height: 1.8; font-size: 0.95rem; margin-bottom: 24px;"></div>
+      <div style="text-align: center;">
+        <a href="#join" class="btn btn-primary" id="deptJoinBtn">加入这个部门</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 音乐播放器 -->
   <meting-js
     server="netease"
     type="playlist"
     id="14128802759" 
     fixed="true"
     autoplay="false"
-    theme="#7b2ff7">
+    theme="#ff0033">
   </meting-js>
 
-  <!-- APlayer 和 MetingJS 核心脚本 -->
   <script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js"></script>
   <script src="main.js"></script>
-<!-- 不蒜子统计 -->
-<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></body>
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</body>
 </html>
