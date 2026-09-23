@@ -253,3 +253,47 @@ img { max-width: 100%; display: block; }
   .nav-auth { margin-left: 0; margin-right: 15px; }
   .user-name { max-width: 60px; }
 }
+/* ===== 手机端主题面板优化 ===== */
+@media (max-width: 768px) {
+  /* 手机端改成底部弹出面板 */
+  .theme-panel {
+    position: fixed;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    border-radius: 24px 24px 0 0;
+    padding: 24px 20px calc(24px + env(safe-area-inset-bottom)); /* 适配 iPhone 底部安全区 */
+    transform: translateY(100%);
+    z-index: 300;
+    border: none;
+    border-top: 1px solid rgba(var(--primary-rgb), .3);
+  }
+  
+  /* 打开时的动画 */
+  .theme-panel.open {
+    transform: translateY(0);
+  }
+
+  /* 主题选项变大，方便手指点击 */
+  .theme-option {
+    padding: 14px 16px;
+    font-size: 1rem;
+    margin-bottom: 8px;
+  }
+
+  /* 面板标题居中 */
+  .theme-panel-title {
+    text-align: center;
+    margin-bottom: 16px;
+    font-size: 0.85rem;
+  }
+
+  /* 手机端把主题按钮稍微向左挪一点，别挤着登录按钮 */
+  .theme-toggle {
+    width: 36px;
+    height: 36px;
+    font-size: 0.95rem;
+  }
+}
