@@ -169,3 +169,36 @@ if (galleryImages.length > 0) {
     if (e.target === overlay) closeLightbox();
   });
 }
+// ===== 9. 每日二次元抽卡 =====
+const dailyAcgBtn = document.getElementById('daily-acg-btn');
+const dailyAcgText = document.getElementById('daily-acg-text');
+const dailyAcgAuthor = document.getElementById('daily-acg-author');
+
+if (dailyAcgBtn) {
+  const acgData = [
+    { text: '“不要停止奔跑，不要回顾来路，来路无可眷恋，值得期待的只有前方。”', author: '《排球少年》' },
+    { text: '“只要有你在，我就无所不能。”', author: '《Fate/stay night》' },
+    { text: '“我可是要成为海贼王的男人！”', author: '《海贼王》' },
+    { text: '“游荡的游魂，燃烧的烈焰，以吾之名召唤汝。”', author: '《Fate》系列经典咒语' },
+    { text: '“世界上只有一种真正的英雄主义，那就是认清生活的真相后依然热爱生活。”', author: '《进击的巨人》' },
+    { text: '“无论你在这个世界上的什么地方，我都会再次找到你。”', author: '《你的名字。》' },
+    { text: '“与其诅咒黑暗，不如点亮蜡烛。”', author: '《魔法少女小圆》' },
+    { text: '“我变秃了，也变强了。”', author: '《一拳超人》' }
+  ];
+
+  dailyAcgBtn.addEventListener('click', () => {
+    // 添加一点随机延迟效果
+    dailyAcgBtn.textContent = '🔮 占卜中...';
+    dailyAcgBtn.disabled = true;
+    dailyAcgText.style.opacity = '0';
+    
+    setTimeout(() => {
+      const random = acgData[Math.floor(Math.random() * acgData.length)];
+      dailyAcgText.textContent = random.text;
+      dailyAcgAuthor.textContent = `—— ${random.author}`;
+      dailyAcgText.style.opacity = '1';
+      dailyAcgBtn.textContent = '🎲 换一个';
+      dailyAcgBtn.disabled = false;
+    }, 500);
+  });
+}
