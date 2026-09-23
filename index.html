@@ -6,13 +6,33 @@
   <meta name="google" content="notranslate">
   <title>次元整研社 | 仙居技师学院二次元文化研究社</title>
   <meta name="description" content="仙居技师学院二次元文化研究社——次元整研社。绘画、Cos、观影，用爱发电，专注整活！" />
+  <meta name="robots" content="index,follow" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="次元整研社 | 仙居技师学院二次元文化研究社" />
+  <meta property="og:description" content="绘画、Cos、观影、技术共建，一个属于我们的次元基地。" />
+  <meta property="og:image" content="assets/images/bg.jpg" />
   <meta name="theme-color" content="#0b0b14" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="manifest" href="manifest.webmanifest" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✨</text></svg>" />
   
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css">
   <link rel="stylesheet" href="style.css" />
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"Organization",
+    "name":"次元整研社",
+    "description":"仙居技师学院二次元文化研究社",
+    "url":"https://THth6699.github.io/"
+  }
+  </script>
 </head>
 <body>
+  <a class="skip-link" href="#main-content">跳到主要内容</a>
 
   <!-- 背景层 -->
   <div class="bg-image"></div> 
@@ -38,13 +58,14 @@
         <a href="#gallery">画廊</a>
         <a href="#join">加入</a>
         <a href="#comments">留言</a>
+        <a href="#tools">工具</a>
       </nav>
 
       <div class="nav-auth">
         <!-- ⭐ 主题切换按钮 -->
         <div class="theme-switcher">
-          <button class="theme-toggle" id="themeToggle" title="一键换肤">🎨</button>
-          <div class="theme-panel" id="themePanel">
+          <button class="theme-toggle" id="themeToggle" title="切换主题" aria-label="切换主题" aria-expanded="false" aria-controls="themePanel">🎨</button>
+          <div class="theme-panel" id="themePanel" role="dialog" aria-label="选择主题">
             <p class="theme-panel-title">选择主题</p>
             <button class="theme-option active" data-theme="eva">🟥 EVA 红黑</button>
             <button class="theme-option" data-theme="miku">🟩 初音未来</button>
@@ -54,7 +75,7 @@
           </div>
         </div>
 
-        <button class="btn btn-sm btn-primary" id="loginBtn">登录 / 注册</button>
+        <button class="btn btn-sm btn-primary" id="loginBtn">我的名片</button>
         <div class="user-info" id="userInfo" style="display:none;">
           <span class="user-avatar" id="userAvatar">👤</span>
           <span class="user-name" id="userNameDisplay">旅行者</span>
@@ -68,7 +89,7 @@
     </div>
   </header>
 
-  <main>
+  <main id="main-content">
     <!-- Hero -->
     <section class="hero" id="home">
       <div class="hero-inner">
@@ -80,8 +101,8 @@
           <a href="#activities" class="btn btn-ghost">看看我们在搞什么</a>
         </div>
         <div class="hero-stats reveal">
-          <div class="stat"><strong data-count="期待你的加入">0</strong><span>在册同好</span></div>
-          <div class="stat"><strong data-count="1">0</strong><span>年度整活</span></div>
+          <div class="stat"><strong data-count="88">0</strong><span>在册同好</span></div>
+          <div class="stat"><strong data-count="24">0</strong><span>年度整活</span></div>
           <div class="stat"><strong data-count="5">0</strong><span>特色部门</span></div>
         </div>
       </div>
@@ -141,12 +162,14 @@
       <div class="container">
         <p class="section-label reveal">ACTIVITIES</p>
         <h2 class="section-title reveal">我们的<span class="grad">搞事日常</span></h2>
-        <p class="section-desc reveal">不定时掉落各种活动，主打一个随心所欲，惊喜连连。</p>
-        <div class="grid grid-3">
-          <article class="card card-line reveal"><span class="tag">常驻</span><h3>暂无</h3><p>无</p></article>
-          <article class="card card-line reveal"><span class="tag">重头戏</span><h3>待开发</h3><p>无</p></article>
-          <article class="card card-line reveal"><span class="tag">热门</span><h3>等待你来开发</h3><p>无</p></article>
+        <p class="section-desc reveal">把活动做成时间线，方便大家快速知道“最近在搞什么”。内容可以直接在 main.js 的活动数据里更新。</p>
+        <div class="activity-toolbar reveal" role="toolbar" aria-label="活动筛选">
+          <button class="filter-btn active" data-activity-filter="all">全部</button>
+          <button class="filter-btn" data-activity-filter="进行中">进行中</button>
+          <button class="filter-btn" data-activity-filter="计划中">计划中</button>
+          <button class="filter-btn" data-activity-filter="已结束">已结束</button>
         </div>
+        <div id="activity-list" class="activity-list" aria-live="polite"></div>
       </div>
     </section>
 
@@ -155,12 +178,19 @@
       <div class="container">
         <p class="section-label reveal">GALLERY</p>
         <h2 class="section-title reveal">次元<span class="grad">记录</span></h2>
-        <p class="section-desc reveal">绘画作品、Cos场照、活动留影，欢迎投稿！</p>
-        <div class="gallery-grid reveal">
-          <div class="gallery-item"><img src="assets/images/gallery1.jpg" alt="绘画作品" loading="lazy"></div>
-          <div class="gallery-item"><img src="assets/images/gallery2.jpg" alt="Cos场照" loading="lazy"></div>
-          <div class="gallery-item"><img src="assets/images/gallery3.jpg" alt="活动留影" loading="lazy"></div>
+        <p class="section-desc reveal">作品、Cos、活动照片都可以分类展示；点击图片进入全屏预览。</p>
+        <div class="gallery-toolbar reveal" role="toolbar" aria-label="画廊筛选">
+          <button class="filter-btn active" data-gallery-filter="all">全部</button>
+          <button class="filter-btn" data-gallery-filter="绘画">绘画</button>
+          <button class="filter-btn" data-gallery-filter="Cos">Cos</button>
+          <button class="filter-btn" data-gallery-filter="活动">活动</button>
         </div>
+        <div class="gallery-grid reveal" id="galleryGrid">
+          <button class="gallery-item" type="button" data-gallery-category="绘画" aria-label="查看绘画作品"><img src="assets/images/gallery1.jpg" alt="绘画作品" loading="lazy"><span>绘画作品 · 投稿</span></button>
+          <button class="gallery-item" type="button" data-gallery-category="Cos" aria-label="查看 Cos 场照"><img src="assets/images/gallery2.jpg" alt="Cos场照" loading="lazy"><span>Cos 场照 · 活动记录</span></button>
+          <button class="gallery-item" type="button" data-gallery-category="活动" aria-label="查看活动留影"><img src="assets/images/gallery3.jpg" alt="活动留影" loading="lazy"><span>社团活动 · 花絮</span></button>
+        </div>
+        <div class="empty-state" id="galleryEmpty" hidden>这个分类暂时还没有内容，欢迎投稿！</div>
       </div>
     </section>
 
@@ -180,6 +210,32 @@
       </div>
     </section>
 
+    <!-- 社团工具箱 -->
+    <section class="section" id="tools">
+      <div class="container">
+        <p class="section-label reveal">TOOLS</p>
+        <h2 class="section-title reveal">次元<span class="grad">工具箱</span></h2>
+        <p class="section-desc reveal">全部运行在浏览器本地，不需要服务器；适合 GitHub Pages 这种纯静态站点。</p>
+        <div class="grid grid-3">
+          <article class="card reveal tool-card">
+            <div class="card-icon">🔥</div><h3>今日打卡</h3>
+            <p id="checkinText">今天还没有打卡，来留下一个“我来过”。</p>
+            <button class="btn btn-primary" id="checkinBtn">今日打卡</button>
+          </article>
+          <article class="card reveal tool-card">
+            <div class="card-icon">📤</div><h3>分享社团</h3>
+            <p>把官网分享给同学；手机支持系统分享，电脑自动复制链接。</p>
+            <button class="btn btn-ghost" id="shareBtn">分享本站</button>
+          </article>
+          <article class="card reveal tool-card">
+            <div class="card-icon">📱</div><h3>安装到手机</h3>
+            <p id="installText">支持 PWA 的浏览器可以把本站安装成独立 App。</p>
+            <button class="btn btn-ghost" id="installBtn" hidden>安装本站</button>
+          </article>
+        </div>
+      </div>
+    </section>
+
     <!-- 加入我们 -->
     <section class="section section-alt" id="join">
       <div class="container">
@@ -191,7 +247,7 @@
             加入官方群聊，获取第一手活动资讯。
           </p>
           <div class="social-matrix">
-            <a href="assets/images/qq-group.png" target="_blank" class="btn btn-qq">🐧 一键加QQ群（长按识别）</a>
+            <a href="assets/images/qq-group.png" target="_blank" rel="noopener noreferrer" class="btn btn-qq">🐧 一键加QQ群（长按识别）</a>
             <a href="https://space.bilibili.com/485506870" target="_blank" rel="noopener" class="btn btn-bilibili">📺 B站主页</a>
           </div>
           <p class="join-note">📮 加群请备注：班级 + 昵称 + 方向（绘画/Cos/观影）。群号：1124255837</p>
@@ -226,6 +282,9 @@
     </section>
   </main>
 
+  <button class="back-top" id="backTop" aria-label="返回顶部">↑</button>
+  <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
+
   <!-- 页脚 -->
   <footer class="footer">
     <div class="container footer-inner">
@@ -234,43 +293,39 @@
         <span>次元整研社 · 仙居技师学院</span>
       </div>
       <p class="footer-copy">
-        © <span id="year">2025</span> acg-lab.xyz · 用爱发电，Made with ✨ <br>
+        © <span id="year">2026</span> 次元整研社 · 用爱发电，Made with ✨ <br>
         <span id="busuanzi_container_site_pv" style="font-size:0.75rem; opacity:0.7;">本站总访问量 <span id="busuanzi_value_site_pv">0</span> 次</span>
       </p>
     </div>
   </footer>
 
-  <!-- 登录注册模态框 -->
-  <div class="modal-overlay" id="authModal">
+  <!-- 本地社团名片（GitHub Pages 无后端，不存密码） -->
+  <div class="modal-overlay" id="authModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
     <div class="modal-card">
-      <button class="modal-close" id="modalClose">✕</button>
+      <button class="modal-close" id="modalClose" aria-label="关闭名片窗口">✕</button>
       <div class="modal-header">
-        <h2 id="modalTitle">登录次元账号</h2>
-        <p class="modal-subtitle">记录你的专属次元ID</p>
+        <h2 id="modalTitle">我的次元名片</h2>
+        <p class="modal-subtitle">仅保存在你的浏览器本地，不需要账号或密码</p>
       </div>
       <form id="authForm">
         <div class="input-group">
-          <label for="authUsername">昵称 / 邮箱</label>
-          <input type="text" id="authUsername" placeholder="请输入你的圈名" required />
+          <label for="authUsername">你的昵称</label>
+          <input type="text" id="authUsername" placeholder="例如：旅行者" maxlength="24" autocomplete="nickname" required />
         </div>
         <div class="input-group">
-          <label for="authPassword">密码</label>
-          <input type="password" id="authPassword" placeholder="输入密码（随便设）" required />
-        </div>
-        <div class="input-group" id="registerExtra" style="display:none;">
           <label for="authDirection">你的主攻方向</label>
           <select id="authDirection">
-            <option value="绘画">🎨 绘画/产粮</option>
-            <option value="Cos">👗 Cos/变装</option>
-            <option value="观影">📺 观影/吐槽</option>
-            <option value="全能">✨ 全能/整活</option>
+            <option value="绘画">🎨 绘画 / 产粮</option>
+            <option value="Cos">👗 Cos / 变装</option>
+            <option value="观影">📺 观影 / 吐槽</option>
+            <option value="技术">💻 技术 / 网站</option>
+            <option value="全能">✨ 全能 / 整活</option>
           </select>
         </div>
-        <button type="submit" class="btn btn-primary btn-block" id="submitAuthBtn">登录</button>
+        <button type="submit" class="btn btn-primary btn-block" id="submitAuthBtn">保存名片</button>
       </form>
       <div class="modal-footer">
-        <span id="switchAuthText">还没有账号？</span>
-        <a href="#" id="switchAuthBtn">立即注册</a>
+        <span>提示：清除浏览器站点数据后，名片也会被清除。</span>
       </div>
     </div>
   </div>
@@ -278,7 +333,7 @@
   <!-- 部门详情弹窗 -->
   <div class="modal-overlay" id="deptModal">
     <div class="modal-card" style="max-width: 600px; text-align: left;">
-      <button class="modal-close" id="deptModalClose">✕</button>
+      <button class="modal-close" id="deptModalClose" aria-label="关闭部门详情">✕</button>
       <div class="modal-header" style="text-align: center;">
         <div id="deptModalIcon" style="font-size: 3rem; margin-bottom: 10px;"></div>
         <h2 id="deptModalTitle" style="font-size: 1.8rem; color: var(--primary);"></h2>
@@ -300,9 +355,10 @@
     theme="#ff0033">
   </meting-js>
 
-  <script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js"></script>
-  <script src="main.js"></script>
-  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js"></script>
+  <script defer src="main.js"></script>
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+  <script>if ('serviceWorker' in navigator) window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));</script>
 </body>
 </html>

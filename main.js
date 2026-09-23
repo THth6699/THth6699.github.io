@@ -4,7 +4,7 @@ const themes = {
     name: 'EVA 红黑',
     vars: {
       '--primary': '#ff0033', '--primary-rgb': '255, 0, 51',
-      '--secondary': '#1a1a1a', '--secondary-rgb': '26, 26, 26',
+      '--secondary': '#7a0019', '--secondary-rgb': '122, 0, 25',
       '--accent': '#00e5ff', '--accent-rgb': '0, 229, 255',
       '--bg-color': '#0b0b14', '--bg-rgb': '11, 11, 20',
       '--modal-bg': '#151522',
@@ -69,7 +69,7 @@ function applyTheme(themeKey) {
   for (const [key, value] of Object.entries(theme.vars)) {
     root.style.setProperty(key, value);
   }
-  localStorage.setItem('acg_lab_theme', themeKey);
+  try { localStorage.setItem('acg_lab_theme', themeKey); } catch (_) {}
   // 更新按钮激活状态
   document.querySelectorAll('.theme-option').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.theme === themeKey);
@@ -82,12 +82,14 @@ const themePanel = document.getElementById('themePanel');
 if (themeToggle && themePanel) {
   themeToggle.addEventListener('click', (e) => {
     e.stopPropagation();
-    themePanel.classList.toggle('open');
+    const open = themePanel.classList.toggle('open');
+    themeToggle.setAttribute('aria-expanded', String(open));
   });
   // 点击页面其他位置关闭面板
   document.addEventListener('click', (e) => {
     if (!themePanel.contains(e.target) && e.target !== themeToggle) {
       themePanel.classList.remove('open');
+      themeToggle.setAttribute('aria-expanded', 'false');
     }
   });
   // 绑定主题选项
@@ -101,6 +103,7 @@ if (themeToggle && themePanel) {
   if (savedTheme && themes[savedTheme]) {
     applyTheme(savedTheme);
   }
+  themeToggle.setAttribute('aria-expanded', 'false');
 }
 
 // ===== 1. 导航栏滚动 =====
@@ -148,8 +151,15 @@ const ctx = canvas.getContext('2d');
 let W, H; let particles = [];
 function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
 window.addEventListener('resize', resize); resize();
-const memes = ['有内鬼', '用爱发电', '前方高能', '已阅', '下次一定', 'DD斩首', '咕咕咕', '整活！'];
-const colors = ['#ff0033', '#1a1a1a', '#00e5ff', '#ffcc00', '#ffffff'];
+const memes = ['有内鬼', '用爱发电', '前方高能', '已阅', '下次一定', 'DD斩首', '咕咕咕', '整活！','喔喔喔'];
+function getParticleColors() {
+  const root = getComputedStyle(document.documentElement);
+  return [
+    root.getPropertyValue('--primary').trim(),
+    root.getPropertyValue('--accent').trim(),
+    root.getPropertyValue('--primary-light').trim()
+  ].filter(Boolean);
+}
 
 class Particle {
   constructor() { this.reset(); this.y = Math.random() * H; }
@@ -158,88 +168,118 @@ class Particle {
     this.speed = Math.random() * 1.5 + 0.5; this.opacity = Math.random() * 0.5 + 0.2;
     this.rotate = Math.random() * Math.PI * 2; this.rotateSpeed = (Math.random() - 0.5) * 0.05;
     this.isMeme = Math.random() > 0.85; this.memeText = memes[Math.floor(Math.random() * memes.length)];
-    this.color = colors[Math.floor(Math.random() * colors.length)];
+    const colors = getParticleColors();
+    this.color = colors[Math.floor(Math.random() * colors.length)] || '#ffffff';
   }
   update() { this.y += this.speed; this.rotate += this.rotateSpeed; if (this.y > H + 20) this.reset(); }
   draw() {
     ctx.save(); ctx.translate(this.x, this.y); ctx.rotate(this.rotate); ctx.globalAlpha = this.opacity;
     if (this.isMeme) { ctx.font = 'bold 14px sans-serif'; ctx.fillStyle = this.color; ctx.textAlign = 'center'; ctx.fillText(this.memeText, 0, 0); }
-    else { ctx.beginPath(); ctx.moveTo(0, 0); ctx.bezierCurveTo(this.size/2, -this.size/2, this.size, 0, 0, this.size); ctx.bezierCurveTo(-this.size, 0, -this.size/2, -this.size/2, 0, 0); ctx.fillStyle = '#ff0033'; ctx.fill(); }
+    else {
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.bezierCurveTo(this.size/2, -this.size/2, this.size, 0, 0, this.size);
+      ctx.bezierCurveTo(-this.size, 0, -this.size/2, -this.size/2, 0, 0);
+      ctx.fillStyle = this.color;
+      ctx.fill();
+    }
     ctx.restore();
   }
 }
 function initParticles() { const count = Math.min(60, Math.floor(W / 15)); particles = []; for (let i = 0; i < count; i++) particles.push(new Particle()); }
-function animate() { ctx.clearRect(0, 0, W, H); particles.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(animate); }
-initParticles(); animate();
+let animationFrame = 0;
+function animate() {
+  if (document.hidden) { animationFrame = 0; return; }
+  ctx.clearRect(0, 0, W, H);
+  particles.forEach(p => { p.update(); p.draw(); });
+  animationFrame = requestAnimationFrame(animate);
+}
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden && !animationFrame) animate();
+});
+initParticles();
+if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) animate();
 
-// ===== 6. 登录注册 =====
+// ===== 6. 本地次元名片 =====
+// GitHub Pages 是纯静态托管，因此这里不伪装成真实账号系统，也不保存密码。
 const authModal = document.getElementById('authModal');
 const loginBtn = document.getElementById('loginBtn');
 const modalClose = document.getElementById('modalClose');
-const switchAuthBtn = document.getElementById('switchAuthBtn');
-const switchAuthText = document.getElementById('switchAuthText');
 const modalTitle = document.getElementById('modalTitle');
 const submitAuthBtn = document.getElementById('submitAuthBtn');
 const authForm = document.getElementById('authForm');
-const registerExtra = document.getElementById('registerExtra');
+const authUsername = document.getElementById('authUsername');
+const authDirection = document.getElementById('authDirection');
 const userInfo = document.getElementById('userInfo');
 const userNameDisplay = document.getElementById('userNameDisplay');
 const userAvatar = document.getElementById('userAvatar');
 const logoutBtn = document.getElementById('logoutBtn');
-let isRegisterMode = false;
 
-function checkLoginState() {
-  const user = JSON.parse(localStorage.getItem('acg_lab_user'));
-  if (user) showUserInfo(user); else showLoginBtn();
+function readLocalProfile() {
+  try {
+    const raw = localStorage.getItem('acg_lab_profile');
+    const profile = raw ? JSON.parse(raw) : null;
+    return profile && profile.username ? profile : null;
+  } catch (_) { return null; }
 }
-function showUserInfo(user) {
-  loginBtn.style.display = 'none'; userInfo.style.display = 'flex';
-  userNameDisplay.textContent = user.username;
-  const avatars = { '产粮': '🎨', 'Cos': '👗', '观影': '📺', '全能': '✨' };
-  userAvatar.textContent = avatars[user.direction] || '👤';
+function saveLocalProfile(profile) {
+  try { localStorage.setItem('acg_lab_profile', JSON.stringify(profile)); return true; }
+  catch (_) { return false; }
 }
-function showLoginBtn() { loginBtn.style.display = 'inline-block'; userInfo.style.display = 'none'; }
-function openModal(mode) {
-  isRegisterMode = mode === 'register';
-  modalTitle.textContent = isRegisterMode ? '注册次元账号' : '登录次元账号';
-  submitAuthBtn.textContent = isRegisterMode ? '注 册' : '登 录';
-  switchAuthText.textContent = isRegisterMode ? '已有账号？' : '还没有账号？';
-  switchAuthBtn.textContent = isRegisterMode ? '去登录' : '立即注册';
-  registerExtra.style.display = isRegisterMode ? 'block' : 'none';
-  authModal.classList.add('active');
+function showUserInfo(profile) {
+  if (!loginBtn || !userInfo) return;
+  loginBtn.style.display = 'none';
+  userInfo.style.display = 'flex';
+  userNameDisplay.textContent = profile.username;
+  const avatars = { '绘画': '🎨', 'Cos': '👗', '观影': '📺', '技术': '💻', '全能': '✨' };
+  userAvatar.textContent = avatars[profile.direction] || '👤';
 }
-function closeModal() { authModal.classList.remove('active'); authForm.reset(); }
-
-loginBtn.addEventListener('click', () => openModal('login'));
-modalClose.addEventListener('click', closeModal);
-authModal.addEventListener('click', (e) => { if (e.target === authModal) closeModal(); });
-switchAuthBtn.addEventListener('click', (e) => { e.preventDefault(); openModal(isRegisterMode ? 'login' : 'register'); });
-
-authForm.addEventListener('submit', (e) => {
-  e.preventDefault();
-  const username = document.getElementById('authUsername').value.trim();
-  const password = document.getElementById('authPassword').value.trim();
-  if (!username || !password) return;
-
-  if (isRegisterMode) {
-    const direction = document.getElementById('authDirection').value;
-    const user = { username, password, direction };
-    localStorage.setItem('acg_lab_user', JSON.stringify(user));
-    alert(`注册成功！欢迎加入次元整研社，${username} 同学！`);
-    showUserInfo(user); closeModal();
-  } else {
-    const savedUser = JSON.parse(localStorage.getItem('acg_lab_user'));
-    if (savedUser && savedUser.username === username && savedUser.password === password) {
-      alert(`欢迎回来，${username}！`); showUserInfo(savedUser); closeModal();
-    } else { alert('账号或密码错误！或者你还没有注册，请先点击下方"立即注册"。'); }
+function showLoginBtn() {
+  if (loginBtn) loginBtn.style.display = 'inline-block';
+  if (userInfo) userInfo.style.display = 'none';
+}
+function openProfileModal() {
+  const profile = readLocalProfile();
+  modalTitle.textContent = profile ? '编辑次元名片' : '我的次元名片';
+  submitAuthBtn.textContent = '保存名片';
+  if (profile) {
+    authUsername.value = profile.username;
+    authDirection.value = profile.direction || '全能';
   }
-});
+  authModal.classList.add('active');
+  document.body.style.overflow = 'hidden';
+  setTimeout(() => authUsername.focus(), 0);
+}
+function closeProfileModal() {
+  authModal.classList.remove('active');
+  document.body.style.overflow = '';
+  authForm.reset();
+}
 
-logoutBtn.addEventListener('click', () => {
-  localStorage.removeItem('acg_lab_user'); showLoginBtn();
-  alert('已安全退出次元。期待你的下次光临！');
-});
-checkLoginState();
+if (loginBtn && authModal && authForm) {
+  const existingProfile = readLocalProfile();
+  if (existingProfile) showUserInfo(existingProfile); else showLoginBtn();
+  loginBtn.addEventListener('click', openProfileModal);
+  modalClose.addEventListener('click', closeProfileModal);
+  authModal.addEventListener('click', e => { if (e.target === authModal) closeProfileModal(); });
+  authForm.addEventListener('submit', e => {
+    e.preventDefault();
+    const username = authUsername.value.trim().replace(/\s+/g, ' ');
+    const direction = authDirection.value;
+    if (!username) return;
+    const profile = { username, direction, updatedAt: new Date().toISOString() };
+    if (!saveLocalProfile(profile)) {
+      alert('浏览器禁止了本地存储，请允许本站使用本地存储后再试。');
+      return;
+    }
+    showUserInfo(profile);
+    closeProfileModal();
+  });
+  logoutBtn.addEventListener('click', () => {
+    try { localStorage.removeItem('acg_lab_profile'); } catch (_) {}
+    showLoginBtn();
+  });
+}
 
 // ===== 7. 年份 =====
 document.getElementById('year').textContent = new Date().getFullYear();
@@ -269,6 +309,9 @@ if (galleryImages.length > 0) {
   };
   closeBtn.addEventListener('click', closeLightbox);
   overlay.addEventListener('click', (e) => { if (e.target === overlay) closeLightbox(); });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && overlay.classList.contains('active')) closeLightbox();
+  });
 }
 
 // ===== 9. 每日二次元 =====
@@ -412,7 +455,113 @@ if (deptCards.length > 0 && deptModal) {
   };
   deptModalClose.addEventListener('click', closeDeptModal);
   deptModal.addEventListener('click', (e) => { if (e.target === deptModal) closeDeptModal(); });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && deptModal.classList.contains('active')) closeDeptModal();
+  });
   if (deptJoinBtn) {
     deptJoinBtn.addEventListener('click', () => { closeDeptModal(); });
   }
+}
+
+// ===== 11. 活动中心：GitHub Pages 静态数据驱动 =====
+const activities = [];
+const activityList = document.getElementById('activity-list');
+if (activityList) {
+  const renderActivities = (filter = 'all') => {
+    const list = filter === 'all' ? activities : activities.filter(item => item.status === filter);
+    activityList.innerHTML = list.map(item => `
+      <article class="activity-item reveal show">
+        <div class="activity-date"><strong>${item.date.slice(5)}</strong><span>${item.date.slice(0,4)}</span></div>
+        <div class="activity-dot">${item.icon}</div>
+        <div class="activity-body"><div class="activity-meta"><span class="tag">${item.tag}</span><span class="status status-${item.status}">${item.status}</span></div><h3>${item.title}</h3><p>${item.desc}</p></div>
+      </article>`).join('') || '<div class="empty-state">这个分类暂时没有活动。</div>';
+  };
+  renderActivities();
+  document.querySelectorAll('[data-activity-filter]').forEach(btn => btn.addEventListener('click', () => {
+    document.querySelectorAll('[data-activity-filter]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active'); renderActivities(btn.dataset.activityFilter);
+  }));
+}
+
+// ===== 12. 画廊筛选 =====
+const galleryItems = [...document.querySelectorAll('[data-gallery-category]')];
+const galleryEmpty = document.getElementById('galleryEmpty');
+document.querySelectorAll('[data-gallery-filter]').forEach(btn => btn.addEventListener('click', () => {
+  document.querySelectorAll('[data-gallery-filter]').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const filter = btn.dataset.galleryFilter;
+  let visible = 0;
+  galleryItems.forEach(item => {
+    const show = filter === 'all' || item.dataset.galleryCategory === filter;
+    item.hidden = !show; if (show) visible++;
+  });
+  if (galleryEmpty) galleryEmpty.hidden = visible !== 0;
+}));
+
+// ===== 13. 今日打卡：本地存储 + 连续天数 =====
+const checkinBtn = document.getElementById('checkinBtn');
+const checkinText = document.getElementById('checkinText');
+if (checkinBtn && checkinText) {
+  const localDateKey = date => { const d = new Date(date); const y = d.getFullYear(); const m = String(d.getMonth()+1).padStart(2,'0'); const day = String(d.getDate()).padStart(2,'0'); return `${y}-${m}-${day}`; };
+  const today = localDateKey(new Date());
+  let checkin = {};
+  try { checkin = JSON.parse(localStorage.getItem('acg_lab_checkin') || '{}') || {}; } catch (_) {}
+  const updateCheckinUI = () => {
+    if (checkin.last === today) {
+      checkinText.textContent = `今天已打卡！当前连续 ${checkin.streak || 1} 天。`;
+      checkinBtn.textContent = '✓ 今日已打卡'; checkinBtn.disabled = true;
+    } else checkinText.textContent = `累计打卡 ${checkin.total || 0} 次。今天来留下一个“我来过”。`;
+  };
+  updateCheckinUI();
+  checkinBtn.addEventListener('click', () => {
+    const yesterday = localDateKey(Date.now() - 86400000);
+    checkin = { last: today, total: (checkin.total || 0) + 1, streak: checkin.last === yesterday ? (checkin.streak || 0) + 1 : 1 };
+    try { localStorage.setItem('acg_lab_checkin', JSON.stringify(checkin)); } catch (_) {}
+    updateCheckinUI();
+  });
+}
+
+// ===== 14. 分享本站 =====
+const shareBtn = document.getElementById('shareBtn');
+if (shareBtn) shareBtn.addEventListener('click', async () => {
+  const data = { title: document.title, text: '来看看次元整研社的官网！', url: location.href };
+  try {
+    if (navigator.share) await navigator.share(data);
+    else { await navigator.clipboard.writeText(location.href); shareBtn.textContent = '✓ 链接已复制'; setTimeout(() => shareBtn.textContent = '分享本站', 1800); }
+  } catch (_) {}
+});
+
+// ===== 15. PWA 安装 =====
+let deferredInstallPrompt = null;
+const installBtn = document.getElementById('installBtn');
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault(); deferredInstallPrompt = e;
+  if (installBtn) installBtn.hidden = false;
+});
+if (installBtn) installBtn.addEventListener('click', async () => {
+  if (!deferredInstallPrompt) return;
+  deferredInstallPrompt.prompt();
+  await deferredInstallPrompt.userChoice;
+  deferredInstallPrompt = null; installBtn.hidden = true;
+});
+
+// ===== 16. 阅读进度 + 返回顶部 =====
+const progress = document.getElementById('scrollProgress');
+const backTop = document.getElementById('backTop');
+const updateScrollUI = () => {
+  const max = document.documentElement.scrollHeight - window.innerHeight;
+  const ratio = max > 0 ? window.scrollY / max : 0;
+  if (progress) progress.style.transform = `scaleX(${ratio})`;
+  if (backTop) backTop.classList.toggle('show', window.scrollY > 500);
+};
+window.addEventListener('scroll', updateScrollUI, { passive: true });
+updateScrollUI();
+if (backTop) backTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+
+// ===== 17. Service Worker =====
+if ('serviceWorker' in navigator && location.protocol === 'https:') {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js', { scope: './' }).catch(() => {});
+  });
 }

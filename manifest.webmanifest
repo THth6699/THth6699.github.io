@@ -1,0 +1,14 @@
+{
+  "name": "次元整研社 · 仙居技师学院",
+  "short_name": "次元整研社",
+  "description": "仙居技师学院二次元文化研究社官方网站",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0b0b14",
+  "theme_color": "#0b0b14",
+  "lang": "zh-CN",
+  "icons": [
+    {"src":"icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}
+  ]
+}
