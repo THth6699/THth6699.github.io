@@ -908,3 +908,49 @@ body.orb-dragging {
   user-select: none;
   -webkit-user-select: none;
 }
+
+/* ===================================================================
+   🛠️ 拖动音乐悬浮球时的性能优化：禁用重效果，避免闪烁
+   =================================================================== */
+
+/* 拖动时，禁用所有模糊、光晕、动画，减少重绘压力 */
+body.orb-dragging .bg-image,
+body.orb-dragging .bg-grid {
+  filter: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+body.orb-dragging .glow {
+  animation: none !important;
+  filter: none !important;
+  opacity: 0.15 !important;
+}
+
+body.orb-dragging .music-orb {
+  animation: none !important;
+  box-shadow: 0 6px 20px rgba(var(--primary-rgb), .5) !important;
+  transition: none !important;
+}
+
+body.orb-dragging .music-orb-ring {
+  display: none !important;
+}
+
+body.orb-dragging #particles {
+  display: none !important;
+}
+
+/* 拖动时给悬浮球独立合成层，避免带动整页重绘 */
+.music-orb {
+  will-change: left, top;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* 拖动结束后恢复正常 */
+body:not(.orb-dragging) .bg-image {
+  transition: filter .2s ease;
+}
