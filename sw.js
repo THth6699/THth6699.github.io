@@ -1,4 +1,4 @@
-const CACHE = 'acg-lab-v5';
+const CACHE = 'acg-lab-v6';
 const CORE = ['./', './index.html', './style.css', './main.js', './manifest.webmanifest', './icon.svg', './404.html'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(CORE)).then(() => self.skipWaiting()));
