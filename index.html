@@ -444,20 +444,58 @@
     </div>
   </div>
 
-  <!-- 音乐播放器 -->
-  <meting-js
-    server="netease"
-    type="playlist"
-    id="14128802759" 
-    fixed="true"
-    autoplay="false"
-    theme="#ff0033">
-  </meting-js>
-
-  <script defer src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js"></script>
+  
   <script defer src="main.js"></script>
   <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
   <script>if ('serviceWorker' in navigator) window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));</script>
+<!-- ================= 🎵 音乐播放悬浮窗 ================= -->
+<div class="music-orb" id="musicOrb" role="button" aria-label="音乐播放器" tabindex="0">
+  <div class="music-orb-inner">
+    <span class="music-orb-icon" id="musicOrbIcon">🎵</span>
+  </div>
+  <div class="music-orb-ring"></div>
+</div>
+
+<div class="music-panel" id="musicPanel" role="dialog" aria-label="音乐播放面板">
+  <div class="music-panel-header">
+    <span class="music-panel-title">🎵 次元电台</span>
+    <button class="music-panel-close" id="musicPanelClose" aria-label="关闭">✕</button>
+  </div>
+
+  <div class="music-panel-cover" id="musicCover">
+    <span class="music-cover-emoji" id="musicCoverEmoji">🎧</span>
+  </div>
+
+  <div class="music-panel-info">
+    <div class="music-title" id="musicTitle">等待播放…</div>
+    <div class="music-artist" id="musicArtist">—</div>
+  </div>
+
+  <div class="music-progress-wrap">
+    <span class="music-time" id="musicCurrentTime">0:00</span>
+    <input type="range" class="music-progress" id="musicProgress" min="0" max="100" value="0" step="0.1" aria-label="播放进度">
+    <span class="music-time" id="musicDuration">0:00</span>
+  </div>
+
+  <div class="music-controls">
+    <button class="music-ctrl-btn" id="musicMode" title="播放模式" aria-label="播放模式">🔁</button>
+    <button class="music-ctrl-btn" id="musicPrev" title="上一首" aria-label="上一首">⏮</button>
+    <button class="music-ctrl-btn music-play-btn" id="musicPlay" title="播放/暂停" aria-label="播放或暂停">▶</button>
+    <button class="music-ctrl-btn" id="musicNext" title="下一首" aria-label="下一首">⏭</button>
+    <button class="music-ctrl-btn" id="musicListBtn" title="播放列表" aria-label="播放列表">☰</button>
+  </div>
+
+  <div class="music-volume-wrap">
+    <span class="music-volume-icon" id="musicVolumeIcon">🔊</span>
+    <input type="range" class="music-volume" id="musicVolume" min="0" max="1" step="0.01" value="0.7" aria-label="音量">
+  </div>
+
+  <div class="music-playlist" id="musicPlaylist">
+    <div class="music-playlist-title">播放列表</div>
+    <ul id="musicPlaylistUl"></ul>
+  </div>
+
+  <audio id="bgmAudio" preload="metadata"></audio>
+</div>
 </body>
 </html>
