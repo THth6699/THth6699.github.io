@@ -601,7 +601,6 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
   const modal = document.getElementById('devCenterModal');
   const openBtn = document.getElementById('devCenterFooterBtn');
   const closeBtn = document.getElementById('devCenterClose');
-  const debugBtn = document.getElementById('debugModeBtn');
 
   const setText = (id, value) => {
     const el = document.getElementById(id);
@@ -619,28 +618,30 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
   };
 
   const updateDebugInfo = async () => {
-    const theme = document.documentElement.dataset.theme || localStorage.getItem('acg_lab_theme') || 'eva';
-    setText('debugTheme', theme);
-    setText('debugScreen', `${window.innerWidth} × ${window.innerHeight}`);
+    const themeKey = localStorage.getItem('acg_lab_theme') || 'eva';
+    const themeNames = { eva: 'EVA 红黑', miku: '初音未来', genshin: '原神星空', sakura: '樱花治愈', cyber: '赛博朋克' };
+    const sw = 'serviceWorker' in navigator;
+
+    // 网站状态面板
+    setText('devPwaStatus', window.matchMedia?.('(display-mode: standalone)').matches ? '已安装' : '浏览器模式');
+    setText('devSwStatus', sw ? '支持' : '不支持');
+    setText('devThemeStatus', themeNames[themeKey] || themeKey);
+    setText('devBrowserStatus', browserName());
+
+    // 调试信息面板
+    setText('debugTheme', themeKey);
+    setText('debugViewport', `${window.innerWidth} × ${window.innerHeight}`);
     setText('debugDpr', String(window.devicePixelRatio || 1));
     setText('debugOnline', navigator.onLine ? '在线' : '离线');
-    setText('debugBrowser', browserName());
+    setText('debugSw', sw ? '支持' : '不支持');
     setText('debugPath', window.location.pathname);
     setText('debugUa', navigator.userAgent);
-
-    const sw = 'serviceWorker' in navigator;
-    setText('debugSw', sw ? '支持' : '不支持');
-
-    const standalone = window.matchMedia?.('(display-mode: standalone)').matches || window.navigator.standalone === true;
-    setText('debugPwa', standalone ? '已安装 / 独立模式' : '浏览器模式');
 
     if ('caches' in window) {
       try {
         const keys = await caches.keys();
         setText('debugCache', keys.length ? `正常（${keys.length} 个）` : '暂无缓存');
-      } catch {
-        setText('debugCache', '无法读取');
-      }
+      } catch { setText('debugCache', '无法读取'); }
     } else {
       setText('debugCache', '不支持');
     }
@@ -653,7 +654,6 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
     document.body.style.overflow = 'hidden';
     updateDebugInfo();
   };
-
   const close = () => {
     if (!modal) return;
     modal.classList.remove('active');
@@ -663,18 +663,23 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
 
   openBtn?.addEventListener('click', open);
   closeBtn?.addEventListener('click', close);
-  modal?.addEventListener('click', e => {
-    if (e.target === modal) close();
-  });
+  modal?.addEventListener('click', e => { if (e.target === modal) close(); });
 
-  debugBtn?.addEventListener('click', () => {
-    const panel = document.getElementById('debugPanel');
-    if (!panel) return;
-    panel.hidden = !panel.hidden;
+  // 修复：用正确的 ID
+  const devModeToggle = document.getElementById('devModeToggle');
+  const devRefreshStatus = document.getElementById('devRefreshStatus');
+  const devDebugOutput = document.getElementById('devDebugOutput');
+
+  devModeToggle?.addEventListener('click', () => {
+    if (!devDebugOutput) return;
+    const willShow = devDebugOutput.hidden;
+    devDebugOutput.hidden = !willShow;
+    devModeToggle.textContent = willShow ? '关闭开发者模式' : '开启开发者模式';
     updateDebugInfo();
   });
+  devRefreshStatus?.addEventListener('click', updateDebugInfo);
 
-  // 开发者彩蛋：Ctrl + Shift + D
+  // 快捷键：Ctrl + Shift + D
   document.addEventListener('keydown', e => {
     if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'd') {
       e.preventDefault();
