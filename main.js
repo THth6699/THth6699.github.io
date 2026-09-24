@@ -864,4 +864,145 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
   // ========== 拖动悬浮球 ==========
   const STORAGE_KEY = 'acg_lab_orb_pos';
   try {
-    const 
+      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
+    if (saved && typeof saved.x === 'number' && typeof saved.y === 'number') {
+      orb.style.left = saved.x + 'px';
+      orb.style.top = saved.y + 'px';
+      orb.style.right = 'auto';
+      orb.style.bottom = 'auto';
+      panel.style.left = 'auto';
+      panel.style.right = '20px';
+      panel.style.bottom = '90px';
+    }
+  } catch (_) {}
+
+  let isDragging = false, hasMoved = false;
+  let startX = 0, startY = 0, offsetX = 0, offsetY = 0;
+  const dragThreshold = 5;
+  let lastTapTime = 0;
+
+  const onPointerDown = (e) => {
+    if (e.button !== undefined && e.button !== 0) return;
+    isDragging = true;
+    hasMoved = false;
+    document.body.classList.add('orb-dragging');
+    orb.classList.add('dragging');
+
+    const rect = orb.getBoundingClientRect();
+    startX = e.clientX; startY = e.clientY;
+    offsetX = e.clientX - rect.left;
+    offsetY = e.clientY - rect.top;
+
+    orb.style.left = rect.left + 'px';
+    orb.style.top = rect.top + 'px';
+    orb.style.right = 'auto';
+    orb.style.bottom = 'auto';
+    orb.style.transform = 'translate(0, 0)';
+    orb._tx = 0; orb._ty = 0;
+
+    document.addEventListener('pointermove', onPointerMove);
+    document.addEventListener('pointerup', onPointerUp);
+    document.addEventListener('pointercancel', onPointerUp);
+  };
+
+  const onPointerMove = (e) => {
+    if (!isDragging) return;
+    const dx = e.clientX - startX;
+    const dy = e.clientY - startY;
+    if (Math.abs(dx) > dragThreshold || Math.abs(dy) > dragThreshold) hasMoved = true;
+
+    const orbW = orb.offsetWidth, orbH = orb.offsetHeight;
+    const rect = orb.getBoundingClientRect();
+    const baseLeft = rect.left - (orb._tx || 0);
+    const baseTop = rect.top - (orb._ty || 0);
+
+    let tx = dx, ty = dy;
+    const maxX = window.innerWidth - orbW - 8;
+    const maxY = window.innerHeight - orbH - 8;
+    tx = Math.max(8 - baseLeft, Math.min(maxX - baseLeft, tx));
+    ty = Math.max(8 - baseTop, Math.min(maxY - baseTop, ty));
+
+    orb.style.transform = `translate(${tx}px, ${ty}px)`;
+    orb._tx = tx; orb._ty = ty;
+
+    if (panel.classList.contains('open')) positionPanel();
+  };
+
+  const positionPanel = () => {
+    const orbRect = orb.getBoundingClientRect();
+    const panelW = panel.offsetWidth;
+    const panelH = panel.offsetHeight;
+    let px = orbRect.left + orbRect.width / 2 - panelW / 2;
+    let py = orbRect.top - panelH - 12;
+    px = Math.max(12, Math.min(window.innerWidth - panelW - 12, px));
+    if (py < 12) py = orbRect.bottom + 12;
+    panel.style.left = px + 'px';
+    panel.style.top = py + 'px';
+    panel.style.right = 'auto';
+    panel.style.bottom = 'auto';
+  };
+
+  const onPointerUp = () => {
+    if (!isDragging) return;
+    isDragging = false;
+    document.body.classList.remove('orb-dragging');
+    orb.classList.remove('dragging');
+    document.removeEventListener('pointermove', onPointerMove);
+    document.removeEventListener('pointerup', onPointerUp);
+    document.removeEventListener('pointercancel', onPointerUp);
+
+    const rect = orb.getBoundingClientRect();
+    orb.style.left = rect.left + 'px';
+    orb.style.top = rect.top + 'px';
+    orb.style.transform = '';
+    orb._tx = 0; orb._ty = 0;
+
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ x: rect.left, y: rect.top }));
+    } catch (_) {}
+
+    if (!hasMoved) {
+      const now = Date.now();
+      if (now - lastTapTime < 300) {
+        nextTrack();
+        lastTapTime = 0;
+      } else {
+        lastTapTime = now;
+        setTimeout(() => {
+          if (Date.now() - lastTapTime >= 250) {
+            if (panel.classList.contains('open')) panel.classList.remove('open');
+            else { positionPanel(); panel.classList.add('open'); }
+          }
+        }, 250);
+      }
+    }
+  };
+
+  orb.addEventListener('pointerdown', onPointerDown);
+
+  orb.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      togglePlay();
+    }
+  });
+
+  // ========== 初始化 ==========
+  loadTrack(0);
+  renderPlaylist();
+
+  // 尝试加载 playlist.json
+  fetch('assets/music/playlist.json')
+    .then(res => res.ok ? res.json() : Promise.reject('JSON 加载失败'))
+    .then(data => {
+      if (Array.isArray(data) && data.length > 0) {
+        playlist = data;
+        currentIndex = 0;
+        loadTrack(0);
+        renderPlaylist();
+      }
+    })
+    .catch(err => {
+      console.warn('无法加载 playlist.json，使用默认列表：', err);
+    });
+})();
