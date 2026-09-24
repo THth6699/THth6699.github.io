@@ -692,3 +692,317 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
   window.addEventListener('online', updateDebugInfo);
   window.addEventListener('offline', updateDebugInfo);
 })();
+
+// ===== 20. 🎵 多功能音乐播放悬浮窗 v2.0 =====
+(() => {
+  const orb = document.getElementById('musicOrb');
+  const panel = document.getElementById('musicPanel');
+  const panelClose = document.getElementById('musicPanelClose');
+  const orbIcon = document.getElementById('musicOrbIcon');
+  const audio = document.getElementById('bgmAudio');
+  if (!orb || !panel || !audio) return;
+
+  // ========== 音乐库配置 ==========
+  // 把你的音乐文件放到 assets/music/ 目录下，然后在这里添加曲目
+  const playlist = [
+    { src: 'assets/music/bgm.mp3',  title: '次元基地', artist: 'BGM 01', emoji: '🎧' },
+    { src: 'assets/music/bgm2.mp3', title: '深夜追番', artist: 'BGM 02', emoji: '🌙' },
+    { src: 'assets/music/bgm3.mp3', title: '漫展回忆', artist: 'BGM 03', emoji: '✨' }
+  ];
+
+  let currentIndex = 0;
+  let playMode = localStorage.getItem('acg_lab_music_mode') || 'loop';
+  const modeIcons = { loop: '🔁', single: '🔂', shuffle: '🔀' };
+  const modeTitles = { loop: '列表循环', single: '单曲循环', shuffle: '随机播放' };
+
+  // ========== DOM 元素 ==========
+  const el = {
+    cover: document.getElementById('musicCover'),
+    coverEmoji: document.getElementById('musicCoverEmoji'),
+    title: document.getElementById('musicTitle'),
+    artist: document.getElementById('musicArtist'),
+    progress: document.getElementById('musicProgress'),
+    currentTime: document.getElementById('musicCurrentTime'),
+    duration: document.getElementById('musicDuration'),
+    play: document.getElementById('musicPlay'),
+    prev: document.getElementById('musicPrev'),
+    next: document.getElementById('musicNext'),
+    mode: document.getElementById('musicMode'),
+    volume: document.getElementById('musicVolume'),
+    volumeIcon: document.getElementById('musicVolumeIcon'),
+    listBtn: document.getElementById('musicListBtn'),
+    playlist: document.getElementById('musicPlaylist'),
+    playlistUl: document.getElementById('musicPlaylistUl')
+  };
+
+  // ========== 工具函数 ==========
+  const fmtTime = (s) => {
+    if (!isFinite(s) || isNaN(s)) return '0:00';
+    const m = Math.floor(s / 60);
+    const sec = Math.floor(s % 60).toString().padStart(2, '0');
+    return `${m}:${sec}`;
+  };
+
+  // ========== 播放列表渲染 ==========
+  const renderPlaylist = () => {
+    if (!el.playlistUl) return;
+    el.playlistUl.innerHTML = playlist.map((track, i) => `
+      <li data-index="${i}" class="${i === currentIndex ? 'active' : ''}">
+        <span class="track-name">${track.emoji} ${track.title}</span>
+      </li>
+    `).join('');
+    el.playlistUl.querySelectorAll('li').forEach(li => {
+      li.addEventListener('click', () => {
+        const idx = +li.dataset.index;
+        if (idx === currentIndex) { togglePlay(); }
+        else { loadTrack(idx); playTrack(); }
+      });
+    });
+  };
+
+  // ========== 加载曲目 ==========
+  const loadTrack = (index) => {
+    currentIndex = (index + playlist.length) % playlist.length;
+    const track = playlist[currentIndex];
+    audio.src = track.src;
+    el.title.textContent = track.title;
+    el.artist.textContent = track.artist;
+    el.coverEmoji.textContent = track.emoji;
+    el.progress.value = 0;
+    el.currentTime.textContent = '0:00';
+    el.duration.textContent = '0:00';
+    renderPlaylist();
+  };
+
+  // ========== 播放/暂停 ==========
+  const playTrack = () => {
+    audio.play().then(() => {
+      orb.classList.add('playing');
+      el.play.textContent = '⏸';
+      orbIcon.textContent = '🎶';
+    }).catch(err => {
+      console.warn('播放失败：', err);
+      el.title.textContent = '播放失败，请检查音频文件';
+    });
+  };
+  const pauseTrack = () => {
+    audio.pause();
+    orb.classList.remove('playing');
+    el.play.textContent = '▶';
+    orbIcon.textContent = '🎵';
+  };
+  const togglePlay = () => audio.paused ? playTrack() : pauseTrack();
+
+  // ========== 上一首/下一首 ==========
+  const prevTrack = () => {
+    if (playMode === 'shuffle') loadTrack(Math.floor(Math.random() * playlist.length));
+    else loadTrack(currentIndex - 1);
+    playTrack();
+  };
+  const nextTrack = () => {
+    if (playMode === 'shuffle') loadTrack(Math.floor(Math.random() * playlist.length));
+    else loadTrack(currentIndex + 1);
+    playTrack();
+  };
+
+  // ========== 音频事件 ==========
+  audio.addEventListener('loadedmetadata', () => {
+    el.duration.textContent = fmtTime(audio.duration);
+  });
+  audio.addEventListener('timeupdate', () => {
+    if (audio.duration) {
+      el.progress.value = (audio.currentTime / audio.duration) * 100;
+      el.currentTime.textContent = fmtTime(audio.currentTime);
+    }
+  });
+  audio.addEventListener('ended', () => {
+    if (playMode === 'single') { audio.currentTime = 0; playTrack(); }
+    else nextTrack();
+  });
+  audio.addEventListener('play', () => {
+    orb.classList.add('playing');
+    el.play.textContent = '⏸';
+    orbIcon.textContent = '🎶';
+  });
+  audio.addEventListener('pause', () => {
+    orb.classList.remove('playing');
+    el.play.textContent = '▶';
+    orbIcon.textContent = '🎵';
+  });
+
+  // ========== 进度条拖动 ==========
+  el.progress.addEventListener('input', () => {
+    if (audio.duration) {
+      audio.currentTime = (el.progress.value / 100) * audio.duration;
+    }
+  });
+
+  // ========== 音量控制 ==========
+  const savedVolume = parseFloat(localStorage.getItem('acg_lab_volume'));
+  if (!isNaN(savedVolume)) {
+    audio.volume = savedVolume;
+    el.volume.value = savedVolume;
+  } else {
+    audio.volume = 0.7;
+  }
+  el.volume.addEventListener('input', () => {
+    audio.volume = el.volume.value;
+    localStorage.setItem('acg_lab_volume', el.volume.value);
+    updateVolumeIcon();
+  });
+  const updateVolumeIcon = () => {
+    const v = audio.volume;
+    el.volumeIcon.textContent = v === 0 ? '🔇' : v < 0.4 ? '🔉' : '🔊';
+  };
+  updateVolumeIcon();
+  el.volumeIcon.addEventListener('click', () => {
+    audio.muted = !audio.muted;
+    el.volumeIcon.textContent = audio.muted ? '🔇' : (audio.volume < 0.4 ? '🔉' : '🔊');
+  });
+
+  // ========== 播放模式切换 ==========
+  const updateModeBtn = () => {
+    el.mode.textContent = modeIcons[playMode];
+    el.mode.title = modeTitles[playMode];
+  };
+  updateModeBtn();
+  el.mode.addEventListener('click', () => {
+    const modes = ['loop', 'single', 'shuffle'];
+    playMode = modes[(modes.indexOf(playMode) + 1) % modes.length];
+    localStorage.setItem('acg_lab_music_mode', playMode);
+    updateModeBtn();
+  });
+
+  // ========== 按钮绑定 ==========
+  el.play.addEventListener('click', togglePlay);
+  el.prev.addEventListener('click', prevTrack);
+  el.next.addEventListener('click', nextTrack);
+  el.listBtn.addEventListener('click', () => {
+    el.playlist.classList.toggle('open');
+  });
+  panelClose.addEventListener('click', () => {
+    panel.classList.remove('open');
+  });
+
+  // ========== 拖动悬浮球 ==========
+  const STORAGE_KEY = 'acg_lab_orb_pos';
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
+    if (saved && typeof saved.x === 'number' && typeof saved.y === 'number') {
+      orb.style.left = saved.x + 'px';
+      orb.style.top = saved.y + 'px';
+      orb.style.right = 'auto';
+      orb.style.bottom = 'auto';
+      panel.style.left = 'auto';
+      panel.style.right = '20px';
+      panel.style.bottom = '90px';
+    }
+  } catch (_) {}
+
+  let isDragging = false, hasMoved = false;
+  let startX = 0, startY = 0, offsetX = 0, offsetY = 0;
+  const dragThreshold = 5;
+  let lastTapTime = 0;
+
+  const onPointerDown = (e) => {
+    if (e.button !== undefined && e.button !== 0) return;
+    isDragging = true;
+    hasMoved = false;
+    document.body.classList.add('orb-dragging');
+    orb.classList.add('dragging');
+
+    const rect = orb.getBoundingClientRect();
+    startX = e.clientX; startY = e.clientY;
+    offsetX = e.clientX - rect.left;
+    offsetY = e.clientY - rect.top;
+
+    orb.style.left = rect.left + 'px';
+    orb.style.top = rect.top + 'px';
+    orb.style.right = 'auto';
+    orb.style.bottom = 'auto';
+
+    document.addEventListener('pointermove', onPointerMove);
+    document.addEventListener('pointerup', onPointerUp);
+    document.addEventListener('pointercancel', onPointerUp);
+  };
+
+  const onPointerMove = (e) => {
+    if (!isDragging) return;
+    const dx = e.clientX - startX;
+    const dy = e.clientY - startY;
+    if (Math.abs(dx) > dragThreshold || Math.abs(dy) > dragThreshold) hasMoved = true;
+
+    const orbW = orb.offsetWidth, orbH = orb.offsetHeight;
+    const maxX = window.innerWidth - orbW - 8;
+    const maxY = window.innerHeight - orbH - 8;
+    let newX = Math.max(8, Math.min(maxX, e.clientX - offsetX));
+    let newY = Math.max(8, Math.min(maxY, e.clientY - offsetY));
+    orb.style.left = newX + 'px';
+    orb.style.top = newY + 'px';
+
+    // 同步面板位置
+    if (panel.classList.contains('open')) positionPanel();
+  };
+
+  const positionPanel = () => {
+    const orbRect = orb.getBoundingClientRect();
+    const panelW = panel.offsetWidth;
+    const panelH = panel.offsetHeight;
+    let px = orbRect.left + orbRect.width / 2 - panelW / 2;
+    let py = orbRect.top - panelH - 12;
+    // 限制在屏幕内
+    px = Math.max(12, Math.min(window.innerWidth - panelW - 12, px));
+    if (py < 12) py = orbRect.bottom + 12;
+    panel.style.left = px + 'px';
+    panel.style.top = py + 'px';
+    panel.style.right = 'auto';
+    panel.style.bottom = 'auto';
+  };
+
+  const onPointerUp = () => {
+    if (!isDragging) return;
+    isDragging = false;
+    document.body.classList.remove('orb-dragging');
+    orb.classList.remove('dragging');
+    document.removeEventListener('pointermove', onPointerMove);
+    document.removeEventListener('pointerup', onPointerUp);
+    document.removeEventListener('pointercancel', onPointerUp);
+
+    const rect = orb.getBoundingClientRect();
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ x: rect.left, y: rect.top }));
+    } catch (_) {}
+
+    if (!hasMoved) {
+      const now = Date.now();
+      if (now - lastTapTime < 300) {
+        // 双击 → 下一首
+        nextTrack();
+        lastTapTime = 0;
+      } else {
+        lastTapTime = now;
+        // 单击 → 切换面板（延迟 250ms，避免和双击冲突）
+        setTimeout(() => {
+          if (Date.now() - lastTapTime >= 250) {
+            if (panel.classList.contains('open')) panel.classList.remove('open');
+            else { positionPanel(); panel.classList.add('open'); }
+          }
+        }, 250);
+      }
+    }
+  };
+
+  orb.addEventListener('pointerdown', onPointerDown);
+
+  // ========== 键盘无障碍 ==========
+  orb.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      togglePlay();
+    }
+  });
+
+  // ========== 初始化 ==========
+  loadTrack(0);
+  renderPlaylist();
+})();
