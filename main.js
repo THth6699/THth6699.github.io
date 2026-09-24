@@ -702,13 +702,29 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
   const audio = document.getElementById('bgmAudio');
   if (!orb || !panel || !audio) return;
 
-  // ========== 音乐库配置 ==========
-  // 把你的音乐文件放到 assets/music/ 目录下，然后在这里添加曲目
-  const playlist = [
-    { src: 'assets/music/bgm.mp3',  title: '次元基地', artist: 'BGM 01', emoji: '🎧' },
-    { src: 'assets/music/bgm2.mp3', title: '深夜追番', artist: 'BGM 02', emoji: '🌙' },
-    { src: 'assets/music/bgm3.mp3', title: '漫展回忆', artist: 'BGM 03', emoji: '✨' }
-  ];
+  // ========== 音乐库配置：从 playlist.json 自动读取 ==========
+// 备用列表：如果 JSON 加载失败，会使用这个默认列表
+const fallbackPlaylist = [
+  { src: 'assets/music/bgm.mp3', title: '次元基地', artist: 'BGM 01', emoji: '🎧' }
+];
+
+let playlist = [...fallbackPlaylist];
+
+// 异步加载 playlist.json（加歌只需要改这个文件，不用改 JS）
+fetch('assets/music/playlist.json')
+  .then(res => res.ok ? res.json() : Promise.reject('JSON 加载失败'))
+  .then(data => {
+    if (Array.isArray(data) && data.length > 0) {
+      playlist = data;
+      // 重新渲染播放列表并加载第一首
+      currentIndex = 0;
+      loadTrack(0);
+      renderPlaylist();
+    }
+  })
+  .catch(err => {
+    console.warn('无法加载 playlist.json，使用默认列表：', err);
+  });
 
   let currentIndex = 0;
   let playMode = localStorage.getItem('acg_lab_music_mode') || 'loop';
