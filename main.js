@@ -921,41 +921,55 @@ fetch('assets/music/playlist.json')
   let lastTapTime = 0;
 
   const onPointerDown = (e) => {
-    if (e.button !== undefined && e.button !== 0) return;
-    isDragging = true;
-    hasMoved = false;
-    document.body.classList.add('orb-dragging');
-    orb.classList.add('dragging');
+  if (e.button !== undefined && e.button !== 0) return;
+  isDragging = true;
+  hasMoved = false;
+  document.body.classList.add('orb-dragging');
+  orb.classList.add('dragging');
 
-    const rect = orb.getBoundingClientRect();
-    startX = e.clientX; startY = e.clientY;
-    offsetX = e.clientX - rect.left;
-    offsetY = e.clientY - rect.top;
+  const rect = orb.getBoundingClientRect();
+  startX = e.clientX; startY = e.clientY;
+  offsetX = e.clientX - rect.left;
+  offsetY = e.clientY - rect.top;
 
-    orb.style.left = rect.left + 'px';
-    orb.style.top = rect.top + 'px';
-    orb.style.right = 'auto';
-    orb.style.bottom = 'auto';
+  // 固定初始位置为 left/top，并记录基准值
+  orb.style.left = rect.left + 'px';
+  orb.style.top = rect.top + 'px';
+  orb.style.right = 'auto';
+  orb.style.bottom = 'auto';
+  // 用 transform 做偏移，避免触发布局重排
+  orb.style.transform = 'translate(0, 0)';
 
-    document.addEventListener('pointermove', onPointerMove);
-    document.addEventListener('pointerup', onPointerUp);
-    document.addEventListener('pointercancel', onPointerUp);
-  };
+  document.addEventListener('pointermove', onPointerMove);
+  document.addEventListener('pointerup', onPointerUp);
+  document.addEventListener('pointercancel', onPointerUp);
+};
 
-  const onPointerMove = (e) => {
-    if (!isDragging) return;
-    const dx = e.clientX - startX;
-    const dy = e.clientY - startY;
-    if (Math.abs(dx) > dragThreshold || Math.abs(dy) > dragThreshold) hasMoved = true;
+const onPointerMove = (e) => {
+  if (!isDragging) return;
+  const dx = e.clientX - startX;
+  const dy = e.clientY - startY;
+  if (Math.abs(dx) > dragThreshold || Math.abs(dy) > dragThreshold) hasMoved = true;
 
-    const orbW = orb.offsetWidth, orbH = orb.offsetHeight;
-    const maxX = window.innerWidth - orbW - 8;
-    const maxY = window.innerHeight - orbH - 8;
-    let newX = Math.max(8, Math.min(maxX, e.clientX - offsetX));
-    let newY = Math.max(8, Math.min(maxY, e.clientY - offsetY));
-    orb.style.left = newX + 'px';
-    orb.style.top = newY + 'px';
+  const orbW = orb.offsetWidth, orbH = orb.offsetHeight;
+  const rect = orb.getBoundingClientRect();
+  // 当前基准 left/top（不含 transform 偏移）
+  const baseLeft = rect.left - (orb._tx || 0);
+  const baseTop = rect.top - (orb._ty || 0);
 
+  let tx = dx, ty = dy;
+  // 限制在屏幕内
+  const maxX = window.innerWidth - orbW - 8;
+  const maxY = window.innerHeight - orbH - 8;
+  tx = Math.max(8 - baseLeft, Math.min(maxX - baseLeft, tx));
+  ty = Math.max(8 - baseTop, Math.min(maxY - baseTop, ty));
+
+  // 用 transform 移动（GPU 加速，不触发重排）
+  orb.style.transform = `translate(${tx}px, ${ty}px)`;
+  orb._tx = tx; orb._ty = ty;
+
+  if (panel.classList.contains('open')) positionPanel();
+};
     // 同步面板位置
     if (panel.classList.contains('open')) positionPanel();
   };
@@ -976,13 +990,41 @@ fetch('assets/music/playlist.json')
   };
 
   const onPointerUp = () => {
-    if (!isDragging) return;
-    isDragging = false;
-    document.body.classList.remove('orb-dragging');
-    orb.classList.remove('dragging');
-    document.removeEventListener('pointermove', onPointerMove);
-    document.removeEventListener('pointerup', onPointerUp);
-    document.removeEventListener('pointercancel', onPointerUp);
+  if (!isDragging) return;
+  isDragging = false;
+  document.body.classList.remove('orb-dragging');
+  orb.classList.remove('dragging');
+  document.removeEventListener('pointermove', onPointerMove);
+  document.removeEventListener('pointerup', onPointerUp);
+  document.removeEventListener('pointercancel', onPointerUp);
+
+  // 把 transform 的偏移合并回 left/top，并清空 transform
+  const rect = orb.getBoundingClientRect();
+  orb.style.left = rect.left + 'px';
+  orb.style.top = rect.top + 'px';
+  orb.style.transform = '';
+  orb._tx = 0; orb._ty = 0;
+
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ x: rect.left, y: rect.top }));
+  } catch (_) {}
+
+  if (!hasMoved) {
+    const now = Date.now();
+    if (now - lastTapTime < 300) {
+      nextTrack();
+      lastTapTime = 0;
+    } else {
+      lastTapTime = now;
+      setTimeout(() => {
+        if (Date.now() - lastTapTime >= 250) {
+          if (panel.classList.contains('open')) panel.classList.remove('open');
+          else { positionPanel(); panel.classList.add('open'); }
+        }
+      }, 250);
+    }
+  }
+};
 
     const rect = orb.getBoundingClientRect();
     try {
