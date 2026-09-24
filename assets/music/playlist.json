@@ -1,1 +1,20 @@
-
+[
+  {
+    "src": "assets/music/bgm.mp3",
+    "title": "次元基地",
+    "artist": "BGM 01",
+    "emoji": "🎧"
+  },
+  {
+    "src": "assets/music/bgm2.mp3",
+    "title": "深夜追番",
+    "artist": "BGM 02",
+    "emoji": "🌙"
+  },
+  {
+    "src": "assets/music/bgm3.mp3",
+    "title": "漫展回忆",
+    "artist": "BGM 03",
+    "emoji": "✨"
+  }
+]
