@@ -943,7 +943,7 @@ body.orb-dragging #particles {
 
 /* 拖动时给悬浮球独立合成层，避免带动整页重绘 */
 .music-orb {
-  will-change: left, top;
+  will-change: transform;
   transform: translateZ(0);
   -webkit-transform: translateZ(0);
   backface-visibility: hidden;
