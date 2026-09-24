@@ -70,7 +70,6 @@ function applyTheme(themeKey) {
     root.style.setProperty(key, value);
   }
   try { localStorage.setItem('acg_lab_theme', themeKey); } catch (_) {}
-  // 更新按钮激活状态
   document.querySelectorAll('.theme-option').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.theme === themeKey);
   });
@@ -85,20 +84,17 @@ if (themeToggle && themePanel) {
     const open = themePanel.classList.toggle('open');
     themeToggle.setAttribute('aria-expanded', String(open));
   });
-  // 点击页面其他位置关闭面板
   document.addEventListener('click', (e) => {
     if (!themePanel.contains(e.target) && e.target !== themeToggle) {
       themePanel.classList.remove('open');
       themeToggle.setAttribute('aria-expanded', 'false');
     }
   });
-  // 绑定主题选项
   document.querySelectorAll('.theme-option').forEach(btn => {
     btn.addEventListener('click', () => {
       applyTheme(btn.dataset.theme);
     });
   });
-  // 加载用户上次选择的主题
   const savedTheme = localStorage.getItem('acg_lab_theme');
   if (savedTheme && themes[savedTheme]) {
     applyTheme(savedTheme);
@@ -133,6 +129,7 @@ const counterObserver = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
     if (entry.isIntersecting) {
       const el = entry.target; const target = +el.dataset.count;
+      if (isNaN(target)) return;
       const start = performance.now(); const duration = 1500;
       const update = (now) => {
         const progress = Math.min((now - start) / duration, 1);
@@ -151,7 +148,7 @@ const ctx = canvas.getContext('2d');
 let W, H; let particles = [];
 function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
 window.addEventListener('resize', resize); resize();
-const memes = ['有内鬼', '用爱发电', '前方高能', '已阅', '下次一定', 'DD斩首', '咕咕咕', '整活！','喔喔喔'];
+const memes = ['有内鬼', '用爱发电', '前方高能', '已阅', '下次一定', 'DD斩首', '咕咕咕', '整活！', '喔喔喔'];
 function getParticleColors() {
   const root = getComputedStyle(document.documentElement);
   return [
@@ -201,7 +198,6 @@ initParticles();
 if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) animate();
 
 // ===== 6. 本地次元名片 =====
-// GitHub Pages 是纯静态托管，因此这里不伪装成真实账号系统，也不保存密码。
 const authModal = document.getElementById('authModal');
 const loginBtn = document.getElementById('loginBtn');
 const modalClose = document.getElementById('modalClose');
@@ -558,7 +554,6 @@ window.addEventListener('scroll', updateScrollUI, { passive: true });
 updateScrollUI();
 if (backTop) backTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 
-
 // ===== 17. Service Worker =====
 if ('serviceWorker' in navigator && location.protocol === 'https:') {
   window.addEventListener('load', () => {
@@ -622,13 +617,11 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
     const themeNames = { eva: 'EVA 红黑', miku: '初音未来', genshin: '原神星空', sakura: '樱花治愈', cyber: '赛博朋克' };
     const sw = 'serviceWorker' in navigator;
 
-    // 网站状态面板
     setText('devPwaStatus', window.matchMedia?.('(display-mode: standalone)').matches ? '已安装' : '浏览器模式');
     setText('devSwStatus', sw ? '支持' : '不支持');
     setText('devThemeStatus', themeNames[themeKey] || themeKey);
     setText('devBrowserStatus', browserName());
 
-    // 调试信息面板
     setText('debugTheme', themeKey);
     setText('debugViewport', `${window.innerWidth} × ${window.innerHeight}`);
     setText('debugDpr', String(window.devicePixelRatio || 1));
@@ -665,7 +658,6 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
   closeBtn?.addEventListener('click', close);
   modal?.addEventListener('click', e => { if (e.target === modal) close(); });
 
-  // 修复：用正确的 ID
   const devModeToggle = document.getElementById('devModeToggle');
   const devRefreshStatus = document.getElementById('devRefreshStatus');
   const devDebugOutput = document.getElementById('devDebugOutput');
@@ -679,7 +671,6 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
   });
   devRefreshStatus?.addEventListener('click', updateDebugInfo);
 
-  // 快捷键：Ctrl + Shift + D
   document.addEventListener('keydown', e => {
     if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'd') {
       e.preventDefault();
@@ -702,38 +693,18 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
   const audio = document.getElementById('bgmAudio');
   if (!orb || !panel || !audio) return;
 
-  // ========== 音乐库配置：从 playlist.json 自动读取 ==========
-// 备用列表：如果 JSON 加载失败，会使用这个默认列表
-const fallbackPlaylist = [
-  { src: 'assets/music/bgm.mp3', title: '次元基地', artist: 'BGM 01', emoji: '🎧' }
-];
+  // ========== 音乐库配置 ==========
+  const fallbackPlaylist = [
+    { src: 'assets/music/bgm.mp3', title: '次元基地', artist: 'BGM 01', emoji: '🎧' }
+  ];
 
-let playlist = [...fallbackPlaylist];
-
-// 异步加载 playlist.json（加歌只需要改这个文件，不用改 JS）
-fetch('assets/music/playlist.json')
-  .then(res => res.ok ? res.json() : Promise.reject('JSON 加载失败'))
-  .then(data => {
-    if (Array.isArray(data) && data.length > 0) {
-      playlist = data;
-      // 重新渲染播放列表并加载第一首
-      currentIndex = 0;
-      loadTrack(0);
-      renderPlaylist();
-    }
-  })
-  .catch(err => {
-    console.warn('无法加载 playlist.json，使用默认列表：', err);
-  });
-
+  let playlist = [...fallbackPlaylist];
   let currentIndex = 0;
   let playMode = localStorage.getItem('acg_lab_music_mode') || 'loop';
   const modeIcons = { loop: '🔁', single: '🔂', shuffle: '🔀' };
   const modeTitles = { loop: '列表循环', single: '单曲循环', shuffle: '随机播放' };
 
-  // ========== DOM 元素 ==========
   const el = {
-    cover: document.getElementById('musicCover'),
     coverEmoji: document.getElementById('musicCoverEmoji'),
     title: document.getElementById('musicTitle'),
     artist: document.getElementById('musicArtist'),
@@ -751,7 +722,6 @@ fetch('assets/music/playlist.json')
     playlistUl: document.getElementById('musicPlaylistUl')
   };
 
-  // ========== 工具函数 ==========
   const fmtTime = (s) => {
     if (!isFinite(s) || isNaN(s)) return '0:00';
     const m = Math.floor(s / 60);
@@ -759,7 +729,6 @@ fetch('assets/music/playlist.json')
     return `${m}:${sec}`;
   };
 
-  // ========== 播放列表渲染 ==========
   const renderPlaylist = () => {
     if (!el.playlistUl) return;
     el.playlistUl.innerHTML = playlist.map((track, i) => `
@@ -776,7 +745,6 @@ fetch('assets/music/playlist.json')
     });
   };
 
-  // ========== 加载曲目 ==========
   const loadTrack = (index) => {
     currentIndex = (index + playlist.length) % playlist.length;
     const track = playlist[currentIndex];
@@ -790,7 +758,6 @@ fetch('assets/music/playlist.json')
     renderPlaylist();
   };
 
-  // ========== 播放/暂停 ==========
   const playTrack = () => {
     audio.play().then(() => {
       orb.classList.add('playing');
@@ -809,7 +776,6 @@ fetch('assets/music/playlist.json')
   };
   const togglePlay = () => audio.paused ? playTrack() : pauseTrack();
 
-  // ========== 上一首/下一首 ==========
   const prevTrack = () => {
     if (playMode === 'shuffle') loadTrack(Math.floor(Math.random() * playlist.length));
     else loadTrack(currentIndex - 1);
@@ -821,7 +787,6 @@ fetch('assets/music/playlist.json')
     playTrack();
   };
 
-  // ========== 音频事件 ==========
   audio.addEventListener('loadedmetadata', () => {
     el.duration.textContent = fmtTime(audio.duration);
   });
@@ -846,14 +811,12 @@ fetch('assets/music/playlist.json')
     orbIcon.textContent = '🎵';
   });
 
-  // ========== 进度条拖动 ==========
   el.progress.addEventListener('input', () => {
     if (audio.duration) {
       audio.currentTime = (el.progress.value / 100) * audio.duration;
     }
   });
 
-  // ========== 音量控制 ==========
   const savedVolume = parseFloat(localStorage.getItem('acg_lab_volume'));
   if (!isNaN(savedVolume)) {
     audio.volume = savedVolume;
@@ -876,7 +839,6 @@ fetch('assets/music/playlist.json')
     el.volumeIcon.textContent = audio.muted ? '🔇' : (audio.volume < 0.4 ? '🔉' : '🔊');
   });
 
-  // ========== 播放模式切换 ==========
   const updateModeBtn = () => {
     el.mode.textContent = modeIcons[playMode];
     el.mode.title = modeTitles[playMode];
@@ -889,7 +851,6 @@ fetch('assets/music/playlist.json')
     updateModeBtn();
   });
 
-  // ========== 按钮绑定 ==========
   el.play.addEventListener('click', togglePlay);
   el.prev.addEventListener('click', prevTrack);
   el.next.addEventListener('click', nextTrack);
@@ -903,157 +864,4 @@ fetch('assets/music/playlist.json')
   // ========== 拖动悬浮球 ==========
   const STORAGE_KEY = 'acg_lab_orb_pos';
   try {
-    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
-    if (saved && typeof saved.x === 'number' && typeof saved.y === 'number') {
-      orb.style.left = saved.x + 'px';
-      orb.style.top = saved.y + 'px';
-      orb.style.right = 'auto';
-      orb.style.bottom = 'auto';
-      panel.style.left = 'auto';
-      panel.style.right = '20px';
-      panel.style.bottom = '90px';
-    }
-  } catch (_) {}
-
-  let isDragging = false, hasMoved = false;
-  let startX = 0, startY = 0, offsetX = 0, offsetY = 0;
-  const dragThreshold = 5;
-  let lastTapTime = 0;
-
-  const onPointerDown = (e) => {
-  if (e.button !== undefined && e.button !== 0) return;
-  isDragging = true;
-  hasMoved = false;
-  document.body.classList.add('orb-dragging');
-  orb.classList.add('dragging');
-
-  const rect = orb.getBoundingClientRect();
-  startX = e.clientX; startY = e.clientY;
-  offsetX = e.clientX - rect.left;
-  offsetY = e.clientY - rect.top;
-
-  // 固定初始位置为 left/top，并记录基准值
-  orb.style.left = rect.left + 'px';
-  orb.style.top = rect.top + 'px';
-  orb.style.right = 'auto';
-  orb.style.bottom = 'auto';
-  // 用 transform 做偏移，避免触发布局重排
-  orb.style.transform = 'translate(0, 0)';
-
-  document.addEventListener('pointermove', onPointerMove);
-  document.addEventListener('pointerup', onPointerUp);
-  document.addEventListener('pointercancel', onPointerUp);
-};
-
-const onPointerMove = (e) => {
-  if (!isDragging) return;
-  const dx = e.clientX - startX;
-  const dy = e.clientY - startY;
-  if (Math.abs(dx) > dragThreshold || Math.abs(dy) > dragThreshold) hasMoved = true;
-
-  const orbW = orb.offsetWidth, orbH = orb.offsetHeight;
-  const rect = orb.getBoundingClientRect();
-  const baseLeft = rect.left - (orb._tx || 0);
-  const baseTop = rect.top - (orb._ty || 0);
-
-  let tx = dx, ty = dy;
-  const maxX = window.innerWidth - orbW - 8;
-  const maxY = window.innerHeight - orbH - 8;
-  tx = Math.max(8 - baseLeft, Math.min(maxX - baseLeft, tx));
-  ty = Math.max(8 - baseTop, Math.min(maxY - baseTop, ty));
-
-  orb.style.transform = `translate(${tx}px, ${ty}px)`;
-  orb._tx = tx; orb._ty = ty;
-
-  if (panel.classList.contains('open')) positionPanel();
-};
-
-  const positionPanel = () => {
-    const orbRect = orb.getBoundingClientRect();
-    const panelW = panel.offsetWidth;
-    const panelH = panel.offsetHeight;
-    let px = orbRect.left + orbRect.width / 2 - panelW / 2;
-    let py = orbRect.top - panelH - 12;
-    // 限制在屏幕内
-    px = Math.max(12, Math.min(window.innerWidth - panelW - 12, px));
-    if (py < 12) py = orbRect.bottom + 12;
-    panel.style.left = px + 'px';
-    panel.style.top = py + 'px';
-    panel.style.right = 'auto';
-    panel.style.bottom = 'auto';
-  };
-
-  const onPointerUp = () => {
-  if (!isDragging) return;
-  isDragging = false;
-  document.body.classList.remove('orb-dragging');
-  orb.classList.remove('dragging');
-  document.removeEventListener('pointermove', onPointerMove);
-  document.removeEventListener('pointerup', onPointerUp);
-  document.removeEventListener('pointercancel', onPointerUp);
-
-  const rect = orb.getBoundingClientRect();
-  orb.style.left = rect.left + 'px';
-  orb.style.top = rect.top + 'px';
-  orb.style.transform = '';
-  orb._tx = 0; orb._ty = 0;
-
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ x: rect.left, y: rect.top }));
-  } catch (_) {}
-
-  if (!hasMoved) {
-    const now = Date.now();
-    if (now - lastTapTime < 300) {
-      nextTrack();
-      lastTapTime = 0;
-    } else {
-      lastTapTime = now;
-      setTimeout(() => {
-        if (Date.now() - lastTapTime >= 250) {
-          if (panel.classList.contains('open')) panel.classList.remove('open');
-          else { positionPanel(); panel.classList.add('open'); }
-        }
-      }, 250);
-    }
-  }
-};
-
-    const rect = orb.getBoundingClientRect();
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ x: rect.left, y: rect.top }));
-    } catch (_) {}
-
-    if (!hasMoved) {
-      const now = Date.now();
-      if (now - lastTapTime < 300) {
-        // 双击 → 下一首
-        nextTrack();
-        lastTapTime = 0;
-      } else {
-        lastTapTime = now;
-        // 单击 → 切换面板（延迟 250ms，避免和双击冲突）
-        setTimeout(() => {
-          if (Date.now() - lastTapTime >= 250) {
-            if (panel.classList.contains('open')) panel.classList.remove('open');
-            else { positionPanel(); panel.classList.add('open'); }
-          }
-        }, 250);
-      }
-    }
-  };
-
-  orb.addEventListener('pointerdown', onPointerDown);
-
-  // ========== 键盘无障碍 ==========
-  orb.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      togglePlay();
-    }
-  });
-
-  // ========== 初始化 ==========
-  loadTrack(0);
-  renderPlaylist();
-})();
+    const 
