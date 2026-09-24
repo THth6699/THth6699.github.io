@@ -418,9 +418,138 @@ kbd{padding:3px 7px;border:1px solid rgba(255,255,255,.18);border-bottom-width:2
 @media (max-width:900px){.dev-center-grid{grid-template-columns:1fr}.dev-panel-wide{grid-column:auto}.debug-output{grid-template-columns:1fr}.dev-center-card{max-height:82vh}}
 @media (max-width:600px){.version-link{font-size:.72rem}.changelog-item{grid-template-columns:1fr;gap:2px}.dev-center-card{padding:20px 16px}.debug-toolbar .btn{width:100%}}
 
+
 /* 修复手机端活动时间轴定位 */
 @media (max-width: 768px) {
   .activity-item {
     position: relative;
+  }
+}
+
+/* ===================================================================
+   📱 手机端首屏舒适度优化 v1
+   =================================================================== */
+@media (max-width: 768px) {
+
+  /* --- 首屏高度改为自适应，不要强行占满一屏 --- */
+  .hero {
+    min-height: auto;
+    padding: 96px 18px 48px;
+    align-items: flex-start;
+  }
+
+  /* --- 顶部徽章缩小 --- */
+  .hero-badge {
+    padding: 5px 12px;
+    font-size: 0.72rem;
+    margin-bottom: 16px;
+    letter-spacing: 0.3px;
+  }
+
+  /* --- 主标题缩小 + 收紧间距 --- */
+  .hero-title {
+    font-size: clamp(2.2rem, 11vw, 3rem);
+    letter-spacing: 1px;
+    margin-bottom: 14px;
+    line-height: 1.15;
+  }
+
+  /* --- 副标题缩小、行高收紧 --- */
+  .hero-sub {
+    font-size: 0.9rem;
+    line-height: 1.7;
+    margin-bottom: 24px;
+    padding: 0 6px;
+  }
+
+  /* --- 主按钮改为竖排、宽度统一，避免大小不一的错落感 --- */
+  .hero-actions {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 32px;
+  }
+  .hero-actions .btn {
+    width: 100%;
+    max-width: 260px;
+    padding: 13px 24px;
+    font-size: 0.92rem;
+  }
+
+  /* --- 数据统计更紧凑 --- */
+  .hero-stats {
+    gap: 22px;
+    padding-top: 4px;
+  }
+  .stat strong {
+    font-size: 1.5rem;
+    letter-spacing: 0.5px;
+  }
+  .stat span {
+    font-size: 0.72rem;
+    margin-top: 2px;
+    display: inline-block;
+  }
+
+  /* --- 导航栏高度收紧 --- */
+  .nav-inner {
+    padding: 12px 16px;
+  }
+  .logo {
+    font-size: 1.05rem;
+    gap: 8px;
+  }
+  .logo-mark {
+    width: 30px;
+    height: 30px;
+    border-radius: 9px;
+    font-size: 0.9rem;
+  }
+  .logo-text em {
+    font-size: 1.05rem;
+  }
+
+  /* --- 顶部右侧按钮缩小，避免挤占空间 --- */
+  .nav-auth {
+    gap: 6px;
+    margin-right: 4px;
+  }
+  .nav-auth .btn-sm {
+    padding: 7px 12px;
+    font-size: 0.78rem;
+  }
+  .theme-toggle {
+    width: 32px;
+    height: 32px;
+    font-size: 0.9rem;
+  }
+
+  /* --- 其他 Section 的标题也收紧一点 --- */
+  .section-title {
+    font-size: clamp(1.5rem, 6vw, 1.9rem);
+    margin-bottom: 12px;
+  }
+  .section-desc {
+    font-size: 0.88rem;
+    margin-bottom: 36px;
+    padding: 0 6px;
+  }
+
+  /* --- 卡片内边距缩小 --- */
+  .card {
+    padding: 24px 20px;
+    border-radius: 16px;
+  }
+  .card-icon {
+    font-size: 1.8rem;
+    margin-bottom: 12px;
+  }
+  .card h3 {
+    font-size: 1.05rem;
+    margin-bottom: 8px;
+  }
+  .card p {
+    font-size: 0.86rem;
+    line-height: 1.65;
   }
 }
