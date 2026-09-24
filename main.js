@@ -953,26 +953,20 @@ const onPointerMove = (e) => {
 
   const orbW = orb.offsetWidth, orbH = orb.offsetHeight;
   const rect = orb.getBoundingClientRect();
-  // 当前基准 left/top（不含 transform 偏移）
   const baseLeft = rect.left - (orb._tx || 0);
   const baseTop = rect.top - (orb._ty || 0);
 
   let tx = dx, ty = dy;
-  // 限制在屏幕内
   const maxX = window.innerWidth - orbW - 8;
   const maxY = window.innerHeight - orbH - 8;
   tx = Math.max(8 - baseLeft, Math.min(maxX - baseLeft, tx));
   ty = Math.max(8 - baseTop, Math.min(maxY - baseTop, ty));
 
-  // 用 transform 移动（GPU 加速，不触发重排）
   orb.style.transform = `translate(${tx}px, ${ty}px)`;
   orb._tx = tx; orb._ty = ty;
 
   if (panel.classList.contains('open')) positionPanel();
 };
-    // 同步面板位置
-    if (panel.classList.contains('open')) positionPanel();
-  };
 
   const positionPanel = () => {
     const orbRect = orb.getBoundingClientRect();
@@ -998,7 +992,6 @@ const onPointerMove = (e) => {
   document.removeEventListener('pointerup', onPointerUp);
   document.removeEventListener('pointercancel', onPointerUp);
 
-  // 把 transform 的偏移合并回 left/top，并清空 transform
   const rect = orb.getBoundingClientRect();
   orb.style.left = rect.left + 'px';
   orb.style.top = rect.top + 'px';
