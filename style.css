@@ -412,3 +412,10 @@ kbd{padding:3px 7px;border:1px solid rgba(255,255,255,.18);border-bottom-width:2
 .debug-output code{max-width:70%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--primary);font-size:.72rem;text-align:right}
 @media (max-width:900px){.dev-center-grid{grid-template-columns:1fr}.dev-panel-wide{grid-column:auto}.debug-output{grid-template-columns:1fr}.dev-center-card{max-height:82vh}}
 @media (max-width:600px){.version-link{font-size:.72rem}.changelog-item{grid-template-columns:1fr;gap:2px}.dev-center-card{padding:20px 16px}.debug-toolbar .btn{width:100%}}
+
+/* 修复手机端活动时间轴定位 */
+@media (max-width: 768px) {
+  .activity-item {
+    position: relative;
+  }
+}
