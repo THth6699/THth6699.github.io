@@ -380,7 +380,9 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .developer-role h3{margin:4px 0 5px;font-size:1rem;color:var(--text-main);}
 .developer-role p{margin:0;color:var(--text-dim);font-size:.78rem;line-height:1.55;}
 .developer-note{margin:22px 0 0;text-align:center;color:var(--text-dim);font-size:.78rem;}
-@media (max-width:900px){.developer-grid{grid-template-columns:1fr;}.developer-btn{display:none;}}
+@media (max-width:900px){.developer-grid{grid-template-columns:1fr;}.developer-btn{ padding: 8px 10px; font-size: 0; }
+  .developer-btn::before{ content: '🛠️'; font-size: 1rem; }
+}
 @media (min-width:901px) and (max-width:1100px){.developer-btn{font-size:.78rem;padding:8px 10px;}}
 
 /* ===== 隐藏式网站开发者中心 v0.3.0 ===== */
