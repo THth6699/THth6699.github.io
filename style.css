@@ -533,3 +533,71 @@ kbd{padding:3px 7px;border:1px solid rgba(255,255,255,.18);border-bottom-width:2
   }
   .ms-cover { max-width: 150px; font-size: 2.2rem; }
                   }
+
+/* ===================================================================
+   🔍 页面缩放控件
+   =================================================================== */
+.zoom-controls {
+  position: fixed;
+  left: 20px;
+  bottom: 20px;
+  z-index: 109;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 4px;
+  background: var(--modal-bg);
+  border: 1px solid rgba(var(--primary-rgb), 0.35);
+  border-radius: 999px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+  user-select: none;
+}
+
+.zoom-controls button {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-main);
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.zoom-controls button:hover {
+  background: rgba(var(--primary-rgb), 0.22);
+  color: var(--primary-light);
+}
+.zoom-controls button:active {
+  transform: scale(0.92);
+}
+.zoom-controls button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.zoom-value {
+  min-width: 44px;
+  padding: 0 6px;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 768px) {
+  .zoom-controls {
+    left: 16px;
+    bottom: 16px;
+  }
+  .zoom-controls button {
+    width: 32px;
+    height: 32px;
+    font-size: 1rem;
+  }
+}
