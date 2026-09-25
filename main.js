@@ -947,7 +947,7 @@ const onPointerMove = (event) => {
   const dx = event.clientX - startX;
   const dy = event.clientY - startY;
 
-  if (Math.abs(dx) > 5 || Math.abs(dy) > 5) {
+  if (Math.abs(dx) > 12 || Math.abs(dy) > 12) {
     hasMoved = true;
   }
 
@@ -1021,7 +1021,7 @@ const onPointerUp = (event) => {
         positionPanel();
         panel.classList.add('open');
       }
-    }, 250);
+    }, 200);
   }
 };
 
