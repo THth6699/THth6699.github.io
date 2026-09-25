@@ -703,3 +703,50 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
       console.warn('无法加载 playlist.json，使用默认列表：', err);
     });
 })();
+
+// ===== 21. 🔍 页面缩放控件 =====
+(() => {
+  const controls = document.getElementById('zoomControls');
+  const zoomOut = document.getElementById('zoomOut');
+  const zoomIn = document.getElementById('zoomIn');
+  const zoomValue = document.getElementById('zoomValue');
+  if (!controls || !zoomOut || !zoomIn || !zoomValue) return;
+
+  const STORAGE_KEY = 'acg_lab_zoom';
+  const MIN = 80;
+  const MAX = 120;
+  const STEP = 10;
+
+  const clamp = (v) => Math.max(MIN, Math.min(MAX, v));
+
+  const read = () => {
+    try {
+      const saved = Number(localStorage.getItem(STORAGE_KEY));
+      return Number.isFinite(saved) ? clamp(saved) : 100;
+    } catch (_) {
+      return 100;
+    }
+  };
+
+  const apply = (value) => {
+    const zoom = clamp(value);
+    // 用 zoom 属性缩放宽高，会同步影响布局
+    document.documentElement.style.zoom = `${zoom}%`;
+    zoomValue.textContent = `${zoom}%`;
+    zoomOut.disabled = zoom <= MIN;
+    zoomIn.disabled = zoom >= MAX;
+    try { localStorage.setItem(STORAGE_KEY, String(zoom)); } catch (_) {}
+  };
+
+  let current = read();
+  apply(current);
+
+  zoomOut.addEventListener('click', () => {
+    current = clamp(current - STEP);
+    apply(current);
+  });
+  zoomIn.addEventListener('click', () => {
+    current = clamp(current + STEP);
+    apply(current);
+  });
+})();
