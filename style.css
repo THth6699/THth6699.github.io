@@ -961,15 +961,11 @@ body:not(.orb-dragging) .bg-image {
 @media (max-width: 768px) {
   /* 1. 彻底关闭悬浮球的所有动画 */
   .music-orb {
-    animation: none !important;
-    /* 2. 用最简单的静态阴影代替动态阴影，减轻GPU负担 */
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
-    /* 3. 移除可能会引发图层冲突的 will-change 和 3D 加速 */
-    will-change: auto !important;
-    transform: none !important;
-    -webkit-transform: none !important;
-    backface-visibility: visible !important;
-    -webkit-backface-visibility: visible !important;
+  animation: none !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+  will-change: transform;
+  backface-visibility: visible !important;
+  -webkit-backface-visibility: visible !important;
   }
 
   /* 4. 隐藏光波效果，光波扩散在手机上极易闪烁 */
