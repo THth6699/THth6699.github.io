@@ -10,7 +10,12 @@
 .nav.scrolled,.nav-links,.modal-overlay,.lightbox-overlay,.music-panel{backdrop-filter:none;-webkit-backdrop-filter:none}
 
 /* Stable compositing for the player without animating its text contents. */
-.music-orb{will-change:left,top;contain:layout paint style;animation:none!important;box-shadow:0 4px 14px rgba(0,0,0,.42)!important}
+.music-orb {
+  will-change: transform, left, top;
+  contain: layout paint;
+  animation: none !important;
+  box-shadow: 0 4px 14px rgba(0,0,0,.42) !important;
+}
 .music-orb.playing{animation:none!important}
 .music-orb.playing .music-orb-icon{animation:none!important}
 .music-orb-ring{display:none!important}
