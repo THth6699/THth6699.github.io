@@ -18,10 +18,16 @@
 
   // Limit the existing canvas workload when the page is busy or hidden.
   const canvas = document.getElementById('particles');
-  if (canvas) {
-    canvas.style.pointerEvents = 'none';
-    if (mobile || reduceMotion) canvas.style.display = 'none';
+
+if (canvas) {
+  canvas.style.pointerEvents = 'none';
+
+  if (reduceMotion) {
+    canvas.style.opacity = '0.2';
+  } else if (mobile) {
+    canvas.style.opacity = '0.55';
   }
+}
 
   // Prevent accidental duplicate service-worker registrations from causing extra work.
   const registrations = navigator.serviceWorker?.getRegistrations;
