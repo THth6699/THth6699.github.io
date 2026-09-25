@@ -1,0 +1,31 @@
+/* Performance overrides for the existing site. Load after style.css. */
+
+/* Avoid expensive full-property animations and continuous gradient text repainting. */
+.card,.activity-body,.btn,.theme-toggle,.theme-option,.music-ctrl-btn{transition-property:transform,opacity,background-color,border-color,box-shadow,color}
+.grad{animation:none;background-size:100% 100%}
+
+/* Keep large blur layers from forcing repeated GPU composition. */
+.bg-image{filter:none;opacity:.1}
+.glow{filter:blur(72px);animation:none;opacity:.18}
+.nav.scrolled,.nav-links,.modal-overlay,.lightbox-overlay,.music-panel{backdrop-filter:none;-webkit-backdrop-filter:none}
+
+/* Stable compositing for the player without animating its text contents. */
+.music-orb{will-change:left,top;contain:layout paint style;animation:none!important;box-shadow:0 4px 14px rgba(0,0,0,.42)!important}
+.music-orb.playing{animation:none!important}
+.music-orb.playing .music-orb-icon{animation:none!important}
+.music-orb-ring{display:none!important}
+.music-panel{background:var(--modal-bg);contain:layout paint style;transform:translateY(16px);transition:opacity .2s ease,transform .2s ease;box-shadow:0 12px 40px rgba(0,0,0,.55)}
+.music-panel.open{transform:translateY(0)}
+.music-cover-emoji{animation:none;filter:none}
+
+@media (max-width:768px){
+  .bg-image{opacity:.06}
+  .glow{display:none}
+  #particles{opacity:.35}
+  .music-panel{background:var(--modal-bg)!important;box-shadow:0 10px 32px rgba(0,0,0,.65)!important}
+}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  .reveal{opacity:1!important;transform:none!important}
+}
