@@ -891,11 +891,29 @@ const getSavedPosition = () => {
 
 const savedPosition = getSavedPosition();
 
-if (savedPosition) {
+// 安全校验：如果保存的位置在顶部导航栏区域（y < 90）或左侧过远，就重置到默认位置
+const DEFAULT_POS = { x: window.innerWidth - 80, y: window.innerHeight - 180 };
+const isPositionUnsafe = (pos) => {
+  if (!pos) return true;
+  if (pos.y < 90) return true;                  // 顶部导航栏区域
+  if (pos.x < 8) return true;                   // 左边贴边
+  if (pos.x > window.innerWidth - 60) return true; // 右边超出
+  if (pos.y > window.innerHeight - 60) return true; // 底部超出
+  return false;
+};
+
+if (savedPosition && !isPositionUnsafe(savedPosition)) {
   orb.style.left = `${savedPosition.x}px`;
   orb.style.top = `${savedPosition.y}px`;
   orb.style.right = 'auto';
   orb.style.bottom = 'auto';
+} else {
+  // 清掉坏位置，回到默认
+  try { localStorage.removeItem(STORAGE_KEY); } catch (_) {}
+  orb.style.right = '20px';
+  orb.style.bottom = '90px';
+  orb.style.left = 'auto';
+  orb.style.top = 'auto';
 }
 
 const clampPosition = (x, y) => {
