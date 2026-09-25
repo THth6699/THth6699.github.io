@@ -12,7 +12,6 @@
 /* Stable compositing for the player without animating its text contents. */
 .music-orb {
   will-change: transform, left, top;
-  contain: layout paint;
   animation: none !important;
   box-shadow: 0 4px 14px rgba(0,0,0,.42) !important;
 }
