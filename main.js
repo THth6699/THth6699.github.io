@@ -900,6 +900,10 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
     orb.style.transform = 'translate(0, 0)';
     orb._tx = 0; orb._ty = 0;
 
+    if (orb.setPointerCapture && e.pointerId !== undefined) {
+  orb.setPointerCapture(e.pointerId);
+    }
+    
     document.addEventListener('pointermove', onPointerMove);
     document.addEventListener('pointerup', onPointerUp);
     document.addEventListener('pointercancel', onPointerUp);
