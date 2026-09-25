@@ -1,65 +1,10 @@
 // ===== 0. ⭐ 一键换肤（主题切换） =====
 const themes = {
-  eva: {
-    name: 'EVA 红黑',
-    vars: {
-      '--primary': '#ff0033', '--primary-rgb': '255, 0, 51',
-      '--secondary': '#7a0019', '--secondary-rgb': '122, 0, 25',
-      '--accent': '#00e5ff', '--accent-rgb': '0, 229, 255',
-      '--bg-color': '#0b0b14', '--bg-rgb': '11, 11, 20',
-      '--modal-bg': '#151522',
-      '--text-main': '#eaeaf2', '--text-muted': '#a8a8be', '--text-dim': '#8888a0',
-      '--primary-light': '#ff8080'
-    }
-  },
-  miku: {
-    name: '初音未来',
-    vars: {
-      '--primary': '#39c5bb', '--primary-rgb': '57, 197, 187',
-      '--secondary': '#007070', '--secondary-rgb': '0, 112, 112',
-      '--accent': '#00ffcc', '--accent-rgb': '0, 255, 204',
-      '--bg-color': '#071113', '--bg-rgb': '7, 17, 19',
-      '--modal-bg': '#0e1f22',
-      '--text-main': '#e6f5f4', '--text-muted': '#a0c4c2', '--text-dim': '#6a8a88',
-      '--primary-light': '#7dd9d3'
-    }
-  },
-  genshin: {
-    name: '原神星空',
-    vars: {
-      '--primary': '#ffcc00', '--primary-rgb': '255, 204, 0',
-      '--secondary': '#4a3b6b', '--secondary-rgb': '74, 59, 107',
-      '--accent': '#ffffff', '--accent-rgb': '255, 255, 255',
-      '--bg-color': '#121020', '--bg-rgb': '18, 16, 32',
-      '--modal-bg': '#1d1a2e',
-      '--text-main': '#f5f0e8', '--text-muted': '#c4b8d6', '--text-dim': '#8a7fa0',
-      '--primary-light': '#ffdd55'
-    }
-  },
-  sakura: {
-    name: '樱花治愈',
-    vars: {
-      '--primary': '#ff9db5', '--primary-rgb': '255, 157, 181',
-      '--secondary': '#fbc2eb', '--secondary-rgb': '251, 194, 235',
-      '--accent': '#a6c1ee', '--accent-rgb': '166, 193, 238',
-      '--bg-color': '#1f1822', '--bg-rgb': '31, 24, 34',
-      '--modal-bg': '#2c2431',
-      '--text-main': '#fdf5fa', '--text-muted': '#d4c4d0', '--text-dim': '#9a8a98',
-      '--primary-light': '#ffc0d0'
-    }
-  },
-  cyber: {
-    name: '赛博朋克',
-    vars: {
-      '--primary': '#fcee0a', '--primary-rgb': '252, 238, 10',
-      '--secondary': '#ff003c', '--secondary-rgb': '255, 0, 60',
-      '--accent': '#00f0ff', '--accent-rgb': '0, 240, 255',
-      '--bg-color': '#0a0a0a', '--bg-rgb': '10, 10, 10',
-      '--modal-bg': '#161616',
-      '--text-main': '#f5f5f5', '--text-muted': '#b0b0b0', '--text-dim': '#707070',
-      '--primary-light': '#fff68f'
-    }
-  }
+  eva: { name: 'EVA 红黑', vars: { '--primary': '#ff0033', '--primary-rgb': '255, 0, 51', '--secondary': '#7a0019', '--secondary-rgb': '122, 0, 25', '--accent': '#00e5ff', '--accent-rgb': '0, 229, 255', '--bg-color': '#0b0b14', '--bg-rgb': '11, 11, 20', '--modal-bg': '#151522', '--text-main': '#eaeaf2', '--text-muted': '#a8a8be', '--text-dim': '#8888a0', '--primary-light': '#ff8080' } },
+  miku: { name: '初音未来', vars: { '--primary': '#39c5bb', '--primary-rgb': '57, 197, 187', '--secondary': '#007070', '--secondary-rgb': '0, 112, 112', '--accent': '#00ffcc', '--accent-rgb': '0, 255, 204', '--bg-color': '#071113', '--bg-rgb': '7, 17, 19', '--modal-bg': '#0e1f22', '--text-main': '#e6f5f4', '--text-muted': '#a0c4c2', '--text-dim': '#6a8a88', '--primary-light': '#7dd9d3' } },
+  genshin: { name: '原神星空', vars: { '--primary': '#ffcc00', '--primary-rgb': '255, 204, 0', '--secondary': '#4a3b6b', '--secondary-rgb': '74, 59, 107', '--accent': '#ffffff', '--accent-rgb': '255, 255, 255', '--bg-color': '#121020', '--bg-rgb': '18, 16, 32', '--modal-bg': '#1d1a2e', '--text-main': '#f5f0e8', '--text-muted': '#c4b8d6', '--text-dim': '#8a7fa0', '--primary-light': '#ffdd55' } },
+  sakura: { name: '樱花治愈', vars: { '--primary': '#ff9db5', '--primary-rgb': '255, 157, 181', '--secondary': '#fbc2eb', '--secondary-rgb': '251, 194, 235', '--accent': '#a6c1ee', '--accent-rgb': '166, 193, 238', '--bg-color': '#1f1822', '--bg-rgb': '31, 24, 34', '--modal-bg': '#2c2431', '--text-main': '#fdf5fa', '--text-muted': '#d4c4d0', '--text-dim': '#9a8a98', '--primary-light': '#ffc0d0' } },
+  cyber: { name: '赛博朋克', vars: { '--primary': '#fcee0a', '--primary-rgb': '252, 238, 10', '--secondary': '#ff003c', '--secondary-rgb': '255, 0, 60', '--accent': '#00f0ff', '--accent-rgb': '0, 240, 255', '--bg-color': '#0a0a0a', '--bg-rgb': '10, 10, 10', '--modal-bg': '#161616', '--text-main': '#f5f5f5', '--text-muted': '#b0b0b0', '--text-dim': '#707070', '--primary-light': '#fff68f' } }
 };
 
 function applyTheme(themeKey) {
@@ -359,75 +304,12 @@ const deptModalContent = document.getElementById('deptModalContent');
 const deptJoinBtn = document.getElementById('deptJoinBtn');
 
 const deptData = {
-  '产粮部': {
-    icon: '🎨',
-    content: `
-      <p><strong>定位：</strong>社团的产粮主力，用画笔创造世界。</p>
-      <p style="margin-top:12px;"><strong>我们平时做什么：</strong></p>
-      <ul>
-        <li>线下摸鱼绘茶会，带上平板或画本互相催更。</li>
-        <li>社团海报、周边、网站配图的创作。</li>
-        <li>互相交流板绘、手绘、同人创作技巧。</li>
-      </ul>
-      <p style="margin-top:12px;"><strong>招募要求：</strong>不论你是大触还是零基础萌新，只要热爱画画，我们都欢迎！</p>
-    `
-  },
-  '观影吐槽部': {
-    icon: '📺',
-    content: `
-      <p><strong>定位：</strong>追番先锋队，负责看番和疯狂吐槽。</p>
-      <p style="margin-top:12px;"><strong>我们平时做什么：</strong></p>
-      <ul>
-        <li>每季新番同步追，在群里实况弹幕式吐槽。</li>
-        <li>组织线上放映会，提供笑点支持。</li>
-        <li>老番补习班、神作安利、烂片排雷。</li>
-      </ul>
-      <p style="margin-top:12px;"><strong>招募要求：</strong>喜欢看番，自带吐槽技能，能接受"禁止打架但可以激情互喷"的观影氛围。</p>
-    `
-  },
-  'Cos变装部': {
-    icon: '👗',
-    content: `
-      <p><strong>定位：</strong>社团的颜值担当和出片主力。</p>
-      <p style="margin-top:12px;"><strong>我们平时做什么：</strong></p>
-      <ul>
-        <li>漫展组团远征，包车、帮妆、看行李一条龙服务。</li>
-        <li>校园外景团建，互相当摄影师，出片率极高。</li>
-        <li>试妆交流，男扮女装不是梦，女扮男装帅断腿。</li>
-      </ul>
-      <p style="margin-top:12px;"><strong>招募要求：</strong>男女不限，社恐可治，零基础也OK，关键要敢于表现自己！</p>
-    `
-  },
-  '技术支援部': {
-    icon: '💻',
-    content: `
-      <p><strong>定位：</strong>社团的极客大脑，用代码给社团开挂。</p>
-      <p style="margin-top:12px;"><strong>我们平时做什么：</strong></p>
-      <ul>
-        <li>维护社团官网（这个网站就是我们的作品）。</li>
-        <li>写网页、做工具、搞自动化脚本。</li>
-        <li>探索 Git、GitHub Pages 等前沿技术。</li>
-      </ul>
-      <p style="margin-top:12px;"><strong>招募要求：</strong>对编程、网页设计、网站维护有兴趣，愿意学习新技术的同学。</p>
-    `
-  },
-  '什么都不干部': {
-    icon: '🛋️',
-    content: `
-      <p><strong>定位：</strong>社团的灵魂部门！负责围观、吃瓜、当气氛组。</p>
-      <p style="margin-top:12px;"><strong>我们平时做什么：</strong></p>
-      <ul>
-        <li>在群里发表情包、点赞、喊"666"。</li>
-        <li>成为各项活动的"啦啦队"和"第一观众"。</li>
-        <li>享受纯粹的二次元聊天氛围，不承担任何硬性任务。</li>
-      </ul>
-      <p style="margin-top:12px;"><strong>招募要求：</strong>只要你热爱二次元，不想内卷，这里就是你的快乐老家！</p>
-    `
-  },
-  '加入方式': {
-    icon: '✨',
-    content: `<p>在QQ群发言，或直接联系群主/各部部长。不限专业、不限年级，只要你热爱二次元！</p>`
-  }
+  '产粮部': { icon: '🎨', content: `<p><strong>定位：</strong>社团的产粮主力，用画笔创造世界。</p><p style="margin-top:12px;"><strong>我们平时做什么：</strong></p><ul><li>线下摸鱼绘茶会，带上平板或画本互相催更。</li><li>社团海报、周边、网站配图的创作。</li><li>互相交流板绘、手绘、同人创作技巧。</li></ul><p style="margin-top:12px;"><strong>招募要求：</strong>不论你是大触还是零基础萌新，只要热爱画画，我们都欢迎！</p>` },
+  '观影吐槽部': { icon: '📺', content: `<p><strong>定位：</strong>追番先锋队，负责看番和疯狂吐槽。</p><p style="margin-top:12px;"><strong>我们平时做什么：</strong></p><ul><li>每季新番同步追，在群里实况弹幕式吐槽。</li><li>组织线上放映会，提供笑点支持。</li><li>老番补习班、神作安利、烂片排雷。</li></ul><p style="margin-top:12px;"><strong>招募要求：</strong>喜欢看番，自带吐槽技能，能接受"禁止打架但可以激情互喷"的观影氛围。</p>` },
+  'Cos变装部': { icon: '👗', content: `<p><strong>定位：</strong>社团的颜值担当和出片主力。</p><p style="margin-top:12px;"><strong>我们平时做什么：</strong></p><ul><li>漫展组团远征，包车、帮妆、看行李一条龙服务。</li><li>校园外景团建，互相当摄影师，出片率极高。</li><li>试妆交流，男扮女装不是梦，女扮男装帅断腿。</li></ul><p style="margin-top:12px;"><strong>招募要求：</strong>男女不限，社恐可治，零基础也OK，关键要敢于表现自己！</p>` },
+  '技术支援部': { icon: '💻', content: `<p><strong>定位：</strong>社团的极客大脑，用代码给社团开挂。</p><p style="margin-top:12px;"><strong>我们平时做什么：</strong></p><ul><li>维护社团官网（这个网站就是我们的作品）。</li><li>写网页、做工具、搞自动化脚本。</li><li>探索 Git、GitHub Pages 等前沿技术。</li></ul><p style="margin-top:12px;"><strong>招募要求：</strong>对编程、网页设计、网站维护有兴趣，愿意学习新技术的同学。</p>` },
+  '什么都不干部': { icon: '🛋️', content: `<p><strong>定位：</strong>社团的灵魂部门！负责围观、吃瓜、当气氛组。</p><p style="margin-top:12px;"><strong>我们平时做什么：</strong></p><ul><li>在群里发表情包、点赞、喊"666"。</li><li>成为各项活动的"啦啦队"和"第一观众"。</li><li>享受纯粹的二次元聊天氛围，不承担任何硬性任务。</li></ul><p style="margin-top:12px;"><strong>招募要求：</strong>只要你热爱二次元，不想内卷，这里就是你的快乐老家！</p>` },
+  '加入方式': { icon: '✨', content: `<p>在QQ群发言，或直接联系群主/各部部长。不限专业、不限年级，只要你热爱二次元！</p>` }
 };
 
 const deptCards = document.querySelectorAll('.dept-card');
@@ -459,7 +341,7 @@ if (deptCards.length > 0 && deptModal) {
   }
 }
 
-// ===== 11. 活动中心：GitHub Pages 静态数据驱动 =====
+// ===== 11. 活动中心 =====
 const activities = [];
 const activityList = document.getElementById('activity-list');
 if (activityList) {
@@ -494,7 +376,7 @@ document.querySelectorAll('[data-gallery-filter]').forEach(btn => btn.addEventLi
   if (galleryEmpty) galleryEmpty.hidden = visible !== 0;
 }));
 
-// ===== 13. 今日打卡：本地存储 + 连续天数 =====
+// ===== 13. 今日打卡 =====
 const checkinBtn = document.getElementById('checkinBtn');
 const checkinText = document.getElementById('checkinText');
 if (checkinBtn && checkinText) {
@@ -580,18 +462,13 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
     document.body.style.overflow = '';
   };
 
-  contributorBtn?.addEventListener('click', open);
-  contributorClose?.addEventListener('click', close);
-  contributorModal?.addEventListener('click', e => {
-    if (e.target === contributorModal) close();
-  });
-
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') close();
-  });
+  if (contributorBtn) contributorBtn.addEventListener('click', open);
+  if (contributorClose) contributorClose.addEventListener('click', close);
+  if (contributorModal) contributorModal.addEventListener('click', e => { if (e.target === contributorModal) close(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
 })();
 
-// ===== 19. 网站开发者中心 v0.3.0 =====
+// ===== 19. 网站开发者中心 =====
 (() => {
   const modal = document.getElementById('devCenterModal');
   const openBtn = document.getElementById('devCenterFooterBtn');
@@ -617,7 +494,7 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
     const themeNames = { eva: 'EVA 红黑', miku: '初音未来', genshin: '原神星空', sakura: '樱花治愈', cyber: '赛博朋克' };
     const sw = 'serviceWorker' in navigator;
 
-    setText('devPwaStatus', window.matchMedia?.('(display-mode: standalone)').matches ? '已安装' : '浏览器模式');
+    setText('devPwaStatus', (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) ? '已安装' : '浏览器模式');
     setText('devSwStatus', sw ? '支持' : '不支持');
     setText('devThemeStatus', themeNames[themeKey] || themeKey);
     setText('devBrowserStatus', browserName());
@@ -654,22 +531,24 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
     document.body.style.overflow = '';
   };
 
-  openBtn?.addEventListener('click', open);
-  closeBtn?.addEventListener('click', close);
-  modal?.addEventListener('click', e => { if (e.target === modal) close(); });
+  if (openBtn) openBtn.addEventListener('click', open);
+  if (closeBtn) closeBtn.addEventListener('click', close);
+  if (modal) modal.addEventListener('click', e => { if (e.target === modal) close(); });
 
   const devModeToggle = document.getElementById('devModeToggle');
   const devRefreshStatus = document.getElementById('devRefreshStatus');
   const devDebugOutput = document.getElementById('devDebugOutput');
 
-  devModeToggle?.addEventListener('click', () => {
-    if (!devDebugOutput) return;
-    const willShow = devDebugOutput.hidden;
-    devDebugOutput.hidden = !willShow;
-    devModeToggle.textContent = willShow ? '关闭开发者模式' : '开启开发者模式';
-    updateDebugInfo();
-  });
-  devRefreshStatus?.addEventListener('click', updateDebugInfo);
+  if (devModeToggle) {
+    devModeToggle.addEventListener('click', () => {
+      if (!devDebugOutput) return;
+      const willShow = devDebugOutput.hidden;
+      devDebugOutput.hidden = !willShow;
+      devModeToggle.textContent = willShow ? '关闭开发者模式' : '开启开发者模式';
+      updateDebugInfo();
+    });
+  }
+  if (devRefreshStatus) devRefreshStatus.addEventListener('click', updateDebugInfo);
 
   document.addEventListener('keydown', e => {
     if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'd') {
@@ -684,401 +563,140 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
   window.addEventListener('offline', updateDebugInfo);
 })();
 
-// ===== 20. 🎵 多功能音乐播放悬浮窗 v2.0 =====
+// ===== 20. 🎵 音乐侧边栏（简洁稳定版） =====
 (() => {
-  const orb = document.getElementById('musicOrb');
-  const panel = document.getElementById('musicPanel');
-  const panelClose = document.getElementById('musicPanelClose');
-  const orbIcon = document.getElementById('musicOrbIcon');
-  const audio = document.getElementById('bgmAudio');
-  if (!orb || !panel || !audio) return;
+  const side = document.getElementById('musicSide');
+  const tab = document.getElementById('msTab');
+  const tabIcon = document.getElementById('msTabIcon');
+  const drawer = document.getElementById('msDrawer');
+  const closeBtn = document.getElementById('msClose');
+  const audio = document.getElementById('msAudio');
+  if (!side || !tab || !drawer || !audio) return;
 
-  // ========== 音乐库配置 ==========
+  const el = {
+    cover: document.getElementById('msCover'),
+    name: document.getElementById('msName'),
+    artist: document.getElementById('msArtist'),
+    now: document.getElementById('msNow'),
+    total: document.getElementById('msTotal'),
+    seek: document.getElementById('msSeek'),
+    play: document.getElementById('msPlay'),
+    prev: document.getElementById('msPrev'),
+    next: document.getElementById('msNext')
+  };
+
+  // 备用列表（如果 playlist.json 加载失败，就用这一首）
   const fallbackPlaylist = [
     { src: 'assets/music/bgm.mp3', title: '次元基地', artist: 'BGM 01', emoji: '🎧' }
   ];
 
   let playlist = [...fallbackPlaylist];
-  let currentIndex = 0;
-  let playMode = localStorage.getItem('acg_lab_music_mode') || 'loop';
-  const modeIcons = { loop: '🔁', single: '🔂', shuffle: '🔀' };
-  const modeTitles = { loop: '列表循环', single: '单曲循环', shuffle: '随机播放' };
+  let index = 0;
 
-  const el = {
-    coverEmoji: document.getElementById('musicCoverEmoji'),
-    title: document.getElementById('musicTitle'),
-    artist: document.getElementById('musicArtist'),
-    progress: document.getElementById('musicProgress'),
-    currentTime: document.getElementById('musicCurrentTime'),
-    duration: document.getElementById('musicDuration'),
-    play: document.getElementById('musicPlay'),
-    prev: document.getElementById('musicPrev'),
-    next: document.getElementById('musicNext'),
-    mode: document.getElementById('musicMode'),
-    volume: document.getElementById('musicVolume'),
-    volumeIcon: document.getElementById('musicVolumeIcon'),
-    listBtn: document.getElementById('musicListBtn'),
-    playlist: document.getElementById('musicPlaylist'),
-    playlistUl: document.getElementById('musicPlaylistUl')
-  };
-
-  const fmtTime = (s) => {
+  const fmt = (s) => {
     if (!isFinite(s) || isNaN(s)) return '0:00';
     const m = Math.floor(s / 60);
     const sec = Math.floor(s % 60).toString().padStart(2, '0');
     return `${m}:${sec}`;
   };
 
-  const renderPlaylist = () => {
-    if (!el.playlistUl) return;
-    el.playlistUl.innerHTML = playlist.map((track, i) => `
-      <li data-index="${i}" class="${i === currentIndex ? 'active' : ''}">
-        <span class="track-name">${track.emoji} ${track.title}</span>
-      </li>
-    `).join('');
-    el.playlistUl.querySelectorAll('li').forEach(li => {
-      li.addEventListener('click', () => {
-        const idx = +li.dataset.index;
-        if (idx === currentIndex) { togglePlay(); }
-        else { loadTrack(idx); playTrack(); }
-      });
-    });
+  const load = (i) => {
+    index = (i + playlist.length) % playlist.length;
+    const t = playlist[index];
+    audio.src = t.src;
+    el.name.textContent = t.title;
+    el.artist.textContent = t.artist;
+    el.cover.textContent = t.emoji;
+    el.seek.value = 0;
+    el.now.textContent = '0:00';
+    el.total.textContent = '0:00';
   };
 
-  const loadTrack = (index) => {
-    currentIndex = (index + playlist.length) % playlist.length;
-    const track = playlist[currentIndex];
-    audio.src = track.src;
-    el.title.textContent = track.title;
-    el.artist.textContent = track.artist;
-    el.coverEmoji.textContent = track.emoji;
-    el.progress.value = 0;
-    el.currentTime.textContent = '0:00';
-    el.duration.textContent = '0:00';
-    renderPlaylist();
-  };
-
-  const playTrack = () => {
+  const play = () => {
     audio.play().then(() => {
-      orb.classList.add('playing');
+      side.classList.add('playing');
       el.play.textContent = '⏸';
-      orbIcon.textContent = '🎶';
-    }).catch(err => {
-      console.warn('播放失败：', err);
-      el.title.textContent = '播放失败，请检查音频文件';
+      tabIcon.textContent = '🎶';
+    }).catch(() => {
+      el.name.textContent = '播放失败，请检查音频文件';
     });
   };
-  const pauseTrack = () => {
+
+  const pause = () => {
     audio.pause();
-    orb.classList.remove('playing');
+    side.classList.remove('playing');
     el.play.textContent = '▶';
-    orbIcon.textContent = '🎵';
-  };
-  const togglePlay = () => audio.paused ? playTrack() : pauseTrack();
-
-  const prevTrack = () => {
-    if (playMode === 'shuffle') loadTrack(Math.floor(Math.random() * playlist.length));
-    else loadTrack(currentIndex - 1);
-    playTrack();
-  };
-  const nextTrack = () => {
-    if (playMode === 'shuffle') loadTrack(Math.floor(Math.random() * playlist.length));
-    else loadTrack(currentIndex + 1);
-    playTrack();
+    tabIcon.textContent = '🎵';
   };
 
-  audio.addEventListener('loadedmetadata', () => {
-    el.duration.textContent = fmtTime(audio.duration);
+  const toggle = () => audio.paused ? play() : pause();
+
+  const openDrawer = () => {
+    side.classList.add('open');
+    tab.setAttribute('aria-expanded', 'true');
+  };
+  const closeDrawer = () => {
+    side.classList.remove('open');
+    tab.setAttribute('aria-expanded', 'false');
+  };
+  const toggleDrawer = () => {
+    if (side.classList.contains('open')) closeDrawer();
+    else openDrawer();
+  };
+
+  tab.addEventListener('click', (e) => {
+    e.stopPropagation();
+    toggleDrawer();
   });
+  closeBtn.addEventListener('click', closeDrawer);
+
+  document.addEventListener('click', (e) => {
+    if (!side.contains(e.target) && side.classList.contains('open')) {
+      closeDrawer();
+    }
+  });
+
   audio.addEventListener('timeupdate', () => {
     if (audio.duration) {
-      el.progress.value = (audio.currentTime / audio.duration) * 100;
-      el.currentTime.textContent = fmtTime(audio.currentTime);
+      el.seek.value = (audio.currentTime / audio.duration) * 100;
+      el.now.textContent = fmt(audio.currentTime);
     }
+  });
+  audio.addEventListener('loadedmetadata', () => {
+    el.total.textContent = fmt(audio.duration);
   });
   audio.addEventListener('ended', () => {
-    if (playMode === 'single') { audio.currentTime = 0; playTrack(); }
-    else nextTrack();
+    load(index + 1);
+    play();
   });
   audio.addEventListener('play', () => {
-    orb.classList.add('playing');
+    side.classList.add('playing');
     el.play.textContent = '⏸';
-    orbIcon.textContent = '🎶';
+    tabIcon.textContent = '🎶';
   });
   audio.addEventListener('pause', () => {
-    orb.classList.remove('playing');
+    side.classList.remove('playing');
     el.play.textContent = '▶';
-    orbIcon.textContent = '🎵';
+    tabIcon.textContent = '🎵';
   });
 
-  el.progress.addEventListener('input', () => {
-    if (audio.duration) {
-      audio.currentTime = (el.progress.value / 100) * audio.duration;
-    }
+  el.play.addEventListener('click', toggle);
+  el.prev.addEventListener('click', () => { load(index - 1); play(); });
+  el.next.addEventListener('click', () => { load(index + 1); play(); });
+  el.seek.addEventListener('input', () => {
+    if (audio.duration) audio.currentTime = (el.seek.value / 100) * audio.duration;
   });
 
-  const savedVolume = parseFloat(localStorage.getItem('acg_lab_volume'));
-  if (!isNaN(savedVolume)) {
-    audio.volume = savedVolume;
-    el.volume.value = savedVolume;
-  } else {
-    audio.volume = 0.7;
-  }
-  el.volume.addEventListener('input', () => {
-    audio.volume = el.volume.value;
-    localStorage.setItem('acg_lab_volume', el.volume.value);
-    updateVolumeIcon();
-  });
-  const updateVolumeIcon = () => {
-    const v = audio.volume;
-    el.volumeIcon.textContent = v === 0 ? '🔇' : v < 0.4 ? '🔉' : '🔊';
-  };
-  updateVolumeIcon();
-  el.volumeIcon.addEventListener('click', () => {
-    audio.muted = !audio.muted;
-    el.volumeIcon.textContent = audio.muted ? '🔇' : (audio.volume < 0.4 ? '🔉' : '🔊');
-  });
+  load(0);
 
-  const updateModeBtn = () => {
-    el.mode.textContent = modeIcons[playMode];
-    el.mode.title = modeTitles[playMode];
-  };
-  updateModeBtn();
-  el.mode.addEventListener('click', () => {
-    const modes = ['loop', 'single', 'shuffle'];
-    playMode = modes[(modes.indexOf(playMode) + 1) % modes.length];
-    localStorage.setItem('acg_lab_music_mode', playMode);
-    updateModeBtn();
-  });
-
-  el.play.addEventListener('click', togglePlay);
-  el.prev.addEventListener('click', prevTrack);
-  el.next.addEventListener('click', nextTrack);
-  el.listBtn.addEventListener('click', () => {
-    el.playlist.classList.toggle('open');
-  });
-  panelClose.addEventListener('click', () => {
-    panel.classList.remove('open');
-  });
-
-
-  // ========== 稳定版拖动悬浮球 ==========
-const STORAGE_KEY = 'acg_lab_orb_pos';
-
-let isDragging = false;
-let hasMoved = false;
-let startX = 0;
-let startY = 0;
-let startLeft = 0;
-let startTop = 0;
-let lastTapTime = 0;
-
-const getSavedPosition = () => {
-  try {
-    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
-
-    if (
-      saved &&
-      Number.isFinite(saved.x) &&
-      Number.isFinite(saved.y)
-    ) {
-      return saved;
-    }
-  } catch (_) {}
-
-  return null;
-};
-
-const savedPosition = getSavedPosition();
-
-// 安全校验：如果保存的位置在顶部导航栏区域（y < 90）或左侧过远，就重置到默认位置
-const DEFAULT_POS = { x: window.innerWidth - 80, y: window.innerHeight - 180 };
-const isPositionUnsafe = (pos) => {
-  if (!pos) return true;
-  if (pos.y < 90) return true;                  // 顶部导航栏区域
-  if (pos.x < 8) return true;                   // 左边贴边
-  if (pos.x > window.innerWidth - 60) return true; // 右边超出
-  if (pos.y > window.innerHeight - 60) return true; // 底部超出
-  return false;
-};
-
-if (savedPosition && !isPositionUnsafe(savedPosition)) {
-  orb.style.left = `${savedPosition.x}px`;
-  orb.style.top = `${savedPosition.y}px`;
-  orb.style.right = 'auto';
-  orb.style.bottom = 'auto';
-} else {
-  // 清掉坏位置，回到默认
-  try { localStorage.removeItem(STORAGE_KEY); } catch (_) {}
-  orb.style.right = '20px';
-  orb.style.bottom = '90px';
-  orb.style.left = 'auto';
-  orb.style.top = 'auto';
-}
-
-const clampPosition = (x, y) => {
-  const width = orb.offsetWidth;
-  const height = orb.offsetHeight;
-  const margin = 8;
-
-  return {
-    x: Math.max(margin, Math.min(window.innerWidth - width - margin, x)),
-    y: Math.max(margin, Math.min(window.innerHeight - height - margin, y))
-  };
-};
-
-const onPointerDown = (event) => {
-  if (event.pointerType === 'mouse' && event.button !== 0) return;
-
-  event.preventDefault();
-
-  const rect = orb.getBoundingClientRect();
-
-  isDragging = true;
-  hasMoved = false;
-  startX = event.clientX;
-  startY = event.clientY;
-  startLeft = rect.left;
-  startTop = rect.top;
-
-  orb.style.left = `${rect.left}px`;
-  orb.style.top = `${rect.top}px`;
-  orb.style.right = 'auto';
-  orb.style.bottom = 'auto';
-  orb.style.transform = 'none';
-
-  orb.classList.add('dragging');
-  document.body.classList.add('orb-dragging');
-
-  if (orb.setPointerCapture && event.pointerId !== undefined) {
-    try {
-      orb.setPointerCapture(event.pointerId);
-    } catch (_) {}
-  }
-};
-
-const onPointerMove = (event) => {
-  if (!isDragging) return;
-
-  event.preventDefault();
-
-  const dx = event.clientX - startX;
-  const dy = event.clientY - startY;
-
-  if (Math.abs(dx) > 12 || Math.abs(dy) > 12) {
-    hasMoved = true;
-  }
-
-  const position = clampPosition(
-    startLeft + dx,
-    startTop + dy
-  );
-
-  orb.style.left = `${position.x}px`;
-  orb.style.top = `${position.y}px`;
-
-  if (panel.classList.contains('open')) {
-    positionPanel();
-  }
-};
-
-const onPointerUp = (event) => {
-  if (!isDragging) return;
-
-  isDragging = false;
-
-  if (
-    orb.releasePointerCapture &&
-    event.pointerId !== undefined &&
-    orb.hasPointerCapture?.(event.pointerId)
-  ) {
-    try {
-      orb.releasePointerCapture(event.pointerId);
-    } catch (_) {}
-  }
-
-  orb.classList.remove('dragging');
-  document.body.classList.remove('orb-dragging');
-
-  const rect = orb.getBoundingClientRect();
-
-  orb.style.left = `${rect.left}px`;
-  orb.style.top = `${rect.top}px`;
-  orb.style.right = 'auto';
-  orb.style.bottom = 'auto';
-  orb.style.transform = 'none';
-
-  try {
-    localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify({
-        x: rect.left,
-        y: rect.top
-      })
-    );
-  } catch (_) {}
-
-  // 没有移动时，仍然保留点击打开面板的功能
-  if (!hasMoved) {
-    const now = Date.now();
-
-    if (now - lastTapTime < 300) {
-      nextTrack();
-      lastTapTime = 0;
-      return;
-    }
-
-    lastTapTime = now;
-
-    setTimeout(() => {
-      if (Date.now() - lastTapTime < 250) return;
-
-      if (panel.classList.contains('open')) {
-        panel.classList.remove('open');
-      } else {
-        positionPanel();
-        panel.classList.add('open');
-      }
-    }, 200);
-  }
-};
-
-orb.addEventListener('pointerdown', onPointerDown, {
-  passive: false
-});
-
-orb.addEventListener('pointermove', onPointerMove, {
-  passive: false
-});
-
-orb.addEventListener('pointerup', onPointerUp, {
-  passive: false
-});
-
-orb.addEventListener('pointercancel', onPointerUp, {
-  passive: false
-});
-
-  orb.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      togglePlay();
-    }
-  });
-
-  // ========== 初始化 ==========
-  loadTrack(0);
-  renderPlaylist();
-
-  // 尝试加载 playlist.json
+  // 从 playlist.json 读取完整歌单（加歌只需改这个文件）
   fetch('assets/music/playlist.json')
     .then(res => res.ok ? res.json() : Promise.reject('JSON 加载失败'))
     .then(data => {
       if (Array.isArray(data) && data.length > 0) {
         playlist = data;
-        currentIndex = 0;
-        loadTrack(0);
-        renderPlaylist();
+        index = 0;
+        load(0);
       }
     })
     .catch(err => {
