@@ -861,25 +861,6 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
     panel.classList.remove('open');
   });
 
-  // ========== 拖动悬浮球 ==========
-  const STORAGE_KEY = 'acg_lab_orb_pos';
-  try {
-      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
-    if (saved && typeof saved.x === 'number' && typeof saved.y === 'number') {
-      orb.style.left = saved.x + 'px';
-      orb.style.top = saved.y + 'px';
-      orb.style.right = 'auto';
-      orb.style.bottom = 'auto';
-      panel.style.left = 'auto';
-      panel.style.right = '20px';
-      panel.style.bottom = '90px';
-    }
-  } catch (_) {}
-
-  let isDragging = false, hasMoved = false;
-  let startX = 0, startY = 0, offsetX = 0, offsetY = 0;
-  const dragThreshold = 5;
-  let lastTapTime = 0;
 
   // ========== 稳定版拖动悬浮球 ==========
 const STORAGE_KEY = 'acg_lab_orb_pos';
