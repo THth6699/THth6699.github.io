@@ -39,7 +39,7 @@ img { max-width: 100%; display: block; }
   background-image: url('assets/images/bg.jpg');
   background-size: cover; background-position: center;
   background-repeat: no-repeat;
-  opacity: 0.15; filter: blur(3px);
+  opacity: 0.20; filter: blur(3px);
 }
 .bg-grid {
   position: fixed; inset: 0;
@@ -551,6 +551,7 @@ kbd{padding:3px 7px;border:1px solid rgba(255,255,255,.18);border-bottom-width:2
   border-radius: 999px;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
   user-select: none;
+  opacity: 0.5;
 }
 
 .zoom-controls button {
