@@ -881,108 +881,184 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
   const dragThreshold = 5;
   let lastTapTime = 0;
 
-  const onPointerDown = (e) => {
-    if (e.button !== undefined && e.button !== 0) return;
-    isDragging = true;
-    hasMoved = false;
-    document.body.classList.add('orb-dragging');
-    orb.classList.add('dragging');
+  // ========== 稳定版拖动悬浮球 ==========
+const STORAGE_KEY = 'acg_lab_orb_pos';
 
-    const rect = orb.getBoundingClientRect();
-    startX = e.clientX; startY = e.clientY;
-    offsetX = e.clientX - rect.left;
-    offsetY = e.clientY - rect.top;
+let isDragging = false;
+let hasMoved = false;
+let startX = 0;
+let startY = 0;
+let startLeft = 0;
+let startTop = 0;
+let lastTapTime = 0;
 
-    orb.style.left = rect.left + 'px';
-    orb.style.top = rect.top + 'px';
-    orb.style.right = 'auto';
-    orb.style.bottom = 'auto';
-    orb.style.transform = 'translate(0, 0)';
-    orb._tx = 0; orb._ty = 0;
+const getSavedPosition = () => {
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
 
-    if (orb.setPointerCapture && e.pointerId !== undefined) {
-  orb.setPointerCapture(e.pointerId);
+    if (
+      saved &&
+      Number.isFinite(saved.x) &&
+      Number.isFinite(saved.y)
+    ) {
+      return saved;
     }
-    
-    document.addEventListener('pointermove', onPointerMove);
-    document.addEventListener('pointerup', onPointerUp);
-    document.addEventListener('pointercancel', onPointerUp);
+  } catch (_) {}
+
+  return null;
+};
+
+const savedPosition = getSavedPosition();
+
+if (savedPosition) {
+  orb.style.left = `${savedPosition.x}px`;
+  orb.style.top = `${savedPosition.y}px`;
+  orb.style.right = 'auto';
+  orb.style.bottom = 'auto';
+}
+
+const clampPosition = (x, y) => {
+  const width = orb.offsetWidth;
+  const height = orb.offsetHeight;
+  const margin = 8;
+
+  return {
+    x: Math.max(margin, Math.min(window.innerWidth - width - margin, x)),
+    y: Math.max(margin, Math.min(window.innerHeight - height - margin, y))
   };
+};
 
-  const onPointerMove = (e) => {
-    if (!isDragging) return;
-    const dx = e.clientX - startX;
-    const dy = e.clientY - startY;
-    if (Math.abs(dx) > dragThreshold || Math.abs(dy) > dragThreshold) hasMoved = true;
+const onPointerDown = (event) => {
+  if (event.pointerType === 'mouse' && event.button !== 0) return;
 
-    const orbW = orb.offsetWidth, orbH = orb.offsetHeight;
-    const rect = orb.getBoundingClientRect();
-    const baseLeft = rect.left - (orb._tx || 0);
-    const baseTop = rect.top - (orb._ty || 0);
+  event.preventDefault();
 
-    let tx = dx, ty = dy;
-    const maxX = window.innerWidth - orbW - 8;
-    const maxY = window.innerHeight - orbH - 8;
-    tx = Math.max(8 - baseLeft, Math.min(maxX - baseLeft, tx));
-    ty = Math.max(8 - baseTop, Math.min(maxY - baseTop, ty));
+  const rect = orb.getBoundingClientRect();
 
-    orb.style.transform = `translate(${tx}px, ${ty}px)`;
-    orb._tx = tx; orb._ty = ty;
+  isDragging = true;
+  hasMoved = false;
+  startX = event.clientX;
+  startY = event.clientY;
+  startLeft = rect.left;
+  startTop = rect.top;
 
-    if (panel.classList.contains('open')) positionPanel();
-  };
+  orb.style.left = `${rect.left}px`;
+  orb.style.top = `${rect.top}px`;
+  orb.style.right = 'auto';
+  orb.style.bottom = 'auto';
+  orb.style.transform = 'none';
 
-  const positionPanel = () => {
-    const orbRect = orb.getBoundingClientRect();
-    const panelW = panel.offsetWidth;
-    const panelH = panel.offsetHeight;
-    let px = orbRect.left + orbRect.width / 2 - panelW / 2;
-    let py = orbRect.top - panelH - 12;
-    px = Math.max(12, Math.min(window.innerWidth - panelW - 12, px));
-    if (py < 12) py = orbRect.bottom + 12;
-    panel.style.left = px + 'px';
-    panel.style.top = py + 'px';
-    panel.style.right = 'auto';
-    panel.style.bottom = 'auto';
-  };
+  orb.classList.add('dragging');
+  document.body.classList.add('orb-dragging');
 
-  const onPointerUp = () => {
-    if (!isDragging) return;
-    isDragging = false;
-    document.body.classList.remove('orb-dragging');
-    orb.classList.remove('dragging');
-    document.removeEventListener('pointermove', onPointerMove);
-    document.removeEventListener('pointerup', onPointerUp);
-    document.removeEventListener('pointercancel', onPointerUp);
-
-    const rect = orb.getBoundingClientRect();
-    orb.style.left = rect.left + 'px';
-    orb.style.top = rect.top + 'px';
-    orb.style.transform = '';
-    orb._tx = 0; orb._ty = 0;
-
+  if (orb.setPointerCapture && event.pointerId !== undefined) {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ x: rect.left, y: rect.top }));
+      orb.setPointerCapture(event.pointerId);
     } catch (_) {}
+  }
+};
 
-    if (!hasMoved) {
-      const now = Date.now();
-      if (now - lastTapTime < 300) {
-        nextTrack();
-        lastTapTime = 0;
-      } else {
-        lastTapTime = now;
-        setTimeout(() => {
-          if (Date.now() - lastTapTime >= 250) {
-            if (panel.classList.contains('open')) panel.classList.remove('open');
-            else { positionPanel(); panel.classList.add('open'); }
-          }
-        }, 250);
-      }
+const onPointerMove = (event) => {
+  if (!isDragging) return;
+
+  event.preventDefault();
+
+  const dx = event.clientX - startX;
+  const dy = event.clientY - startY;
+
+  if (Math.abs(dx) > 5 || Math.abs(dy) > 5) {
+    hasMoved = true;
+  }
+
+  const position = clampPosition(
+    startLeft + dx,
+    startTop + dy
+  );
+
+  orb.style.left = `${position.x}px`;
+  orb.style.top = `${position.y}px`;
+
+  if (panel.classList.contains('open')) {
+    positionPanel();
+  }
+};
+
+const onPointerUp = (event) => {
+  if (!isDragging) return;
+
+  isDragging = false;
+
+  if (
+    orb.releasePointerCapture &&
+    event.pointerId !== undefined &&
+    orb.hasPointerCapture?.(event.pointerId)
+  ) {
+    try {
+      orb.releasePointerCapture(event.pointerId);
+    } catch (_) {}
+  }
+
+  orb.classList.remove('dragging');
+  document.body.classList.remove('orb-dragging');
+
+  const rect = orb.getBoundingClientRect();
+
+  orb.style.left = `${rect.left}px`;
+  orb.style.top = `${rect.top}px`;
+  orb.style.right = 'auto';
+  orb.style.bottom = 'auto';
+  orb.style.transform = 'none';
+
+  try {
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({
+        x: rect.left,
+        y: rect.top
+      })
+    );
+  } catch (_) {}
+
+  // 没有移动时，仍然保留点击打开面板的功能
+  if (!hasMoved) {
+    const now = Date.now();
+
+    if (now - lastTapTime < 300) {
+      nextTrack();
+      lastTapTime = 0;
+      return;
     }
-  };
 
-  orb.addEventListener('pointerdown', onPointerDown);
+    lastTapTime = now;
+
+    setTimeout(() => {
+      if (Date.now() - lastTapTime < 250) return;
+
+      if (panel.classList.contains('open')) {
+        panel.classList.remove('open');
+      } else {
+        positionPanel();
+        panel.classList.add('open');
+      }
+    }, 250);
+  }
+};
+
+orb.addEventListener('pointerdown', onPointerDown, {
+  passive: false
+});
+
+orb.addEventListener('pointermove', onPointerMove, {
+  passive: false
+});
+
+orb.addEventListener('pointerup', onPointerUp, {
+  passive: false
+});
+
+orb.addEventListener('pointercancel', onPointerUp, {
+  passive: false
+});
 
   orb.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' || e.key === ' ') {
