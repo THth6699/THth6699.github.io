@@ -1045,11 +1045,11 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
   }
 })();
 
-// ===== 25. ⚡ 启动序列彩蛋（约 3 秒；整段删除即可完全回滚，不影响任何其他功能） =====
+// ===== 25. ⚡ 启动序列 · 黑客终端版（约 5 秒；整段删除即可完全回滚，不影响任何其他功能） =====
 (function () {
   var ONCE_PER_SESSION = true;   // true = 同一标签页会话只播一次；false = 每次刷新都播
-  var STEP_MS = 200;             // 每行出现的间隔（毫秒）
-  var AUTO_END_MS = 2300;        // 播多久后开始淡出（点击/按键可随时跳过）
+  var AUTO_END_MS = 4650;        // 从出现到开始淡出（毫秒）；总时长 ≈ 这个数 + 0.5 秒淡出
+  var TYPE_SPEED = 30;           // 打字机速度（毫秒/字）
 
   if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
@@ -1060,23 +1060,39 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
 
   var finished = false;
   var timers = [];
+  var intervals = [];
   var root = document.documentElement;
 
-  function clearTimers() { for (var i = 0; i < timers.length; i++) clearTimeout(timers[i]); timers = []; }
+  function clearAll() {
+    var i;
+    for (i = 0; i < timers.length; i++) clearTimeout(timers[i]);
+    for (i = 0; i < intervals.length; i++) clearInterval(intervals[i]);
+    timers = []; intervals = [];
+  }
   function later(fn, ms) { timers.push(setTimeout(fn, ms)); }
 
   var boot = document.createElement('div');
   boot.id = 'acgBoot';
   boot.setAttribute('aria-hidden', 'true');
   boot.innerHTML =
+    '<div class="acgb-rain"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>' +
     '<div class="acgb-inner">' +
       '<div class="acgb-power"></div>' +
-      '<span class="acgb-line">&gt; 次元整研社 · 系统启动…</span>' +
+      '<span class="acgb-line">&gt; ssh visitor@acg-lab.xyz</span>' +
+      '<span class="acgb-line">&gt; 连接次元服务器 … OK</span>' +
+      '<span class="acgb-line">&gt; 身份验证：访客 · 权限 GUEST</span>' +
       '<span class="acgb-line">&gt; 注入二次元浓度 … <b class="acgb-pct">0%</b></span>' +
-      '<span class="acgb-line warn">&gt; 浓度检测：严重超标 ⚠</span>' +
-      '<span class="acgb-line ok">&gt; 加载[拒绝内卷]模块 … OK</span>' +
-      '<span class="acgb-line ok">&gt; [专注整活]协议已就绪</span>' +
-      '<div class="acgb-final">欢迎回来，<b>旅行者</b> ✨</div>' +
+      '<span class="acgb-line warn">&gt; ⚠ 信号异常 · 二次元浓度超标</span>' +
+      '<span class="acgb-line">&gt; 绕过[内卷]防火墙 … 已绕过</span>' +
+      '<span class="acgb-line">&gt; 密钥 0xF3A9-C2B7 … 匹配成功</span>' +
+      '<span class="acgb-line">&gt; 解密社团档案 … 19 名同好在线</span>' +
+      '<span class="acgb-line ok">&gt; 加载模块：绘画/Cos/观影/整活 … OK</span>' +
+      '<span class="acgb-line ok" data-type="&gt; sudo 整活 --force"></span>' +
+      '<span class="acgb-line ok">&gt; 权限提升完成 · 整活特权已激活</span>' +
+      '<div class="acgb-final">' +
+        '<span class="acgb-grant">ACCESS GRANTED</span>' +
+        '<span class="acgb-welcome">欢迎回来，<b>旅行者</b> ✨</span>' +
+      '</div>' +
       '<div class="acgb-bar"><i></i></div>' +
     '</div>';
   document.body.appendChild(boot);
@@ -1087,47 +1103,70 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
   var barEl = boot.querySelector('.acgb-bar');
   var pctEl = boot.querySelector('.acgb-pct');
 
-  later(function () { if (barEl) barEl.classList.add('run'); }, 30);
+  // 每行出现的时间点（毫秒）。想整体调快/调慢就改这个数组
+  var schedule = [150, 420, 690, 960, 1480, 1760, 2040, 2320, 2600, 2880, 3520];
 
-  // 逐行出现，最新一行带光标
+  later(function () { if (barEl) barEl.classList.add('run'); }, 60);
+
   for (var i = 0; i < lines.length; i++) {
     (function (line, idx) {
       later(function () {
         var prev = lines[idx - 1];
         if (prev) prev.classList.remove('current');
         line.classList.add('show', 'current');
-      }, 140 + idx * STEP_MS);
+        var typed = line.getAttribute('data-type');
+        if (typed) startTyping(line, typed);
+      }, schedule[idx] || (150 + idx * 310));
     })(lines[i], i);
   }
 
-  // “浓度”数字从 0 数到 98%
-  var tick = setInterval(function () {
-    if (finished) { clearInterval(tick); return; }
-    var n = parseInt(pctEl.textContent, 10) || 0;
-    n += 2; if (n > 98) n = 98;
-    pctEl.textContent = n + '%';
-    if (n >= 98) clearInterval(tick);
-  }, 18);
+  function startTyping(el, text) {
+    var n = 0;
+    var iv = setInterval(function () {
+      if (finished) { clearInterval(iv); return; }
+      n += 1;
+      el.textContent = text.slice(0, n);
+      if (n >= text.length) clearInterval(iv);
+    }, TYPE_SPEED);
+    intervals.push(iv);
+  }
 
-  // 大标题收尾
+  // “浓度”数字 0 → 100%（在它那行出现之后才开始数）
+  later(function () {
+    var countIv = setInterval(function () {
+      if (finished || !pctEl) { clearInterval(countIv); return; }
+      var n = parseInt(pctEl.textContent, 10) || 0;
+      n += 1;
+      if (n >= 100) { n = 100; clearInterval(countIv); }
+      pctEl.textContent = n + '%';
+    }, 22);
+    intervals.push(countIv);
+  }, 990);
+
+  // 压轴：ACCESS GRANTED
   later(function () {
     var last = lines[lines.length - 1];
     if (last) last.classList.remove('current');
     if (finalEl) finalEl.classList.add('show');
-  }, 140 + lines.length * STEP_MS + 60);
+  }, 3820);
 
   function finish() {
     if (finished) return;
     finished = true;
-    clearTimers();
-    for (var i = 0; i < lines.length; i++) { lines[i].classList.add('show'); lines[i].classList.remove('current'); }
+    clearAll();
+    for (var k = 0; k < lines.length; k++) {
+      lines[k].classList.add('show');
+      lines[k].classList.remove('current');
+      var t = lines[k].getAttribute('data-type');
+      if (t) lines[k].textContent = t;   // 打字打到一半被跳过 → 直接补全
+    }
     if (finalEl) finalEl.classList.add('show');
     if (barEl) barEl.classList.add('run');
     boot.classList.add('fade');
     setTimeout(function () {
       if (boot.parentNode) boot.parentNode.removeChild(boot);
       root.classList.remove('acg-boot-lock');
-    }, 480);
+    }, 500);
   }
 
   later(finish, AUTO_END_MS);
