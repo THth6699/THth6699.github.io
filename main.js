@@ -750,3 +750,61 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
     apply(current);
   });
 })();
+
+// ===== 22. ✨ GSAP 首屏入场动画（整段删除即可完全回滚，不影响其他功能） =====
+(function () {
+  var hero = document.querySelector('.hero-inner');
+  if (!hero) return;
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  var els = hero.querySelectorAll('.reveal');
+  if (!els.length) return;
+
+  // 把首屏从旧的 reveal 观察系统里摘出来，避免两套动画打架
+  try {
+    for (var i = 0; i !== els.length; i++) observer.unobserve(els[i]);
+  } catch (e) {}
+
+  var settled = false;
+
+  function revealPlain() {
+    if (settled) return;
+    settled = true;
+    console.log('[ACG] GSAP 未加载，首屏改为普通显示');
+    for (var j = 0; j !== els.length; j++) els[j].classList.add('show');
+  }
+
+  function takeover() {
+    if (settled || !window.gsap) return;
+    settled = true;
+    console.log('[ACG] GSAP 首屏动画已启动');
+    for (var k = 0; k !== els.length; k++) els[k].classList.remove('reveal');
+    gsap.timeline({ defaults: { duration: 0.7, ease: 'power3.out' } })
+      .from('.hero-badge',   { y: 24, opacity: 0 })
+      .from('.hero-title',   { y: 30, opacity: 0 }, '-=0.45')
+      .from('.hero-sub',     { y: 24, opacity: 0 }, '-=0.5')
+      .from('.hero-actions', { y: 20, opacity: 0 }, '-=0.5')
+      .from('.hero-stats',   { y: 20, opacity: 0 }, '-=0.5');
+  }
+
+  if (window.gsap) { takeover(); return; }
+
+  var urls = [
+    'https://cdn.bootcdn.net/ajax/libs/gsap/3.15.0/gsap.min.js',
+    'https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js',
+    'https://unpkg.com/gsap@3.15.0/dist/gsap.min.js'
+  ];
+  var idx = 0;
+
+  function tryNext() {
+    if (idx === urls.length) { revealPlain(); return; }
+    var s = document.createElement('script');
+    s.src = urls[idx++];
+    s.onload = takeover;
+    s.onerror = tryNext;
+    document.head.appendChild(s);
+  }
+  tryNext();
+
+  setTimeout(revealPlain, 3000); // 兜底：3 秒还没加载成功就直接显示，绝不留白
+})();
