@@ -931,3 +931,116 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
   if (window.Lenis) boot(window.Lenis);
   else tryLoad(0);
 })();
+
+// ===== 24. 🚨 暴走模式彩蛋（连点 Logo 5 次触发；整段删除即可完全回滚，不影响任何其他功能） =====
+(function () {
+  var logo = document.querySelector('.logo');
+  if (!logo) return;
+
+  var SOUND = true;         // 不想播放警报音就改成 false
+  var CLICKS_NEEDED = 5;    // 需要连点的次数
+  var WINDOW_MS = 900;      // 两次点击的最大间隔（超时重新计数）
+  var COOLDOWN_MS = 8000;   // 播放结束后的冷却时间，防止连续刷屏
+
+  var clicks = 0;
+  var lastClick = 0;
+  var busy = false;
+  var cooldownUntil = 0;
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  logo.addEventListener('click', function () {
+    var now = Date.now();
+    if (busy || now < cooldownUntil) return;
+    if (now - lastClick > WINDOW_MS) clicks = 0;
+    lastClick = now;
+    clicks += 1;
+    if (clicks < CLICKS_NEEDED) return;
+    clicks = 0;
+    trigger();
+  });
+
+  // 两声短促警报音（实时合成，不需要音频文件；不想要就改 SOUND = false）
+  function beep() {
+    if (!SOUND) return;
+    try {
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+      var ac = new AC();
+      if (ac.state === 'suspended') ac.resume();
+      var t = ac.currentTime;
+      [0, 0.22].forEach(function (offset) {
+        var o = ac.createOscillator();
+        var g = ac.createGain();
+        o.type = 'square';
+        o.frequency.value = 740;
+        g.gain.setValueAtTime(0.0001, t + offset);
+        g.gain.exponentialRampToValueAtTime(0.09, t + offset + 0.02);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + offset + 0.16);
+        o.connect(g);
+        g.connect(ac.destination);
+        o.start(t + offset);
+        o.stop(t + offset + 0.18);
+      });
+      setTimeout(function () { try { ac.close(); } catch (e) {} }, 1500);
+    } catch (e) {}
+  }
+
+  function trigger() {
+    if (busy) return;
+    busy = true;
+    console.log('[ACG] 暴走モード 発動！');
+    beep();
+
+    document.documentElement.classList.add('berserk-mode');
+
+    var main = document.getElementById('main-content');
+    var navInner = document.querySelector('.nav-inner');
+    var title = document.querySelector('.hero-title');
+    if (!reduce) {
+      if (main) main.classList.add('berserk-shake');
+      if (navInner) navInner.classList.add('berserk-shake');
+      if (title) title.classList.add('berserk-title');
+    }
+
+    // 全屏警报层（纯 JS 创建，不修改 index.html）
+    var fx = document.createElement('div');
+    fx.id = 'berserkFx';
+    fx.setAttribute('aria-hidden', 'true');
+    fx.innerHTML =
+      '<div class="bzk-tint"></div>' +
+      '<div class="bzk-scan"></div>' +
+      '<div class="bzk-bar top"></div>' +
+      '<div class="bzk-bar bottom"></div>' +
+      '<div class="bzk-frame"></div>' +
+      '<div class="bzk-center">' +
+        '<div class="bzk-kicker">EMERGENCY · 紧急通告</div>' +
+        '<div class="bzk-main">暴走モード 発動</div>' +
+        '<div class="bzk-sub">检测到高浓度二次元能量 · <b>全员注意</b></div>' +
+      '</div>';
+    document.body.appendChild(fx);
+    void fx.offsetWidth;   // 强制重排一次，保证动画从第一帧开始播
+    fx.classList.add('on');
+
+    // 1.9 秒时切换文案：从“発動”变成“解除”
+    setTimeout(function () {
+      var m = fx.querySelector('.bzk-main');
+      var s = fx.querySelector('.bzk-sub');
+      if (m) m.textContent = '暴走モード 解除';
+      if (s) s.innerHTML = '能量释放完毕 · <b>系统恢复正常</b> ⚡';
+    }, 1900);
+
+    // 3.4 秒后收尾还原
+    setTimeout(function () {
+      fx.classList.add('out');
+      setTimeout(function () { if (fx.parentNode) fx.parentNode.removeChild(fx); }, 450);
+
+      document.documentElement.classList.remove('berserk-mode');
+      if (main) main.classList.remove('berserk-shake');
+      if (navInner) navInner.classList.remove('berserk-shake');
+      if (title) title.classList.remove('berserk-title');
+
+      cooldownUntil = Date.now() + COOLDOWN_MS;
+      busy = false;
+    }, 3400);
+  }
+})();
