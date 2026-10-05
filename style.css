@@ -699,3 +699,57 @@ html.berserk-mode #particles { filter: sepia(1) saturate(7) hue-rotate(-38deg) b
   .bzk-kicker { letter-spacing: 5px; font-size: .68rem; }
   .bzk-main { letter-spacing: 3px; }
 }
+
+/* ===================================================================
+   ⚡ 启动序列彩蛋（进站播放约 3 秒，点击/按键可跳过；整段删除即可回滚）
+   =================================================================== */
+#acgBoot {
+  position: fixed; inset: 0; z-index: 1200;
+  background: #05060a;
+  display: flex; align-items: center; justify-content: center;
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Courier New", monospace;
+  cursor: pointer; overflow: hidden;
+  opacity: 1; transition: opacity .45s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+#acgBoot.fade { opacity: 0; }
+#acgBoot::before {
+  content: ""; position: absolute; inset: 0; opacity: .15; pointer-events: none;
+  background: repeating-linear-gradient(0deg, rgba(255,255,255,.06) 0 1px, transparent 1px 3px);
+}
+.acgb-inner { width: min(560px, 88vw); position: relative; }
+.acgb-line {
+  display: block; margin: 0 0 10px;
+  font-size: clamp(.78rem, 2.6vw, .95rem);
+  color: #8b93ab; letter-spacing: .5px;
+  opacity: 0; transform: translateY(6px);
+  transition: opacity .25s ease, transform .25s ease;
+}
+.acgb-line.show { opacity: 1; transform: none; }
+.acgb-line.ok { color: var(--primary); }
+.acgb-line.warn { color: #ff5c78; }
+.acgb-pct { color: var(--accent); }
+.acgb-line.current::after { content: "▍"; margin-left: 2px; animation: acgbBlink .7s steps(1, end) infinite; }
+@keyframes acgbBlink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+.acgb-final {
+  margin-top: 22px; font-size: clamp(1.05rem, 3.4vw, 1.3rem);
+  font-weight: 800; letter-spacing: 3px; color: #fff;
+  opacity: 0; transform: translateY(8px);
+  transition: opacity .3s ease, transform .3s ease;
+}
+.acgb-final.show { opacity: 1; transform: none; }
+.acgb-final b { color: var(--primary); }
+.acgb-bar { position: absolute; left: 0; bottom: -26px; height: 3px; width: 100%; background: rgba(255,255,255,.08); border-radius: 2px; overflow: hidden; }
+.acgb-bar i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--primary), var(--accent)); transition: width 2s linear; }
+.acgb-bar.run i { width: 100%; }
+.acgb-power {
+  position: absolute; left: 10%; right: 10%; top: -14px; height: 2px;
+  background: var(--accent); box-shadow: 0 0 18px var(--accent);
+  transform: scaleX(0); animation: acgbPower .45s ease-out forwards;
+}
+@keyframes acgbPower {
+  0% { transform: scaleX(0); opacity: 1; }
+  70% { transform: scaleX(1); opacity: 1; }
+  100% { transform: scaleX(1); opacity: 0; }
+}
+html.acg-boot-lock, html.acg-boot-lock body { overflow: hidden !important; }
