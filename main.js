@@ -434,7 +434,10 @@ const updateScrollUI = () => {
 };
 window.addEventListener('scroll', updateScrollUI, { passive: true });
 updateScrollUI();
-if (backTop) backTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+if (backTop) backTop.addEventListener('click', () => {
+  if (window.__lenis) { window.__lenis.scrollTo(0); }
+  else { window.scrollTo({ top: 0, behavior: 'smooth' }); }
+});
 
 // ===== 17. Service Worker =====
 if ('serviceWorker' in navigator && location.protocol === 'https:') {
@@ -855,4 +858,76 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
 
   if (window.gsap && window.ScrollTrigger) { init(); }
   else { tryLoad(0); setTimeout(fallbackPlain, 3000); }
+})();
+
+// ===== 23. 🌊 Lenis 平滑滚动（可选层：加载失败 / 减少动态效果时自动保持原生滚动） =====
+(function () {
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  var started = false;
+
+  function fail() {
+    console.log('[ACG] Lenis 未启用，保持原生滚动');
+  }
+
+  function boot(LenisCtor) {
+    if (started || !LenisCtor) return;
+    started = true;
+    var lenis;
+    try {
+      lenis = new LenisCtor({ smoothWheel: true });  // 只平滑鼠标滚轮；手机触屏保持原生
+    } catch (e) { fail(); return; }
+
+    window.__lenis = lenis;  // 暴露给"返回顶部"按钮和第 16 节使用
+
+    // 锚点跳转改走 Lenis（顶部预留 84px 让开固定导航栏，与原 scroll-padding-top 一致）
+    document.addEventListener('click', function (e) {
+      var t = e.target;
+      var anchor = null;
+      while (t && t !== document) {
+        if (t.nodeType === 1 && t.tagName === 'A') { anchor = t; break; }
+        t = t.parentNode;
+      }
+      if (!anchor) return;
+      var href = anchor.getAttribute('href') || '';
+      if (href.charAt(0) !== '#' || href.length < 2) return;
+      var node = document.querySelector(href);
+      if (!node) return;
+      e.preventDefault();
+      var y = node.getBoundingClientRect().top + window.pageYOffset - 84;
+      lenis.scrollTo(y);
+      try { history.pushState(null, '', href); } catch (err) {}
+    });
+
+    if (window.gsap && window.ScrollTrigger) {
+      // 有 GSAP：由 GSAP 时钟统一驱动，滚动与入场动画完全同步（官方推荐做法）
+      lenis.on('scroll', ScrollTrigger.update);
+      gsap.ticker.add(function (time) { lenis.raf(time * 1000); });
+      gsap.ticker.lagSmoothing(0);
+      console.log('[ACG] Lenis 平滑滚动已启用（GSAP 同步驱动）');
+    } else {
+      function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
+      requestAnimationFrame(raf);
+      console.log('[ACG] Lenis 平滑滚动已启用');
+    }
+  }
+
+  // 镜像按顺序尝试：一个不通自动换下一个
+  var mirrors = [
+    'https://registry.npmmirror.com/lenis/1.3.26/files/dist/lenis.min.js',
+    'https://cdn.jsdelivr.net/npm/lenis@1.3.26/dist/lenis.min.js',
+    'https://unpkg.com/lenis@1.3.26/dist/lenis.min.js'
+  ];
+  function tryLoad(i) {
+    if (started) return;
+    if (i >= mirrors.length) { fail(); return; }
+    var s = document.createElement('script');
+    s.src = mirrors[i];
+    s.onload = function () { boot(window.Lenis); };
+    s.onerror = function () { tryLoad(i + 1); };
+    document.head.appendChild(s);
+  }
+
+  if (window.Lenis) boot(window.Lenis);
+  else tryLoad(0);
 })();
