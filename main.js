@@ -751,60 +751,108 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
   });
 })();
 
-// ===== 22. ✨ GSAP 首屏入场动画（整段删除即可完全回滚，不影响其他功能） =====
+// ===== 22. ✨ GSAP 动画系统（首屏入场 + 滚动入场；整段删除即可完全回滚） =====
 (function () {
-  var hero = document.querySelector('.hero-inner');
-  if (!hero) return;
+  // 系统开了"减少动态效果"：什么都不做，全部交给原来的 reveal 系统
   if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-  var els = hero.querySelectorAll('.reveal');
-  if (!els.length) return;
+  var settled = false;   // 是否已有结果（动画接管 或 普通显示）
+  var heroEls = [];      // 首屏元素
+  var waitEls = [];      // 滚动到才出现的元素
+  var heroBox = document.querySelector('.hero-inner');
 
-  // 把首屏从旧的 reveal 观察系统里摘出来，避免两套动画打架
-  try {
-    for (var i = 0; i !== els.length; i++) observer.unobserve(els[i]);
-  } catch (e) {}
+  // ① 立刻把 GSAP 要管的元素从旧的 reveal 观察系统里摘出来，防止两套动画打架
+  if (heroBox) {
+    var hs = heroBox.querySelectorAll('.reveal');
+    for (var i = 0; i !== hs.length; i++) {
+      heroEls.push(hs[i]);
+      try { observer.unobserve(hs[i]); } catch (e) {}
+    }
+  }
+  var all = document.querySelectorAll('.reveal');
+  for (var j = 0; j !== all.length; j++) {
+    var el = all[j];
+    if (heroBox && heroBox.contains(el)) continue;   // 首屏的上面已处理
+    try { observer.unobserve(el); } catch (e) {}
+    if (el.getBoundingClientRect().top > window.innerHeight) {
+      waitEls.push(el);                              // 还在屏幕外 → 交给 GSAP
+    } else {
+      try { observer.observe(el); } catch (e) {}     // 已经在屏幕里 → 交回旧系统
+    }
+  }
 
-  var settled = false;
-
-  function revealPlain() {
+  // ② 库加载失败时的兜底：直接全部显示，绝不留白
+  function fallbackPlain() {
     if (settled) return;
     settled = true;
-    console.log('[ACG] GSAP 未加载，首屏改为普通显示');
-    for (var j = 0; j !== els.length; j++) els[j].classList.add('show');
+    console.log('[ACG] GSAP 未加载，动画改为普通显示');
+    var k;
+    for (k = 0; k !== heroEls.length; k++) heroEls[k].classList.add('show');
+    for (k = 0; k !== waitEls.length; k++) waitEls[k].classList.add('show');
   }
 
-  function takeover() {
-    if (settled || !window.gsap) return;
+  // ③ 库加载成功后：接管动画
+  function init() {
+    if (settled || !window.gsap || !window.ScrollTrigger) return;
     settled = true;
-    console.log('[ACG] GSAP 首屏动画已启动');
-    for (var k = 0; k !== els.length; k++) els[k].classList.remove('reveal');
-    gsap.timeline({ defaults: { duration: 0.7, ease: 'power3.out' } })
-      .from('.hero-badge',   { y: 24, opacity: 0 })
-      .from('.hero-title',   { y: 30, opacity: 0 }, '-=0.45')
-      .from('.hero-sub',     { y: 24, opacity: 0 }, '-=0.5')
-      .from('.hero-actions', { y: 20, opacity: 0 }, '-=0.5')
-      .from('.hero-stats',   { y: 20, opacity: 0 }, '-=0.5');
+    gsap.registerPlugin(ScrollTrigger);
+    console.log('[ACG] GSAP + ScrollTrigger 已接管动画');
+
+    // 首屏依次上浮（和之前一样）
+    for (var a = 0; a !== heroEls.length; a++) heroEls[a].classList.remove('reveal');
+    if (heroEls.length) {
+      gsap.timeline({ defaults: { duration: 0.7, ease: 'power3.out' } })
+        .from('.hero-badge',   { y: 24, opacity: 0 })
+        .from('.hero-title',   { y: 30, opacity: 0 }, '-=0.45')
+        .from('.hero-sub',     { y: 24, opacity: 0 }, '-=0.5')
+        .from('.hero-actions', { y: 20, opacity: 0 }, '-=0.5')
+        .from('.hero-stats',   { y: 20, opacity: 0 }, '-=0.5');
+    }
+
+    // 滚动入场：进入视野后依次浮现
+    if (waitEls.length) {
+      for (var b = 0; b !== waitEls.length; b++) waitEls[b].classList.remove('reveal');
+      gsap.set(waitEls, { opacity: 0, y: 22 });
+      ScrollTrigger.batch(waitEls, {
+        once: true,
+        onEnter: function (batch) {
+          gsap.to(batch, { opacity: 1, y: 0, duration: 0.65, ease: 'power2.out', stagger: 0.1, overwrite: true });
+        }
+      });
+    }
+
+    // 你们的页面缩放会改变所有元素位置：变化后刷新一次触发器（这是本站特有的坑）
+    var refreshTimer = 0;
+    if (window.MutationObserver) {
+      new MutationObserver(function () {
+        clearTimeout(refreshTimer);
+        refreshTimer = setTimeout(function () { try { ScrollTrigger.refresh(); } catch (e) {} }, 300);
+      }).observe(document.documentElement, { attributes: true, attributeFilter: ['style'] });
+    }
+    window.addEventListener('load', function () { try { ScrollTrigger.refresh(); } catch (e) {} });
   }
 
-  if (window.gsap) { takeover(); return; }
-
-  var urls = [
-    'https://cdn.bootcdn.net/ajax/libs/gsap/3.15.0/gsap.min.js',
-    'https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js',
-    'https://unpkg.com/gsap@3.15.0/dist/gsap.min.js'
+  // ④ 从国内镜像依次加载 gsap + ScrollTrigger（一个不通自动换下一个）
+  var mirrors = [
+    'https://cdn.bootcdn.net/ajax/libs/gsap/3.15.0/',
+    'https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/',
+    'https://unpkg.com/gsap@3.15.0/dist/'
   ];
-  var idx = 0;
-
-  function tryNext() {
-    if (idx === urls.length) { revealPlain(); return; }
+  function loadFile(url, ok, fail) {
     var s = document.createElement('script');
-    s.src = urls[idx++];
-    s.onload = takeover;
-    s.onerror = tryNext;
+    s.src = url;
+    s.onload = ok;
+    s.onerror = fail;
     document.head.appendChild(s);
   }
-  tryNext();
+  function tryLoad(i) {
+    if (settled) return;
+    if (i >= mirrors.length) { fallbackPlain(); return; }
+    loadFile(mirrors[i] + 'gsap.min.js', function () {
+      loadFile(mirrors[i] + 'ScrollTrigger.min.js', init, function () { tryLoad(i + 1); });
+    }, function () { tryLoad(i + 1); });
+  }
 
-  setTimeout(revealPlain, 3000); // 兜底：3 秒还没加载成功就直接显示，绝不留白
+  if (window.gsap && window.ScrollTrigger) { init(); }
+  else { tryLoad(0); setTimeout(fallbackPlain, 3000); }
 })();
