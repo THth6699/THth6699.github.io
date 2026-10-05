@@ -602,3 +602,10 @@ kbd{padding:3px 7px;border:1px solid rgba(255,255,255,.18);border-bottom-width:2
     font-size: 1rem;
   }
 }
+
+/* ===================================================================
+   🌊 Lenis 平滑滚动（仅 Lenis 成功启用时才会生效；不启用时这三行无任何影响）
+   =================================================================== */
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-stopped { overflow: hidden; }
