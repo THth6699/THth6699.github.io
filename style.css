@@ -609,3 +609,93 @@ kbd{padding:3px 7px;border:1px solid rgba(255,255,255,.18);border-bottom-width:2
 html.lenis, html.lenis body { height: auto; }
 .lenis.lenis-smooth { scroll-behavior: auto !important; }
 .lenis.lenis-stopped { overflow: hidden; }
+
+/* ===================================================================
+   🚨 暴走模式彩蛋（连点 Logo 5 次触发；整段删除即可完全回滚）
+   =================================================================== */
+.logo { touch-action: manipulation; -webkit-user-select: none; user-select: none; }
+
+#berserkFx {
+  position: fixed; inset: 0; z-index: 950; pointer-events: none;
+  display: none; overflow: hidden; opacity: 1; transition: opacity .45s ease;
+}
+#berserkFx.on { display: block; }
+#berserkFx.out { opacity: 0; }
+
+/* 红色警报洗屏 + 视口红色内发光 */
+.bzk-tint {
+  position: absolute; inset: 0; opacity: 0;
+  background: radial-gradient(ellipse at center, rgba(255,0,51,.10) 0%, rgba(255,0,51,.30) 100%);
+}
+#berserkFx.on .bzk-tint { animation: bzkPulse .55s ease-in-out 5; }
+.bzk-frame {
+  position: absolute; inset: 0; opacity: 0;
+  box-shadow: inset 0 0 140px rgba(255,0,51,.55), inset 0 0 36px rgba(255,0,51,.38);
+}
+#berserkFx.on .bzk-frame { animation: bzkPulse .55s ease-in-out 5; }
+@keyframes bzkPulse { 0%, 100% { opacity: .12; } 50% { opacity: .85; } }
+
+/* 扫过屏幕的光带 */
+.bzk-scan {
+  position: absolute; left: 0; right: 0; top: 0; height: 96px; opacity: 0;
+  background: linear-gradient(180deg, transparent, rgba(255,255,255,.13), transparent);
+}
+#berserkFx.on .bzk-scan { animation: bzkScan 1.05s linear 3; }
+@keyframes bzkScan { 0% { transform: translateY(-120px); opacity: 1; } 100% { transform: translateY(105vh); opacity: 1; } }
+
+/* 上下危险条纹带（红黑斜纹，固定红色不受主题影响） */
+.bzk-bar {
+  position: absolute; left: -20%; right: -20%; height: 54px;
+  background: repeating-linear-gradient(45deg, #0d0d12 0 22px, #ff0033 22px 44px);
+  box-shadow: 0 0 30px rgba(255,0,51,.55);
+}
+.bzk-bar.top { top: 12%; transform: translateX(-110%); }
+.bzk-bar.bottom { bottom: 12%; transform: translateX(110%); }
+#berserkFx.on .bzk-bar.top { animation: bzkSlide .45s cubic-bezier(.2,.8,.2,1) forwards; }
+#berserkFx.on .bzk-bar.bottom { animation: bzkSlide .45s cubic-bezier(.2,.8,.2,1) forwards; }
+@keyframes bzkSlide { to { transform: translateX(0); } }
+
+/* 中央警告文字（带 RGB 撕裂抖动） */
+.bzk-center { position: absolute; left: 0; right: 0; top: 50%; transform: translateY(-50%); text-align: center; padding: 0 16px; }
+.bzk-kicker { font-size: .8rem; letter-spacing: 8px; color: #ff4d6d; margin-bottom: 10px; text-shadow: 0 0 12px rgba(255,0,51,.85); }
+.bzk-main {
+  font-size: clamp(2rem, 7vw, 4.2rem); font-weight: 900; letter-spacing: 6px; color: #fff;
+  text-shadow: 3px 0 rgba(0,229,255,.85), -3px 0 rgba(255,0,51,.9), 0 0 34px rgba(255,0,51,.75);
+  animation: bzkGlitch .22s steps(2, end) infinite;
+}
+.bzk-sub { margin-top: 14px; font-size: clamp(.85rem, 2.6vw, 1.05rem); color: #ffd9e0; letter-spacing: 2px; }
+.bzk-sub b { color: #fff; }
+@keyframes bzkGlitch {
+  0% { transform: translate(0, 0) skewX(0); }
+  25% { transform: translate(-3px, 2px) skewX(-2deg); }
+  50% { transform: translate(3px, -2px) skewX(2deg); }
+  75% { transform: translate(-2px, -2px) skewX(-1deg); }
+  100% { transform: translate(2px, 2px) skewX(1deg); }
+}
+
+/* 页面震动 + 标题撕裂 */
+#main-content.berserk-shake { animation: bzkShake .13s linear 10; will-change: transform; }
+.nav-inner.berserk-shake { animation: bzkShake .13s linear 10; will-change: transform; }
+@keyframes bzkShake {
+  0% { transform: translate(-5px, 2px); }
+  25% { transform: translate(5px, -3px); }
+  50% { transform: translate(-4px, -2px); }
+  75% { transform: translate(4px, 3px); }
+  100% { transform: translate(0, 0); }
+}
+.hero-title.berserk-title { animation: bzkTitleJit .22s steps(2, end) 9; }
+@keyframes bzkTitleJit {
+  0% { transform: translate(-4px, 1px) skewX(-3deg); }
+  50% { transform: translate(4px, -1px) skewX(3deg); }
+  100% { transform: translate(0, 0) skewX(0); }
+}
+
+/* 粒子集体“转红”（用滤镜给画布上色，不改粒子系统本身） */
+#particles { transition: filter .35s ease; }
+html.berserk-mode #particles { filter: sepia(1) saturate(7) hue-rotate(-38deg) brightness(1.15); }
+
+@media (max-width: 768px) {
+  .bzk-bar { height: 40px; }
+  .bzk-kicker { letter-spacing: 5px; font-size: .68rem; }
+  .bzk-main { letter-spacing: 3px; }
+}
