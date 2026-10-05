@@ -819,7 +819,7 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
       ScrollTrigger.batch(waitEls, {
         once: true,
         onEnter: function (batch) {
-          gsap.to(batch, { opacity: 1, y: 0, duration: 0.64, ease: 'power2.out', stagger: 0.1, overwrite: true });
+          gsap.to(batch, { opacity: 1, y: 0, duration: 0.65, ease: 'power2.out', stagger: 0.1, overwrite: true });
         }
       });
     }
