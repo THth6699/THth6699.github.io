@@ -1044,3 +1044,98 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
     }, 3400);
   }
 })();
+
+// ===== 25. ⚡ 启动序列彩蛋（约 3 秒；整段删除即可完全回滚，不影响任何其他功能） =====
+(function () {
+  var ONCE_PER_SESSION = true;   // true = 同一标签页会话只播一次；false = 每次刷新都播
+  var STEP_MS = 200;             // 每行出现的间隔（毫秒）
+  var AUTO_END_MS = 2300;        // 播多久后开始淡出（点击/按键可随时跳过）
+
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  try {
+    if (ONCE_PER_SESSION && sessionStorage.getItem('acg_lab_boot')) return;
+    sessionStorage.setItem('acg_lab_boot', '1');
+  } catch (e) {}
+
+  var finished = false;
+  var timers = [];
+  var root = document.documentElement;
+
+  function clearTimers() { for (var i = 0; i < timers.length; i++) clearTimeout(timers[i]); timers = []; }
+  function later(fn, ms) { timers.push(setTimeout(fn, ms)); }
+
+  var boot = document.createElement('div');
+  boot.id = 'acgBoot';
+  boot.setAttribute('aria-hidden', 'true');
+  boot.innerHTML =
+    '<div class="acgb-inner">' +
+      '<div class="acgb-power"></div>' +
+      '<span class="acgb-line">&gt; 次元整研社 · 系统启动…</span>' +
+      '<span class="acgb-line">&gt; 注入二次元浓度 … <b class="acgb-pct">0%</b></span>' +
+      '<span class="acgb-line warn">&gt; 浓度检测：严重超标 ⚠</span>' +
+      '<span class="acgb-line ok">&gt; 加载[拒绝内卷]模块 … OK</span>' +
+      '<span class="acgb-line ok">&gt; [专注整活]协议已就绪</span>' +
+      '<div class="acgb-final">欢迎回来，<b>旅行者</b> ✨</div>' +
+      '<div class="acgb-bar"><i></i></div>' +
+    '</div>';
+  document.body.appendChild(boot);
+  root.classList.add('acg-boot-lock');
+
+  var lines = boot.querySelectorAll('.acgb-line');
+  var finalEl = boot.querySelector('.acgb-final');
+  var barEl = boot.querySelector('.acgb-bar');
+  var pctEl = boot.querySelector('.acgb-pct');
+
+  later(function () { if (barEl) barEl.classList.add('run'); }, 30);
+
+  // 逐行出现，最新一行带光标
+  for (var i = 0; i < lines.length; i++) {
+    (function (line, idx) {
+      later(function () {
+        var prev = lines[idx - 1];
+        if (prev) prev.classList.remove('current');
+        line.classList.add('show', 'current');
+      }, 140 + idx * STEP_MS);
+    })(lines[i], i);
+  }
+
+  // “浓度”数字从 0 数到 98%
+  var tick = setInterval(function () {
+    if (finished) { clearInterval(tick); return; }
+    var n = parseInt(pctEl.textContent, 10) || 0;
+    n += 2; if (n > 98) n = 98;
+    pctEl.textContent = n + '%';
+    if (n >= 98) clearInterval(tick);
+  }, 18);
+
+  // 大标题收尾
+  later(function () {
+    var last = lines[lines.length - 1];
+    if (last) last.classList.remove('current');
+    if (finalEl) finalEl.classList.add('show');
+  }, 140 + lines.length * STEP_MS + 60);
+
+  function finish() {
+    if (finished) return;
+    finished = true;
+    clearTimers();
+    for (var i = 0; i < lines.length; i++) { lines[i].classList.add('show'); lines[i].classList.remove('current'); }
+    if (finalEl) finalEl.classList.add('show');
+    if (barEl) barEl.classList.add('run');
+    boot.classList.add('fade');
+    setTimeout(function () {
+      if (boot.parentNode) boot.parentNode.removeChild(boot);
+      root.classList.remove('acg-boot-lock');
+    }, 480);
+  }
+
+  later(finish, AUTO_END_MS);
+  setTimeout(finish, 8000);   // 终极保险：无论发生什么，8 秒内一定消失、一定解锁滚动
+
+  boot.addEventListener('click', finish);
+  document.addEventListener('keydown', function onKey() {
+    finish();
+    document.removeEventListener('keydown', onKey);
+  });
+})();
