@@ -1178,3 +1178,200 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
     document.removeEventListener('keydown', onKey);
   });
 })();
+
+// ===== 26. 📊 电台频谱（放歌时侧边栏出现随节奏跳动的频谱条；整段删除即可完全回滚） =====
+(function () {
+  var audio = document.getElementById('msAudio');
+  var side = document.getElementById('musicSide');
+  var drawer = document.getElementById('msDrawer');
+  if (!audio || !side || !drawer) return;
+
+  // 系统开了“减少动态效果”就不启用
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  // ① 频谱画布：纯 JS 创建，插在封面下方，不改 index.html
+  var canvas = document.createElement('canvas');
+  canvas.className = 'ms-spectrum';
+  canvas.setAttribute('aria-hidden', 'true');
+  var cover = drawer.querySelector('.ms-cover');
+  if (cover && cover.parentNode) cover.parentNode.insertBefore(canvas, cover.nextSibling);
+  else drawer.appendChild(canvas);
+
+  var ctx = canvas.getContext && canvas.getContext('2d');
+  if (!ctx) return;
+
+  var dpr = Math.min(2, window.devicePixelRatio || 1);
+  var cssW = 0, cssH = 0;
+  var N = 0;
+  var bars = [];
+
+  var ac = null, srcNode = null, analyser = null, data = null;
+  var failed = false;
+
+  function sizes() {
+    cssW = canvas.clientWidth || 200;
+    cssH = canvas.clientHeight || 34;
+    canvas.width = Math.max(1, Math.round(cssW * dpr));
+    canvas.height = Math.max(1, Math.round(cssH * dpr));
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    N = Math.max(12, Math.min(48, Math.floor(cssW / 6)));
+    bars = [];
+    for (var i = 0; i < N; i++) bars.push(2);
+  }
+  sizes();
+
+  // ② 主题色（跟随换肤，换主题时自动刷新）
+  var colorA = '#ff0033', colorB = '#00e5ff';
+  function readColors() {
+    try {
+      var cs = getComputedStyle(document.documentElement);
+      var a = cs.getPropertyValue('--primary').trim();
+      var b = cs.getPropertyValue('--accent').trim();
+      if (a) colorA = a;
+      if (b) colorB = b;
+    } catch (e) {}
+  }
+  readColors();
+  if (window.MutationObserver) {
+    var lastPrimary = colorA;
+    new MutationObserver(function () {
+      var now = '';
+      try { now = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim(); } catch (e) {}
+      if (now && now !== lastPrimary) { lastPrimary = now; readColors(); }
+    }).observe(document.documentElement, { attributes: true, attributeFilter: ['style'] });
+  }
+
+  // ③ 绘制
+  function roundTopBar(x, y, w, h) {
+    var r = Math.min(2, w / 2, h / 2);
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.lineTo(x + w - r, y);
+    ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+    ctx.lineTo(x + w, y + h);
+    ctx.lineTo(x, y + h);
+    ctx.lineTo(x, y + r);
+    ctx.quadraticCurveTo(x, y, x + r, y);
+    ctx.fill();
+  }
+
+  function paint(alpha, heights) {
+    if (!cssW || !cssH) return;
+    ctx.clearRect(0, 0, cssW, cssH);
+    ctx.globalAlpha = alpha;
+    var grad = ctx.createLinearGradient(0, 0, cssW, 0);
+    grad.addColorStop(0, colorA);
+    grad.addColorStop(1, colorB);
+    ctx.fillStyle = grad;
+    var unit = cssW / N;
+    var barW = Math.max(2, unit * 0.6);
+    for (var i = 0; i < N; i++) {
+      var h = Math.max(2, heights[i] || 2);
+      var x = i * unit + (unit - barW) / 2;
+      roundTopBar(x, cssH - h, barW, h);
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  function drawIdle() {
+    for (var i = 0; i < N; i++) bars[i] = 2;
+    paint(0.35, bars);
+  }
+
+  function drawFrame() {
+    if (!analyser || !data) return;
+    analyser.getByteFrequencyData(data);
+    for (var i = 0; i < N; i++) {
+      var idx = Math.floor(Math.pow(i / N, 1.5) * 72) + 1;
+      if (idx > data.length - 1) idx = data.length - 1;
+      var v = data[idx] / 255;
+      var target = 2 + v * (cssH - 8);
+      bars[i] += (target - bars[i]) * 0.38;
+    }
+    paint(1, bars);
+  }
+
+  // ④ 音频分析：首次播放时挂载（在用户点击的时机创建，避开浏览器自动播放限制）
+  function ensureAnalyser() {
+    if (analyser) return true;
+    if (failed) return false;
+    try {
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) { failed = true; return false; }
+      if (!ac) ac = new AC();
+      if (ac.state === 'suspended' && ac.resume) { try { ac.resume(); } catch (e) {} }
+      if (!srcNode) srcNode = ac.createMediaElementSource(audio);
+      analyser = ac.createAnalyser();
+      analyser.fftSize = 256;
+      analyser.smoothingTimeConstant = 0.82;
+      srcNode.connect(analyser);
+      analyser.connect(ac.destination);   // 关键：接回输出，否则会没声音
+      data = new Uint8Array(analyser.frequencyBinCount);
+      return true;
+    } catch (e) {
+      failed = true;
+      analyser = null;
+      console.log('[ACG] 频谱不可用，音频保持原样播放');
+      try { if (srcNode && ac) srcNode.connect(ac.destination); } catch (e2) {}
+      return false;
+    }
+  }
+
+  // ⑤ 只在“播放中 + 侧栏打开 + 页面可见”时绘制，其余时间停机省电
+  var rafId = 0;
+  function stopLoop() { if (rafId) { cancelAnimationFrame(rafId); rafId = 0; } }
+  function tick() {
+    rafId = 0;
+    if (audio.paused || document.hidden || !side.classList.contains('open') || !analyser || !data) {
+      drawIdle();
+      return;
+    }
+    drawFrame();
+    rafId = requestAnimationFrame(tick);
+  }
+  function startLoop() {
+    if (!analyser || !data) { drawIdle(); return; }
+    if (!rafId) rafId = requestAnimationFrame(tick);
+  }
+
+  // ⑥ 事件接线
+  audio.addEventListener('play', function () {
+    if (!ensureAnalyser()) { canvas.classList.add('off'); return; }
+    startLoop();
+  });
+  audio.addEventListener('playing', function () { if (analyser) startLoop(); });
+  audio.addEventListener('pause', function () { stopLoop(); drawIdle(); });
+  audio.addEventListener('ended', function () { stopLoop(); drawIdle(); });
+
+  // 播放相关按钮被点击时先建立音频链路（在用户手势里创建，最不容易被浏览器拦截）
+  var btnIds = ['msPlay', 'msPrev', 'msNext'];
+  for (var b = 0; b < btnIds.length; b++) {
+    (function (id) {
+      var el = document.getElementById(id);
+      if (el) el.addEventListener('click', function () { ensureAnalyser(); });
+    })(btnIds[b]);
+  }
+
+  if (window.MutationObserver) {
+    new MutationObserver(function () {
+      if (side.classList.contains('open')) {
+        sizes();
+        if (!audio.paused) startLoop(); else drawIdle();
+      } else {
+        stopLoop();
+        drawIdle();
+      }
+    }).observe(side, { attributes: true, attributeFilter: ['class'] });
+  }
+
+  document.addEventListener('visibilitychange', function () {
+    if (document.hidden) stopLoop();
+    else if (!audio.paused && side.classList.contains('open')) startLoop();
+  });
+  window.addEventListener('resize', function () {
+    sizes();
+    if (audio.paused || !side.classList.contains('open')) drawIdle();
+  });
+
+  drawIdle();   // 初始先画一帧“安静”状态
+})();
