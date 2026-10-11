@@ -785,3 +785,18 @@ html.berserk-mode #particles { filter: sepia(1) saturate(7) hue-rotate(-38deg) b
 }
 
 html.acg-boot-lock, html.acg-boot-lock body { overflow: hidden !important; }
+
+/* ===================================================================
+   📊 电台频谱（放歌时音乐侧边栏出现的频谱条；整段删除即可完全回滚）
+   =================================================================== */
+.ms-spectrum {
+  display: block; width: 100%; height: 34px;
+  margin: 0 0 12px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, .03);
+  border: 1px solid rgba(var(--primary-rgb), .16);
+}
+.ms-spectrum.off { display: none; }
+@media (max-width: 768px) {
+  .ms-spectrum { height: 28px; margin-bottom: 10px; }
+}
