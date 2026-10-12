@@ -736,90 +736,278 @@ html.berserk-mode #particles { filter: sepia(1) saturate(7) hue-rotate(-38deg) b
 }
 
 /* ===================================================================
-   ⚡ 启动序列 · 黑客终端版（进站播放约 5 秒，点击/按键可跳过；整段删除即可回滚）
-   想换颜色：改下面的 --hack 即可（比如换成站点主题红 #ff0033）
+   ⚡ 启动序列 · 技术档案版（黑幕 → 过曝洗白 → 暖白底板 → 五步授权 → 色散故障揭幕）
+   风格参考 Hypergryph 式开机序列；整段连 main.js 第 25 节一起删除即可完全回滚。
+   改主色只需改下面的 --acgb-accent。
    =================================================================== */
 #acgBoot {
-  --hack: #00ff41;
-  --hack-soft: #4fd36e;
+  /* —— 配色：暖白技术档案（浅色阶段） —— */
+  --acgb-accent: #ff0033;          /* 强调色（本站主题红；想更接近参考可改 #ff7500） */
+  --acgb-bg: #e5e3df;
+  --acgb-ink: #0a0a0a;
+  --acgb-ink-soft: #3a3936;
+  --acgb-muted: #7a7873;
+  --acgb-hair: rgba(10, 10, 10, .16);
+  --acgb-hair-soft: rgba(10, 10, 10, .07);
+  --acgb-glitch-a: #ff3b30;
+  --acgb-glitch-b: #2971b8;
+  --acgb-box-bg: #0a0a0a;
+  --acgb-box-ink: #f2f1ee;
+
+  /* 字体全部取系统自带，零网络依赖、启动不抖动 */
+  --acgb-din: "Bahnschrift", "DIN Alternate", "DIN Condensed", "Archivo", "Oswald",
+    "Arial Narrow", "Liberation Sans Narrow", "Ubuntu Condensed", "Roboto Condensed",
+    "HarmonyOS Sans SC", "Microsoft YaHei", "PingFang SC", sans-serif;
+  --acgb-mono: "Cascadia Mono", "SFMono-Regular", "Consolas", "Menlo", "DejaVu Sans Mono",
+    "Liberation Mono", "Noto Sans Mono", ui-monospace, monospace;
+  --acgb-zh: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "HarmonyOS Sans SC",
+    "Source Han Sans SC", "Noto Sans CJK SC", "Noto Sans SC", "WenQuanYi Micro Hei", sans-serif;
+
   position: fixed; inset: 0; z-index: 1200;
-  background: radial-gradient(ellipse at 50% 42%, rgba(0,255,65,.07), transparent 62%), #04070a;
-  display: flex; align-items: center; justify-content: center;
-  font-family: ui-monospace, SFMono-Regular, Consolas, "Courier New", monospace;
-  cursor: pointer; overflow: hidden;
-  opacity: 1; transition: opacity .48s ease;
+  overflow: hidden; background: #000; color: var(--acgb-ink);
+  font-family: var(--acgb-din);
+  cursor: default; -webkit-user-select: none; user-select: none;
   -webkit-tap-highlight-color: transparent;
+  -webkit-font-smoothing: antialiased;
+  contain: layout paint style;
 }
-#acgBoot.fade { opacity: 0; }
-#acgBoot::before {
-  content: ""; position: absolute; inset: 0; opacity: .16; pointer-events: none;
-  background: repeating-linear-gradient(0deg, rgba(0,255,65,.05) 0 1px, transparent 1px 3px);
-}
-
-/* 背景数据流（几道下落的绿光，纯 transform 动画，很省） */
-.acgb-rain { position: absolute; inset: 0; overflow: hidden; opacity: .18; pointer-events: none; }
-.acgb-rain i {
-  position: absolute; top: -150px; width: 2px; height: 140px;
-  background: linear-gradient(180deg, transparent, var(--hack) 55%, transparent);
-  animation: acgbFall 1.5s linear infinite;
-}
-@keyframes acgbFall { from { transform: translateY(0); } to { transform: translateY(125vh); } }
-.acgb-rain i:nth-child(1) { left: 7%;  animation-delay: -.2s; }
-.acgb-rain i:nth-child(2) { left: 18%; animation-delay: -.9s; animation-duration: 1.8s; }
-.acgb-rain i:nth-child(3) { left: 29%; animation-delay: -1.4s; }
-.acgb-rain i:nth-child(4) { left: 42%; animation-delay: -.5s; animation-duration: 1.3s; }
-.acgb-rain i:nth-child(5) { left: 54%; animation-delay: -1.1s; }
-.acgb-rain i:nth-child(6) { left: 66%; animation-delay: -.3s; animation-duration: 1.7s; }
-.acgb-rain i:nth-child(7) { left: 77%; animation-delay: -1.6s; }
-.acgb-rain i:nth-child(8) { left: 88%; animation-delay: -.7s; animation-duration: 1.4s; }
-.acgb-rain i:nth-child(9) { left: 96%; animation-delay: -1.2s; }
-
-.acgb-inner { width: min(560px, 88vw); position: relative; }
-.acgb-line {
-  display: block; margin: 0 0 10px;
-  font-size: clamp(.78rem, 2.6vw, .95rem);
-  color: var(--hack-soft); letter-spacing: .5px;
-  opacity: 0; transform: translateY(6px);
-  transition: opacity .25s ease, transform .25s ease;
-}
-.acgb-line.show { opacity: 1; transform: none; }
-.acgb-line.ok { color: var(--hack); }
-.acgb-line.warn { color: #ff5c78; }
-.acgb-pct { color: var(--hack); }
-.acgb-line.current::after { content: "▍"; margin-left: 2px; animation: acgbBlink .7s steps(1, end) infinite; }
-@keyframes acgbBlink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
-
-.acgb-final { margin-top: 22px; opacity: 0; transform: translateY(8px); transition: opacity .3s ease, transform .3s ease; }
-.acgb-final.show { opacity: 1; transform: none; }
-.acgb-grant {
-  display: inline-block; font-size: clamp(1.35rem, 5vw, 1.9rem); font-weight: 900; letter-spacing: 5px;
-  color: var(--hack);
-  text-shadow: 0 0 16px rgba(0,255,65,.65), 2px 0 rgba(255,0,51,.35), -2px 0 rgba(0,229,255,.35);
-  animation: acgbGrant .3s steps(2, end);
-}
-@keyframes acgbGrant {
-  0% { transform: translate(-4px, 2px) skewX(-3deg); opacity: .4; }
-  100% { transform: translate(0, 0) skewX(0); opacity: 1; }
-}
-.acgb-welcome { display: block; margin-top: 10px; font-size: clamp(.95rem, 3vw, 1.15rem); letter-spacing: 2px; color: #cfe9d6; }
-.acgb-welcome b { color: var(--hack); }
-
-.acgb-bar { position: absolute; left: 0; bottom: -28px; height: 3px; width: 100%; background: rgba(0,255,65,.10); border-radius: 2px; overflow: hidden; }
-.acgb-bar i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--hack), #b8ff6b); transition: width 4.3s linear; }
-.acgb-bar.run i { width: 100%; }
-
-.acgb-power {
-  position: absolute; left: 10%; right: 10%; top: -14px; height: 2px;
-  background: var(--hack); box-shadow: 0 0 18px var(--hack);
-  transform: scaleX(0); animation: acgbPower .45s ease-out forwards;
-}
-@keyframes acgbPower {
-  0% { transform: scaleX(0); opacity: 1; }
-  70% { transform: scaleX(1); opacity: 1; }
-  100% { transform: scaleX(1); opacity: 0; }
-}
-
+#acgBoot.acgb-out { opacity: 0; transition: opacity .45s ease; }
 html.acg-boot-lock, html.acg-boot-lock body { overflow: hidden !important; }
+
+/* —— 幕 1：黑幕标识 —— */
+.acgb-scene { position: absolute; inset: 0; }
+.acgb-s1 { display: flex; align-items: center; justify-content: center; background: #000; }
+.acgb-s1-logo {
+  display: flex; align-items: center; gap: 16px;
+  color: #f4f3f0; opacity: 0; transform: translateY(10px);
+  animation: acgbLogoIn .75s cubic-bezier(.2, .7, .3, 1) .18s forwards;
+}
+.acgb-s1-mark {
+  width: 52px; height: 52px; border-radius: 14px;
+  display: grid; place-items: center;
+  background: var(--acgb-accent); color: #fff;
+  font-family: var(--acgb-zh); font-size: 1.6rem; font-weight: 900;
+}
+.acgb-s1-text {
+  font-size: clamp(.95rem, 2.6vw, 1.15rem); font-weight: 700;
+  letter-spacing: .32em; text-transform: uppercase;
+}
+@keyframes acgbLogoIn { to { opacity: 1; transform: none; } }
+
+/* —— 幕 2：过曝洗白 —— */
+.acgb-s2 { background: #fff; opacity: 0; pointer-events: none; }
+.acgb-s2.on { animation: acgbFlash 1s ease-out forwards; }
+@keyframes acgbFlash {
+  0% { opacity: 0; }
+  22% { opacity: 1; }
+  100% { opacity: 1; }
+}
+
+/* —— 幕 3：暖白「技术档案」底板 —— */
+.acgb-s3 { background: var(--acgb-bg); }
+/* 极淡的方格网，给底板一点"档案纸"的质感 */
+.acgb-s3::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .5;
+  background-image:
+    repeating-linear-gradient(0deg, var(--acgb-hair-soft) 0 1px, transparent 1px 64px),
+    repeating-linear-gradient(90deg, var(--acgb-hair-soft) 0 1px, transparent 1px 64px);
+}
+
+/* 四角定位角标 */
+.acgb-corners { position: absolute; inset: 0; pointer-events: none; }
+.acgb-c {
+  position: absolute; width: 26px; height: 26px;
+  border: 1px solid var(--acgb-hair);
+}
+.acgb-c.tl { top: 22px; left: 22px; border-right: 0; border-bottom: 0; }
+.acgb-c.tr { top: 22px; right: 22px; border-left: 0; border-bottom: 0; }
+.acgb-c.bl { bottom: 22px; left: 22px; border-right: 0; border-top: 0; }
+.acgb-c.br { bottom: 22px; right: 22px; border-left: 0; border-top: 0; }
+
+/* 左上品牌块：三行窄体大字，第三行带强调色 */
+.acgb-brand {
+  position: absolute; top: clamp(46px, 9vh, 84px); left: clamp(30px, 5vw, 68px);
+  opacity: 0; transform: translateY(10px);
+  animation: acgbRise .7s cubic-bezier(.2, .7, .3, 1) .1s forwards;
+}
+.acgb-brand-line {
+  font-size: clamp(1.5rem, 4.6vw, 2.6rem);
+  font-weight: 800; line-height: 1.12; letter-spacing: .01em;
+  text-transform: uppercase;
+}
+.acgb-brand-line.accent { color: var(--acgb-accent); }
+
+/* 品牌块下方的版本行 + 一段短横线 */
+/* 注意：位置不再硬编码，改为跟着品牌块自然排版——品牌块三行字号是 clamp 的，
+   硬编码 top 在小屏必然重叠（这是早先版本踩过的坑） */
+.acgb-meta {
+  display: flex; align-items: center; gap: 12px;
+  margin-top: clamp(10px, 2vh, 18px);
+  font-family: var(--acgb-mono);
+  font-size: clamp(.58rem, 1.5vw, .72rem);
+  letter-spacing: .22em; color: var(--acgb-muted); text-transform: uppercase;
+  opacity: 0; animation: acgbRise .7s ease .5s forwards;
+}
+.acgb-meta b { color: var(--acgb-accent); font-weight: 700; font-variant-numeric: tabular-nums; }
+.acgb-meta-rule { width: clamp(40px, 7vw, 76px); height: 1px; background: var(--acgb-hair); }
+
+/* 底部左右两处状态 */
+.acgb-steps, .acgb-foot {
+  position: absolute; bottom: clamp(26px, 5vh, 48px);
+  font-family: var(--acgb-mono);
+  font-size: clamp(.58rem, 1.5vw, .72rem);
+  letter-spacing: .22em; color: var(--acgb-muted); text-transform: uppercase;
+  opacity: 0; animation: acgbRise .7s ease .6s forwards;
+}
+.acgb-steps { left: clamp(30px, 5vw, 68px); }
+.acgb-steps b { color: var(--acgb-ink); font-weight: 700; font-variant-numeric: tabular-nums; }
+.acgb-foot { right: clamp(30px, 5vw, 68px); }
+.acgb-foot-sq {
+  display: inline-block; width: 26px; height: 10px;
+  background: var(--acgb-ink); margin-left: 8px; vertical-align: -1px;
+}
+@keyframes acgbRise { to { opacity: 1; transform: none; } }
+
+/* 舞台中央：环形准星 + 状态行 */
+.acgb-stage {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding-bottom: 26px;   /* 视觉重心略高于几何中心 */
+}
+/* 准星与文字块同心叠放：环在文字外侧，不把文字推下去 */
+.acgb-cross { position: relative; width: clamp(210px, 42vh, 300px); aspect-ratio: 1; flex: none; }
+.acgb-copy {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  width: min(86vw, 640px);
+}
+.acgb-ring {
+  position: absolute; inset: 0; border-radius: 50%;
+  border: 1px solid var(--acgb-hair);
+  /* 缺口留在正下方，转起来时不会挡住底部文字 */
+  mask-image: conic-gradient(from 0deg, #000 0deg 300deg, transparent 300deg 360deg);
+  -webkit-mask-image: conic-gradient(from 0deg, #000 0deg 300deg, transparent 300deg 360deg);
+  animation: acgbSpin 14s linear infinite;
+}
+.acgb-ring--in {
+  inset: 13%;
+  border-color: var(--acgb-accent); opacity: .55;
+  animation-duration: 9s; animation-direction: reverse;
+}
+.acgb-ring--mid { inset: 6%; }
+@keyframes acgbSpin { to { transform: rotate(360deg); } }
+.acgb-cross-dot {
+  position: absolute; left: 50%; top: 50%; width: 5px; height: 5px;
+  margin: -2.5px 0 0 -2.5px; border-radius: 50%;
+  background: var(--acgb-ink);
+}
+.acgb-cross-plus {
+  position: absolute; left: 50%; top: 50%;
+  width: 22px; height: 1px; background: var(--acgb-hair); transform: translate(-50%, -50%);
+}
+.acgb-cross-plus.v { width: 1px; height: 22px; }
+
+/* 逐字渐显：用不透明度而非截断，居中排版不会左右抖动 */
+.acgb-sub, .acgb-status { text-align: center; }
+.acgb-sub {
+  font-family: var(--acgb-mono);
+  font-size: clamp(.58rem, 1.9vw, .8rem);
+  letter-spacing: clamp(.14em, .8vw, .34em);
+  color: var(--acgb-ink-soft); text-transform: uppercase;
+  margin-bottom: 12px; min-height: 1.4em;
+}
+.acgb-status {
+  font-family: var(--acgb-zh);
+  font-size: clamp(.86rem, 2.4vw, 1.05rem);
+  letter-spacing: .16em; color: var(--acgb-ink); font-weight: 600;
+}
+/* 逐字渐显的单元。注意必须显式写 white-space:pre：
+   字符被包进 inline-block 的 span 后，HTML 里的空格会被折叠掉，
+   英文副标题会粘成一整串（这是实现逐字动画时最容易踩的坑）。 */
+.acgb-ch { display: inline-block; white-space: pre; opacity: 0; transform: translateY(.16em); }
+.acgb-sub.on .acgb-ch { animation: acgbCh .34s ease forwards; }
+.acgb-status.on .acgb-ch { animation: acgbCh .34s ease forwards; }
+@keyframes acgbCh { to { opacity: 1; transform: none; } }
+
+/* 需要人工确认时的提示与按钮 */
+.acgb-ask { margin-top: 26px; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.acgb-ask[hidden] { display: none !important; }
+.acgb-ask-hint {
+  font-family: var(--acgb-mono); font-size: .66rem; letter-spacing: .2em;
+  color: var(--acgb-muted); text-transform: uppercase;
+}
+.acgb-ask-btn {
+  font-family: var(--acgb-zh); font-size: .84rem; letter-spacing: .16em;
+  padding: 11px 30px; cursor: pointer;
+  background: var(--acgb-ink); color: var(--acgb-box-ink);
+  border: 1px solid var(--acgb-ink);
+  transition: background .2s ease, color .2s ease;
+}
+.acgb-ask-btn:hover { background: var(--acgb-accent); border-color: var(--acgb-accent); color: #fff; }
+.acgb-ask-btn:focus-visible { outline: 2px solid var(--acgb-accent); outline-offset: 3px; }
+
+/* 右上角跳过 */
+.acgb-skip {
+  position: absolute; top: clamp(18px, 3.5vh, 30px); right: clamp(18px, 3vw, 30px);
+  font-family: var(--acgb-mono); font-size: .64rem; letter-spacing: .24em;
+  padding: 8px 14px; cursor: pointer; text-transform: uppercase;
+  background: transparent; color: var(--acgb-muted);
+  border: 1px solid var(--acgb-hair);
+  transition: color .2s ease, border-color .2s ease;
+}
+.acgb-skip:hover { color: var(--acgb-ink); border-color: var(--acgb-ink); }
+.acgb-skip:focus-visible { outline: 2px solid var(--acgb-accent); outline-offset: 2px; }
+
+/* 底边进度条 */
+.acgb-progress {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 2px;
+  background: var(--acgb-hair-soft);
+}
+.acgb-progress i {
+  display: block; height: 100%; width: 0;
+  background: var(--acgb-accent);
+  transition: width .55s cubic-bezier(.3, .7, .3, 1);
+}
+
+/* —— 幕 4：色散故障揭幕 —— */
+.acgb-glitch { position: absolute; inset: 0; pointer-events: none; opacity: 0; }
+.acgb-glitch.on { animation: acgbGlitch .62s steps(2, end) forwards; }
+@keyframes acgbGlitch {
+  0%   { opacity: 0; transform: translate(0, 0); }
+  10%  { opacity: .9; transform: translate(-7px, 2px); }
+  22%  { opacity: .7; transform: translate(6px, -3px); }
+  36%  { opacity: .85; transform: translate(-4px, 0); }
+  52%  { opacity: .5; transform: translate(3px, 2px); }
+  70%  { opacity: .6; transform: translate(-2px, -1px); }
+  100% { opacity: 0; transform: translate(0, 0); }
+}
+.acgb-gbar { position: absolute; left: 0; right: 0; height: 3px; mix-blend-mode: multiply; }
+.acgb-gbar.a { background: var(--acgb-glitch-a); }
+.acgb-gbar.b { background: var(--acgb-glitch-b); }
+
+/* 终幕：黑底白字方框 */
+.acgb-box {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%) scale(.96);
+  padding: clamp(18px, 4vw, 30px) clamp(26px, 7vw, 54px);
+  background: var(--acgb-box-bg); color: var(--acgb-box-ink);
+  font-family: var(--acgb-mono);
+  font-size: clamp(.74rem, 2.4vw, 1rem); letter-spacing: .3em; text-transform: uppercase;
+  opacity: 0; transition: opacity .3s ease, transform .3s ease;
+  white-space: nowrap;
+}
+.acgb-box.on { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+
+/* 减少动态效果：不播开屏（main.js 已提前退出），这里再兜一层 */
+@media (prefers-reduced-motion: reduce) {
+  .acgb-ring, .acgb-ring--in { animation: none; }
+}
+
+/* 窄屏：品牌块缩一档，避免和中央准星挤在一起 */
+@media (max-width: 560px) {
+  .acgb-brand-line { font-size: 1.35rem; }
+  .acgb-meta { position: static; margin-top: 12px; }
+  .acgb-foot { display: none; }
+  .acgb-cross { width: min(78vw, 300px); }
+}
 
 /* ===================================================================
    📊 电台频谱（放歌时音乐侧边栏出现的频谱条；整段删除即可完全回滚）

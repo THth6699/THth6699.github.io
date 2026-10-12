@@ -1131,136 +1131,320 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
   }
 })();
 
-// ===== 25. ⚡ 启动序列 · 黑客终端版（约 5 秒；整段删除即可完全回滚，不影响任何其他功能） =====
+// ===== 25. ⚡ 启动序列 · 技术档案版 =====
+// 黑幕标识 → 过曝洗白 → 暖白「技术档案」底板 → 五步授权 → 色散故障揭幕。
+// 风格参考 Hypergryph 式开机序列（视觉语言为通用 UI 语汇，代码与文案均为本站原创）。
+// 整段删除 + 删掉 style.css 里的 #acgBoot 段即可完全回滚，不影响其他功能。
 (function () {
   var ONCE_PER_SESSION = true;   // true = 同一标签页会话只播一次；false = 每次刷新都播
-  var AUTO_END_MS = 4650;        // 从出现到开始淡出（毫秒）；总时长 ≈ 这个数 + 0.5 秒淡出
-  var TYPE_SPEED = 30;           // 打字机速度（毫秒/字）
+  var SPEED = 1;                 // 整体快慢，1 = 原始速度；0.5 = 快一倍，2 = 慢一倍
 
+  // 【可调】六幕文案。中文主字 + 英文等宽副标题
+  var STEPS = [
+    { zh: '需要访问许可',      en: 'ACCESS PERMISSION REQUIRED', ask: true  },
+    { zh: '身份资料确认',      en: 'IDENTITY VERIFICATION',      ask: true  },
+    { zh: '接收访问需求',      en: 'ACCESS REQUEST RECEIVED',    ask: false },
+    { zh: '开始读取权限',      en: 'PERMISSION READ STARTED',    ask: false },
+    { zh: '读取完毕 · 核验通过', en: 'READ COMPLETE · VERIFIED',  ask: false },
+    { zh: '欢迎 {name} 访问',  en: 'WELCOME, {name}',            ask: false }
+  ];
+
+  var BRAND = ['次元整研社', 'ACG LABORATORY', 'XIANJU TECH'];   // 左上三行（第三行用强调色）
+  var FOOT = 'POWERED BY 次元整研社';                            // 右下角
+  var BOX_TEXT = 'ACG LAB · ACCESS GRANTED';                     // 揭幕后的黑底白字框
+
+  var DEFAULT_NAME = '旅行者';
+
+  // 没开"减少动态效果"才播（这是无障碍要求，不做例外）
   if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-
+  // 已经播过就跳过（sessionStorage 被禁用时照样播）
   try {
-    if (ONCE_PER_SESSION && sessionStorage.getItem('acg_lab_boot')) return;
-    sessionStorage.setItem('acg_lab_boot', '1');
+    if (ONCE_PER_SESSION && sessionStorage.getItem('acg_lab_boot2')) return;
+    sessionStorage.setItem('acg_lab_boot2', '1');
   } catch (e) {}
+
+  // ── 取访问者昵称：优先读本地「次元名片」，读不到就用默认值 ──
+  function readName() {
+    try {
+      var raw = localStorage.getItem('acg_lab_profile');
+      if (!raw) return DEFAULT_NAME;
+      var p = JSON.parse(raw);
+      return (p && typeof p.username === 'string' && p.username.trim()) ? p.username.trim().slice(0, 12) : DEFAULT_NAME;
+    } catch (e) { return DEFAULT_NAME; }
+  }
+
+  // ── 轻音效：全部用 Web Audio 现场合成，不引入任何音频文件 ──
+  // 浏览器要求先有用户交互才允许出声，所以首次点击/按键之前是静音的。
+  var Audio_ = (function () {
+    var ac = null;
+    function ctx() {
+      if (ac) return ac;
+      try {
+        var AC = window.AudioContext || window.webkitAudioContext;
+        if (!AC) return null;
+        ac = new AC();
+      } catch (e) { ac = null; }
+      return ac;
+    }
+    function tone(freq, dur, gain, type, slideTo) {
+      var a = ctx(); if (!a) return;
+      if (a.state === 'suspended' && a.resume) { try { a.resume(); } catch (e) {} }
+      try {
+        var t = a.currentTime;
+        var osc = a.createOscillator(), g = a.createGain();
+        osc.type = type || 'sine';
+        osc.frequency.setValueAtTime(freq, t);
+        if (slideTo) osc.frequency.exponentialRampToValueAtTime(slideTo, t + dur);
+        g.gain.setValueAtTime(0.0001, t);
+        g.gain.exponentialRampToValueAtTime(gain || 0.05, t + 0.012);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+        osc.connect(g); g.connect(a.destination);
+        osc.start(t); osc.stop(t + dur + 0.02);
+      } catch (e) {}
+    }
+    function noise(dur, gain, cutoff, attack) {
+      var a = ctx(); if (!a) return;
+      if (a.state === 'suspended' && a.resume) { try { a.resume(); } catch (e) {} }
+      try {
+        var t = a.currentTime, len = Math.max(1, Math.floor(a.sampleRate * dur));
+        var buf = a.createBuffer(1, len, a.sampleRate), d = buf.getChannelData(0);
+        for (var i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / len);
+        var src = a.createBufferSource(); src.buffer = buf;
+        var f = a.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = cutoff || 1400;
+        var g = a.createGain();
+        var at = attack || 0.01;
+        g.gain.setValueAtTime(0.0001, t);
+        g.gain.linearRampToValueAtTime(gain || 0.05, t + at);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+        src.connect(f); f.connect(g); g.connect(a.destination);
+        src.start(t); src.stop(t + dur + 0.02);
+      } catch (e) {}
+    }
+    return {
+      tick:  function () { tone(1180, 0.035, 0.028, 'square'); },
+      step:  function () { tone(430, 0.20, 0.04, 'sine', 640); },
+      flash: function () { noise(0.55, 0.05, 800, 0.18); },
+      glitch: function () { noise(0.38, 0.07, 2200, 0.005); tone(90, 0.20, 0.035, 'sawtooth'); }
+    };
+  })();
+
+  // ── 预测量逐字渐显的每字间隔：先把文字放进 DOM 量宽度，避免量完闪烁 ──
+  function typeDelay(el, count, totalMs) {
+    var w0 = el.getBoundingClientRect().width;
+    if (!w0 || !count) return Math.max(12, Math.min(38, totalMs / Math.max(1, count)));
+    var probe = document.createElement('span');
+    probe.textContent = 'X';
+    probe.style.cssText = 'position:absolute;visibility:hidden;white-space:pre';
+    el.appendChild(probe);
+    var cw = probe.getBoundingClientRect().width;
+    el.removeChild(probe);
+    if (!cw) return 22;
+    return Math.max(12, Math.min(38, (totalMs * cw) / w0));
+  }
+
+  // ── 逐字渐显（用透明度而非截断，居中排版不会左右抖动）──
+  function typeIn(el, text, delay) {
+    el.textContent = '';
+    var frag = document.createDocumentFragment();
+    for (var i = 0; i < text.length; i++) {
+      var s = document.createElement('span');
+      s.className = 'acgb-ch';
+      s.textContent = text.charAt(i);
+      s.style.animationDelay = (i * delay) + 'ms';
+      frag.appendChild(s);
+    }
+    el.appendChild(frag);
+    // 强制一次重排后再加 .on，保证动画从头播（同一帧内加会不触发）
+    void el.offsetWidth;
+    el.classList.add('on');
+  }
 
   var finished = false;
   var timers = [];
-  var intervals = [];
   var root = document.documentElement;
+  var name = readName();
 
   function clearAll() {
-    var i;
-    for (i = 0; i < timers.length; i++) clearTimeout(timers[i]);
-    for (i = 0; i < intervals.length; i++) clearInterval(intervals[i]);
-    timers = []; intervals = [];
+    for (var i = 0; i < timers.length; i++) clearTimeout(timers[i]);
+    timers = [];
   }
-  function later(fn, ms) { timers.push(setTimeout(fn, ms)); }
+  function later(fn, ms) { timers.push(setTimeout(fn, ms * SPEED)); }
 
-  var boot = document.createElement('div');
-  boot.id = 'acgBoot';
-  boot.setAttribute('aria-hidden', 'true');
-  boot.innerHTML =
-    '<div class="acgb-rain"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>' +
-    '<div class="acgb-inner">' +
-      '<div class="acgb-power"></div>' +
-      '<span class="acgb-line">&gt; ssh visitor@acg-lab.xyz</span>' +
-      '<span class="acgb-line">&gt; 连接次元服务器 … OK</span>' +
-      '<span class="acgb-line">&gt; 身份验证：访客 · 权限 GUEST</span>' +
-      '<span class="acgb-line">&gt; 注入二次元浓度 … <b class="acgb-pct">0%</b></span>' +
-      '<span class="acgb-line warn">&gt; ⚠ 信号异常 · 二次元浓度超标</span>' +
-      '<span class="acgb-line">&gt; 绕过[内卷]防火墙 … 已绕过</span>' +
-      '<span class="acgb-line">&gt; 密钥 0xF3A9-C2B7 … 匹配成功</span>' +
-      '<span class="acgb-line">&gt; 解密社团档案 … 19 名同好在线</span>' +
-      '<span class="acgb-line ok">&gt; 加载模块：绘画/Cos/观影/整活 … OK</span>' +
-      '<span class="acgb-line ok" data-type="&gt; sudo 整活 --force"></span>' +
-      '<span class="acgb-line ok">&gt; 权限提升完成 · 整活特权已激活</span>' +
-      '<div class="acgb-final">' +
-        '<span class="acgb-grant">ACCESS GRANTED</span>' +
-        '<span class="acgb-welcome">欢迎回来，<b>旅行者</b> ✨</span>' +
+  // ── 搭 DOM ──
+  var el = document.createElement('div');
+  el.id = 'acgBoot';
+  el.setAttribute('role', 'dialog');
+  el.setAttribute('aria-modal', 'true');
+  el.setAttribute('aria-label', '次元整研社 · 启动序列');
+
+  var brandHtml = BRAND.map(function (line, i) {
+    return '<div class="acgb-brand-line' + (i === BRAND.length - 1 ? ' accent' : '') + '">' + line + '</div>';
+  }).join('');
+
+  var barsHtml = '';
+  for (var b = 0; b < 6; b++) {
+    barsHtml += '<div class="acgb-gbar a" style="top:' + (14 + b * 13) + '%"></div>' +
+                '<div class="acgb-gbar b" style="top:' + (19 + b * 13) + '%"></div>';
+  }
+
+  el.innerHTML =
+    '<div class="acgb-scene acgb-s3">' +
+      '<div class="acgb-corners"><i class="acgb-c bl"></i><i class="acgb-c br"></i></div>' +
+      '<div class="acgb-brand">' + brandHtml +
+        '<div class="acgb-meta">REV 0.7.0 · WEB PROFILE <span class="acgb-meta-rule"></span> <b class="acgb-clock">--:--:--</b></div>' +
       '</div>' +
-      '<div class="acgb-bar"><i></i></div>' +
-    '</div>';
-  document.body.appendChild(boot);
+      '<div class="acgb-steps">[ <b class="acgb-stepnow">00</b> / 0' + STEPS.length + ' ] BOOT</div>' +
+      '<div class="acgb-foot">' + FOOT + '<span class="acgb-foot-sq"></span></div>' +
+      '<div class="acgb-stage">' +
+        '<div class="acgb-cross">' +
+          '<div class="acgb-ring"></div>' +
+          '<div class="acgb-ring acgb-ring--mid"></div>' +
+          '<div class="acgb-ring acgb-ring--in"></div>' +
+          '<div class="acgb-cross-plus"></div>' +
+          '<div class="acgb-cross-plus v"></div>' +
+          '<div class="acgb-cross-dot"></div>' +
+          '<div class="acgb-copy">' +
+            '<div class="acgb-sub" aria-live="polite"></div>' +
+            '<div class="acgb-status"></div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="acgb-ask" hidden>' +
+          '<button class="acgb-ask-btn" type="button">确认继续</button>' +
+          '<div class="acgb-ask-hint">ENTER / SPACE / 点击继续</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="acgb-progress"><i></i></div>' +
+    '</div>' +
+    '<div class="acgb-scene acgb-s2"></div>' +
+    '<div class="acgb-scene acgb-s1">' +
+      '<div class="acgb-s1-logo">' +
+        '<span class="acgb-s1-mark">整</span>' +
+        '<span class="acgb-s1-text">次元整研社 · ACG LAB</span>' +
+      '</div>' +
+    '</div>' +
+    '<div class="acgb-glitch">' + barsHtml + '</div>' +
+    '<div class="acgb-box">' + BOX_TEXT + '</div>' +
+    '<button class="acgb-skip" type="button">跳过 SKIP</button>';
+
+  document.body.appendChild(el);
   root.classList.add('acg-boot-lock');
 
-  var lines = boot.querySelectorAll('.acgb-line');
-  var finalEl = boot.querySelector('.acgb-final');
-  var barEl = boot.querySelector('.acgb-bar');
-  var pctEl = boot.querySelector('.acgb-pct');
+  var s1 = el.querySelector('.acgb-s1');
+  var s2 = el.querySelector('.acgb-s2');
+  var glitch = el.querySelector('.acgb-glitch');
+  var box = el.querySelector('.acgb-box');
+  var subEl = el.querySelector('.acgb-sub');
+  var statusEl = el.querySelector('.acgb-status');
+  var askEl = el.querySelector('.acgb-ask');
+  var askBtn = el.querySelector('.acgb-ask-btn');
+  var stepNow = el.querySelector('.acgb-stepnow');
+  var clockEl = el.querySelector('.acgb-clock');
+  var barEl = el.querySelector('.acgb-progress i');
+  var skipBtn = el.querySelector('.acgb-skip');
 
-  // 每行出现的时间点（毫秒）。想整体调快/调慢就改这个数组
-  var schedule = [150, 420, 690, 960, 1480, 1760, 2040, 2320, 2600, 2880, 3520];
+  // 实时时钟，给底板一点"正在运行"的感觉
+  function tickClock() {
+    var d = new Date(), p = function (n) { return n < 10 ? '0' + n : '' + n; };
+    if (clockEl) clockEl.textContent = p(d.getHours()) + ':' + p(d.getMinutes()) + ':' + p(d.getSeconds());
+  }
+  tickClock();
+  var clockIv = setInterval(function () {
+    if (finished) { clearInterval(clockIv); return; }
+    tickClock();
+  }, 1000);
 
-  later(function () { if (barEl) barEl.classList.add('run'); }, 60);
+  // ── 幕次状态机 ──
+  var idx = 0, awaiting = false;
+  function goto(i, force) {
+    if (finished) return;
+    if (i >= STEPS.length) { reveal(); return; }
+    if (awaiting && !force) return;          // 等确认期间不接受自动推进
+    awaiting = false;
+    idx = i;
+    var st = STEPS[i];
+    var zh = st.zh.replace('{name}', name);
+    var en = st.en.replace('{name}', name.toUpperCase());
 
-  for (var i = 0; i < lines.length; i++) {
-    (function (line, idx) {
-      later(function () {
-        var prev = lines[idx - 1];
-        if (prev) prev.classList.remove('current');
-        line.classList.add('show', 'current');
-        var typed = line.getAttribute('data-type');
-        if (typed) startTyping(line, typed);
-      }, schedule[idx] || (150 + idx * 310));
-    })(lines[i], i);
+    askEl.hidden = !st.ask;
+    if (stepNow) stepNow.textContent = ('0' + (i + 1)).slice(-2);
+    if (barEl) barEl.style.width = Math.round(((i + 1) / STEPS.length) * 100) + '%';
+
+    if (i > 0) Audio_.step();
+
+    // 中文主字与英文副标题共用一套逐字渐显
+    subEl.classList.remove('on');
+    statusEl.classList.remove('on');
+    var d1 = typeDelay(subEl, en.length, Math.min(1200, 520 + en.length * 16));
+    var d2 = typeDelay(statusEl, zh.length, 420);
+    typeIn(subEl, en, d1);
+    typeIn(statusEl, zh, d2);
+
+    if (st.ask) {
+      awaiting = true;
+      if (askBtn) { try { askBtn.focus(); } catch (e) {} }
+      return;   // 等用户确认后才推进
+    }
+    later(function () { goto(idx + 1); }, 1150 + Math.min(600, en.length * 10));
   }
 
-  function startTyping(el, text) {
-    var n = 0;
-    var iv = setInterval(function () {
-      if (finished) { clearInterval(iv); return; }
-      n += 1;
-      el.textContent = text.slice(0, n);
-      if (n >= text.length) clearInterval(iv);
-    }, TYPE_SPEED);
-    intervals.push(iv);
+  // ── 幕 6 之后：色散故障揭幕 ──
+  function reveal() {
+    if (finished) return;
+    awaiting = false;
+    if (stepNow) stepNow.textContent = '0' + STEPS.length;
+    if (barEl) barEl.style.width = '100%';
+    if (skipBtn) skipBtn.style.opacity = '0';
+    Audio_.glitch();
+    glitch.classList.add('on');
+    box.classList.add('on');
+    later(function () { end(); }, 1400);
   }
 
-  // “浓度”数字 0 → 100%（在它那行出现之后才开始数）
-  later(function () {
-    var countIv = setInterval(function () {
-      if (finished || !pctEl) { clearInterval(countIv); return; }
-      var n = parseInt(pctEl.textContent, 10) || 0;
-      n += 1;
-      if (n >= 100) { n = 100; clearInterval(countIv); }
-      pctEl.textContent = n + '%';
-    }, 22);
-    intervals.push(countIv);
-  }, 990);
-
-  // 压轴：ACCESS GRANTED
-  later(function () {
-    var last = lines[lines.length - 1];
-    if (last) last.classList.remove('current');
-    if (finalEl) finalEl.classList.add('show');
-  }, 3820);
-
-  function finish() {
+  // ── 收尾 ──
+  function end() {
     if (finished) return;
     finished = true;
     clearAll();
-    for (var k = 0; k < lines.length; k++) {
-      lines[k].classList.add('show');
-      lines[k].classList.remove('current');
-      var t = lines[k].getAttribute('data-type');
-      if (t) lines[k].textContent = t;   // 打字打到一半被跳过 → 直接补全
-    }
-    if (finalEl) finalEl.classList.add('show');
-    if (barEl) barEl.classList.add('run');
-    boot.classList.add('fade');
+    awaiting = false;
+    el.classList.add('acgb-out');
     setTimeout(function () {
-      if (boot.parentNode) boot.parentNode.removeChild(boot);
+      if (el.parentNode) el.parentNode.removeChild(el);
       root.classList.remove('acg-boot-lock');
-    }, 500);
+    }, 460);
   }
 
-  later(finish, AUTO_END_MS);
-  setTimeout(finish, 8000);   // 终极保险：无论发生什么，8 秒内一定消失、一定解锁滚动
+  // ── 用户操作 ──
+  function confirm() {
+    if (finished) return;
+    Audio_.tick();
+    if (awaiting) goto(idx + 1, true);   // 强制推进当前确认步
+  }
+  if (askBtn) askBtn.addEventListener('click', function (e) { e.stopPropagation(); confirm(); });
+  if (skipBtn) skipBtn.addEventListener('click', function (e) { e.stopPropagation(); end(); });
+  el.addEventListener('click', function (e) {
+    // 点空白处只推进"待确认"步骤，不直接跳过整段（避免误触丢失动画）
+    if (!awaiting) return;
+    var t = e.target;
+    if (t && t.closest && t.closest('.acgb-skip, .acgb-ask-btn')) return;
+    confirm();
+  });
+  function onKey(e) {
+    if (e.key === 'Escape') { end(); return; }
+    if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
+      if (awaiting) { e.preventDefault(); confirm(); }
+    }
+  }
+  document.addEventListener('keydown', onKey);
 
-  boot.addEventListener('click', finish);
-  document.addEventListener('keydown', function onKey() {
-    finish();
+  // ── 起播 ──
+  // 幕 1（黑幕标识）→ 幕 2（过曝洗白）→ 幕 3（底板 + 第一步）
+  later(function () { if (s1) s1.style.display = 'none'; }, 1750);
+  later(function () { if (s2) s2.classList.add('on'); Audio_.flash(); }, 1800);
+  later(function () { if (s2) s2.style.display = 'none'; goto(0); }, 2900);
+
+  // 保险：无论中途发生什么，25 秒内一定消失并解锁滚动
+  setTimeout(function () { end(); }, 25000);
+  window.addEventListener('pagehide', function () {
     document.removeEventListener('keydown', onKey);
   });
 })();
