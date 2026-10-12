@@ -15,7 +15,26 @@
   --text-muted: #a8a8be;
   --text-dim: #8888a0;
   --primary-light: #ff8080;
+  /* 按钮渐变的两个端点与前景色。刻意与 --primary/--secondary 解耦：
+     主题色用在标题/描边等处可以很亮，但按钮要承载文字，必须保证对比度 >= 4.5:1 */
+  --btn-grad-from: #eb002c;
+  --btn-grad-to: #b3002a;
+  --on-primary: #ffffff;
 }
+
+/* ===== 各主题的按钮前景色与渐变端点 =====
+   取值按 WCAG 2.1 相对亮度公式实算，渐变两端对前景色的对比度都 >= 4.5:1。
+   用属性选择器而非 JS，配合 <head> 中的同步脚本可在首屏绘制前生效，顺带消除主题闪烁。 */
+html[data-theme="eva"]     { --btn-grad-from: #eb002c; --btn-grad-to: #b3002a; --on-primary: #ffffff; }
+html[data-theme="miku"]    { --btn-grad-from: #39c5bb; --btn-grad-to: #2aa79f; --on-primary: #06282a; }
+html[data-theme="genshin"] { --btn-grad-from: #ffcc00; --btn-grad-to: #e6b800; --on-primary: #241c38; }
+html[data-theme="sakura"]  { --btn-grad-from: #ff9db5; --btn-grad-to: #f7a8c0; --on-primary: #3a2230; }
+html[data-theme="cyber"]   { --btn-grad-from: #fcee0a; --btn-grad-to: #e0d409; --on-primary: #141414; }
+
+/* ===== [hidden] 兜底 =====
+   作者样式里的 .btn{display:inline-block} / .debug-output{display:grid} 会盖过 UA 的
+   [hidden]{display:none}，导致 #installBtn 与 #devDebugOutput 明明带 hidden 却一直显示、点了没反应。 */
+[hidden] { display: none !important; }
 
 /* ===== 基础重置 ===== */
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -35,8 +54,15 @@ img { max-width: 100%; display: block; }
 
 /* ===== 背景层 ===== */
 .bg-image {
-  position: fixed; inset: 0; z-index: -1;
+  /* inset 用负值向外扩：blur 会把边缘向内外扩散，如果贴齐视口四边会露出一圈透明"底边" */
+  position: fixed; inset: -20px; z-index: -1;
+  /* image-set 让支持 WebP 的浏览器（几乎所有现代浏览器）拿到 130KB 的版本，
+     不支持时自动回退到 477KB 的 JPEG */
   background-image: url('assets/images/bg.jpg');
+  background-image: image-set(
+    url('assets/images/bg.webp') type('image/webp'),
+    url('assets/images/bg.jpg') type('image/jpeg')
+  );
   background-size: cover; background-position: center;
   background-repeat: no-repeat;
   opacity: 0.20; filter: blur(3px);
@@ -91,8 +117,8 @@ img { max-width: 100%; display: block; }
 .theme-switcher { position: relative; }
 .theme-toggle { width: 38px; height: 38px; border-radius: 50%; border: 1px solid rgba(255,255,255,.15); background: rgba(255,255,255,.05); color: #fff; cursor: pointer; font-size: 1rem; transition: all .3s; display: grid; place-items: center; }
 .theme-toggle:hover { border-color: var(--primary); transform: rotate(30deg); }
-.theme-panel { position: absolute; top: 48px; right: 0; width: 180px; padding: 12px; background: var(--modal-bg); border: 1px solid rgba(var(--primary-rgb), .3); border-radius: 14px; box-shadow: 0 10px 30px rgba(0,0,0,.5); opacity: 0; pointer-events: none; transform: translateY(-10px); transition: all .3s; z-index: 150; }
-.theme-panel.open { opacity: 1; pointer-events: auto; transform: translateY(0); }
+.theme-panel { position: absolute; top: 48px; right: 0; width: 180px; padding: 12px; background: var(--modal-bg); border: 1px solid rgba(var(--primary-rgb), .3); border-radius: 14px; box-shadow: 0 10px 30px rgba(0,0,0,.5); opacity: 0; visibility: hidden; pointer-events: none; transform: translateY(-10px); transition: opacity .3s, visibility .3s, transform .3s; z-index: 150; }
+.theme-panel.open { opacity: 1; visibility: visible; pointer-events: auto; transform: translateY(0); }
 .theme-panel-title { font-size: .75rem; color: var(--text-dim); margin-bottom: 8px; letter-spacing: 1px; }
 .theme-option { display: block; width: 100%; padding: 8px 12px; margin-bottom: 4px; background: transparent; border: 1px solid transparent; border-radius: 8px; color: var(--text-muted); font-size: .85rem; cursor: pointer; text-align: left; transition: all .2s; }
 .theme-option:hover { background: rgba(var(--primary-rgb), .1); color: #fff; }
@@ -126,20 +152,19 @@ img { max-width: 100%; display: block; }
 .gallery-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
 .gallery-item { border-radius: 16px; overflow: hidden; position: relative; aspect-ratio: 16 / 9; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); }
 .gallery-item img { width: 100%; height: 100%; object-fit: cover; transition: transform .4s ease; }
-.gallery-item:hover img { transform: scale(1.1); }
 
 /* ===== 加入区域 ===== */
 .join-box { background: linear-gradient(135deg, rgba(var(--primary-rgb), .12), rgba(var(--secondary-rgb), .08)); border: 1px solid rgba(var(--primary-rgb), .25); border-radius: 28px; padding: 64px 32px; text-align: center; }
 .join-actions, .social-matrix { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-top: 32px; }
-.btn-qq { background: linear-gradient(135deg, #12b7f5, #0099ff); color: #fff; box-shadow: 0 8px 30px rgba(18,183,245,.4); }
+.btn-qq { background: linear-gradient(135deg, #12b7f5, #0099ff); color: #08243a; box-shadow: 0 8px 30px rgba(18,183,245,.4); }
 .btn-qq:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(18,183,245,.5); }
-.btn-bilibili { background: linear-gradient(135deg, #fb7299, #ff9db5); color: #fff; box-shadow: 0 8px 30px rgba(251,114,153,.4); }
+.btn-bilibili { background: linear-gradient(135deg, #fb7299, #ff9db5); color: #3a1f2b; box-shadow: 0 8px 30px rgba(251,114,153,.4); }
 .btn-bilibili:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(251,114,153,.5); }
 .join-note { margin-top: 24px; font-size: .85rem; color: var(--text-dim); }
 
 /* ===== 按钮 ===== */
 .btn { display: inline-block; padding: 14px 32px; border-radius: 999px; font-weight: 700; font-size: .95rem; transition: all .3s; cursor: pointer; border: none; }
-.btn-primary { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #fff; box-shadow: 0 8px 30px rgba(var(--primary-rgb), .45); }
+.btn-primary { background: linear-gradient(135deg, var(--btn-grad-from), var(--btn-grad-to)); color: var(--on-primary); box-shadow: 0 8px 30px rgba(var(--primary-rgb), .45); }
 .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(var(--secondary-rgb), .55); }
 .btn-ghost { background: rgba(255,255,255,.05); color: var(--text-main); border: 1px solid rgba(255,255,255,.15); }
 .btn-ghost:hover { background: rgba(255,255,255,.1); border-color: rgba(255,255,255,.3); }
@@ -158,8 +183,8 @@ img { max-width: 100%; display: block; }
 .stat span { font-size: .85rem; color: var(--text-dim); }
 
 /* ===== 模态框 ===== */
-.modal-overlay { position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,.7); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity .3s; }
-.modal-overlay.active { opacity: 1; pointer-events: auto; }
+.modal-overlay { position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,.7); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; pointer-events: none; transition: opacity .3s, visibility .3s; }
+.modal-overlay.active { opacity: 1; visibility: visible; pointer-events: auto; }
 .modal-card { background: var(--modal-bg); border: 1px solid rgba(var(--primary-rgb), .3); border-radius: 24px; padding: 40px; width: 90%; max-width: 420px; position: relative; transform: translateY(20px) scale(.95); transition: all .3s cubic-bezier(.22,.61,.36,1); box-shadow: 0 20px 60px rgba(0,0,0,.5); }
 .modal-overlay.active .modal-card { transform: translateY(0) scale(1); }
 .modal-close { position: absolute; top: 16px; right: 16px; background: none; border: none; color: var(--text-dim); font-size: 1.2rem; cursor: pointer; transition: color .2s; z-index: 10; }
@@ -169,7 +194,7 @@ img { max-width: 100%; display: block; }
 .modal-subtitle { font-size: .85rem; color: var(--text-dim); }
 .input-group { margin-bottom: 20px; text-align: left; }
 .input-group label { display: block; font-size: .8rem; color: var(--text-muted); margin-bottom: 8px; font-weight: 600; }
-.input-group input, .input-group select { width: 100%; padding: 14px 16px; border-radius: 12px; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); color: #fff; font-size: .95rem; outline: none; transition: border .2s; font-family: inherit; }
+.input-group input, .input-group select { width: 100%; padding: 14px 16px; border-radius: 12px; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); color: #fff; font-size: 1rem; outline: none; transition: border .2s; font-family: inherit; }
 .input-group input:focus, .input-group select:focus { border-color: var(--primary); }
 .input-group select option { background: var(--modal-bg); color: #fff; }
 .modal-footer { text-align: center; margin-top: 24px; font-size: .85rem; color: var(--text-dim); }
@@ -196,8 +221,8 @@ img { max-width: 100%; display: block; }
 }
 
 /* ===== 灯箱 ===== */
-.lightbox-overlay { position: fixed; inset: 0; z-index: 999; background: rgba(0,0,0,.9); backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity .3s; }
-.lightbox-overlay.active { opacity: 1; pointer-events: auto; }
+.lightbox-overlay { position: fixed; inset: 0; z-index: 999; background: rgba(0,0,0,.9); backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; pointer-events: none; transition: opacity .3s, visibility .3s; }
+.lightbox-overlay.active { opacity: 1; visibility: visible; pointer-events: auto; }
 .lightbox-overlay img { max-width: 90%; max-height: 85%; border-radius: 12px; box-shadow: 0 10px 40px rgba(var(--primary-rgb), .4); transform: scale(0.9); transition: transform .3s; }
 .lightbox-overlay.active img { transform: scale(1); }
 .lightbox-close { position: absolute; top: 20px; right: 24px; color: #fff; font-size: 2rem; cursor: pointer; background: none; border: none; transition: transform .2s; }
@@ -262,7 +287,10 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .activity-body h3 { margin-bottom:5px; }
 .activity-body p { color:var(--text-muted); font-size:.92rem; }
 .gallery-item { position:relative; overflow:hidden; border-radius:16px; background:var(--modal-bg); }
-.gallery-item img { transition:transform .45s ease; width:100%; aspect-ratio:4/3; object-fit:cover; }
+/* <picture> 只是候选源容器，本身不参与布局；必须显式撑满，
+   否则 <img> 的 height:100% 会失去可解析的父高度 */
+.gallery-item picture { display:block; width:100%; height:100%; }
+.gallery-item img { transition:transform .45s ease; width:100%; height:100%; object-fit:cover; }
 .gallery-item span { position:absolute; left:0; right:0; bottom:0; padding:12px 14px; background:linear-gradient(transparent,rgba(0,0,0,.85)); color:#fff; text-align:left; font-size:.85rem; }
 .gallery-item:hover img { transform:scale(1.06); }
 .empty-state { text-align:center; color:var(--text-dim); padding:30px; border:1px dashed rgba(255,255,255,.1); border-radius:16px; }
@@ -270,8 +298,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .tool-card p { flex:1; margin-bottom:18px; }
 .tool-card .btn { align-self:stretch; }
 .scroll-progress { position:fixed; left:0; top:0; height:3px; width:100%; z-index:1001; transform:scaleX(0); transform-origin:left; background:linear-gradient(90deg,var(--primary),var(--accent)); pointer-events:none; }
-.back-top { position:fixed; right:22px; bottom:24px; z-index:90; width:44px; height:44px; border:1px solid rgba(var(--primary-rgb),.35); border-radius:50%; background:rgba(var(--modal-bg),.9); color:var(--text-main); cursor:pointer; opacity:0; transform:translateY(15px); pointer-events:none; transition:.25s; backdrop-filter:blur(10px); }
-.back-top.show { opacity:1; transform:translateY(0); pointer-events:auto; }
+.back-top { position:fixed; right:22px; bottom:24px; z-index:90; width:44px; height:44px; border:1px solid rgba(var(--primary-rgb),.35); border-radius:50%; background:rgba(var(--modal-bg),.9); color:var(--text-main); cursor:pointer; opacity:0; visibility:hidden; transform:translateY(15px); pointer-events:none; transition:opacity .25s, visibility .25s, transform .25s, color .2s, border-color .2s; backdrop-filter:blur(10px); }
+.back-top.show { opacity:1; visibility:visible; transform:translateY(0); pointer-events:auto; }
 .back-top:hover { color:var(--primary); border-color:var(--primary); }
 @media (max-width:768px) {
   .activity-list::before { left:21px; }
@@ -551,7 +579,14 @@ kbd{padding:3px 7px;border:1px solid rgba(255,255,255,.18);border-bottom-width:2
   border-radius: 999px;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
   user-select: none;
-  opacity: 0.5;
+  /* 原先常驻 0.5 透明度，把 0.72rem 的百分比文字压到约 2.8:1 对比度。
+     改为默认 0.75，悬停/键盘聚焦时完全不透明。 */
+  opacity: 0.75;
+  transition: opacity 0.2s ease;
+}
+.zoom-controls:hover,
+.zoom-controls:focus-within {
+  opacity: 1;
 }
 
 .zoom-controls button {

@@ -7,18 +7,55 @@
   <title>次元整研社 | 仙居技师学院二次元文化研究社</title>
   <meta name="description" content="仙居技师学院二次元文化研究社——次元整研社。绘画、Cos、观影，用爱发电，专注整活！" />
   <meta name="robots" content="index,follow" />
+  <link rel="canonical" href="https://acg-lab.xyz/" />
+
   <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="次元整研社" />
   <meta property="og:title" content="次元整研社 | 仙居技师学院二次元文化研究社" />
   <meta property="og:description" content="绘画、Cos、观影、技术共建，一个属于我们的次元基地。" />
-  <meta property="og:image" content="assets/images/bg.jpg" />
+  <meta property="og:url" content="https://acg-lab.xyz/" />
+  <meta property="og:image" content="https://acg-lab.xyz/assets/images/bg.jpg" />
+  <meta property="og:image:alt" content="次元整研社 · 社团主视觉" />
+  <meta property="og:locale" content="zh_CN" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="次元整研社 | 仙居技师学院二次元文化研究社" />
+  <meta name="twitter:description" content="绘画、Cos、观影、技术共建，一个属于我们的次元基地。" />
+  <meta name="twitter:image" content="https://acg-lab.xyz/assets/images/bg.jpg" />
+
   <meta name="theme-color" content="#0b0b14" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="次元整研社" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✨</text></svg>" />
+
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="icon.svg" type="image/svg+xml" />
+  <link rel="icon" href="assets/images/icon-192.png" sizes="192x192" type="image/png" />
+  <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png" />
 
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+  <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
+  <link rel="dns-prefetch" href="https://giscus.app" />
+  <link rel="dns-prefetch" href="https://busuanzi.ibruce.info" />
+  <link rel="dns-prefetch" href="https://cdn.bootcdn.net" />
+  <link rel="dns-prefetch" href="https://unpkg.com" />
+
   <link rel="stylesheet" href="style.css" />
+
+  <!-- 主题首屏防闪：在绘制前同步套用已保存主题，避免非默认主题先闪一下 EVA 红黑 -->
+  <script>
+    (function () {
+      var THEME_COLORS = {
+        eva: '#0b0b14', miku: '#071113', genshin: '#121020', sakura: '#1f1822', cyber: '#0a0a0a'
+      };
+      var key = 'eva';
+      try { key = localStorage.getItem('acg_lab_theme') || 'eva'; } catch (_) {}
+      if (!THEME_COLORS[key]) key = 'eva';
+      document.documentElement.setAttribute('data-theme', key);
+      var meta = document.querySelector('meta[name="theme-color"]');
+      if (meta) meta.setAttribute('content', THEME_COLORS[key]);
+    })();
+  </script>
 </head>
 <body>
   <a class="skip-link" href="#main-content">跳到主要内容</a>
@@ -150,9 +187,9 @@
           <button class="filter-btn" data-gallery-filter="活动">活动</button>
         </div>
         <div class="gallery-grid reveal" id="galleryGrid">
-          <button class="gallery-item" type="button" data-gallery-category="绘画" aria-label="查看绘画作品"><img src="assets/images/gallery1.jpg" alt="绘画作品" loading="lazy"><span>绘画作品 · 投稿</span></button>
-          <button class="gallery-item" type="button" data-gallery-category="Cos" aria-label="查看 Cos 场照"><img src="assets/images/gallery2.jpg" alt="Cos场照" loading="lazy"><span>Cos 场照 · 活动记录</span></button>
-          <button class="gallery-item" type="button" data-gallery-category="活动" aria-label="查看活动留影"><img src="assets/images/gallery3.jpg" alt="活动留影" loading="lazy"><span>社团活动 · 花絮</span></button>
+          <button class="gallery-item" type="button" data-gallery-category="绘画" aria-label="查看绘画作品"><picture><source srcset="assets/images/gallery1.webp" type="image/webp"><img src="assets/images/gallery1.jpg" alt="绘画作品" loading="lazy" decoding="async" width="1257" height="1613"></picture><span>绘画作品 · 投稿</span></button>
+          <button class="gallery-item" type="button" data-gallery-category="Cos" aria-label="查看 Cos 场照"><picture><source srcset="assets/images/gallery2.webp" type="image/webp"><img src="assets/images/gallery2.jpg" alt="Cos场照" loading="lazy" decoding="async" width="960" height="1283"></picture><span>Cos 场照 · 活动记录</span></button>
+          <button class="gallery-item" type="button" data-gallery-category="活动" aria-label="查看活动留影"><picture><source srcset="assets/images/gallery3.webp" type="image/webp"><img src="assets/images/gallery3.jpg" alt="活动留影" loading="lazy" decoding="async" width="1259" height="1354"></picture><span>社团活动 · 花絮</span></button>
         </div>
         <div class="empty-state" id="galleryEmpty" hidden>这个分类暂时还没有内容，欢迎投稿！</div>
       </div>
@@ -193,7 +230,7 @@
           <h2 class="section-title">准备好<span class="grad">穿越次元</span>了吗？</h2>
           <p class="section-desc">仙居技师学院在校生，不限专业、不限年级、零基础也完全OK！<br />加入官方群聊，获取第一手活动资讯。</p>
           <div class="social-matrix">
-            <a href="assets/images/qq-group.png" target="_blank" rel="noopener noreferrer" class="btn btn-qq">🐧 一键加QQ群（长按识别）</a>
+            <a href="assets/images/qq-group.webp" target="_blank" rel="noopener noreferrer" class="btn btn-qq">🐧 一键加QQ群（长按识别）</a>
             <a href="https://space.bilibili.com/485506870" target="_blank" rel="noopener noreferrer" class="btn btn-bilibili">📺 B站主页</a>
           </div>
           <p class="join-note">📮 加群请备注：班级 + 昵称 + 方向（绘画/Cos/观影）。群号：1124255837</p>
@@ -238,7 +275,7 @@
       </div>
       <p class="footer-copy">
         © <span id="year">2026</span> 次元整研社 · 用爱发电，Made with ✨ <br>
-        <button class="version-link" id="devCenterFooterBtn" type="button" aria-label="打开网站开发者中心">v0.5</button>
+        <button class="version-link" id="devCenterFooterBtn" type="button" aria-label="打开网站开发者中心">v0.6</button>
         <span class="footer-dot">·</span>
         <span id="busuanzi_container_site_pv" style="font-size:0.75rem; opacity:0.7;">本站总访问量 <span id="busuanzi_value_site_pv">0</span> 次</span>
       </p>
@@ -250,14 +287,15 @@
     <div class="modal-card dev-center-card">
       <button class="modal-close" id="devCenterClose" aria-label="关闭网站开发者中心">✕</button>
       <div class="modal-header">
-        <p class="section-label">DEVELOPER CENTER · v0.5</p>
+        <p class="section-label">DEVELOPER CENTER · v0.6</p>
         <h2 id="devCenterTitle">网站开发者中心</h2>
         <p class="modal-subtitle">这里记录本站的技术栈、更新历史与运行状态。</p>
       </div>
       <div class="dev-center-grid">
         <article class="dev-panel dev-panel-wide"><div class="dev-panel-title">🧩 技术栈</div><div class="tech-tags"><span>HTML</span><span>CSS</span><span>JavaScript</span><span>GitHub Pages</span><span>PWA</span></div></article>
         <article class="dev-panel"><div class="dev-panel-title">📅 更新日志</div><div class="changelog">
-           <div class="changelog-item"><strong>v0.5</strong>1.更丝滑的动画2.添加了首屏入站动画<span></span></div>
+          <div class="changelog-item"><strong>v0.6</strong><span>修复 PWA 无法安装（补回 manifest 引用与图标）、修好「安装本站」与调试面板的显示开关；修正搜索引擎与分享卡片信息；补齐按钮对比度、键盘操作与滚动锁；图片转 WebP，体积减少约 69%。</span></div>
+          <div class="changelog-item"><strong>v0.5</strong><span>更丝滑的动画，添加首屏入站动画。</span></div>
           <div class="changelog-item"><strong>v0.4</strong><span>增加音乐侧边栏，一起来投稿你喜欢的音乐吧！</span></div>
           <div class="changelog-item"><strong>v0.3</strong><span>新增隐藏式开发者中心、运行状态检测与快捷键入口。</span></div>
           <div class="changelog-item"><strong>v0.2</strong><span>完成 GitHub Pages 生产化基础、PWA、SEO、移动端与交互优化。</span></div>
@@ -373,11 +411,12 @@
 
   <script defer src="main.js"></script>
   <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-<!-- ===== 🔍 页面缩放控件 ===== -->
-<div class="zoom-controls" id="zoomControls" role="group" aria-label="页面缩放">
-  <button type="button" id="zoomOut" aria-label="缩小页面" title="缩小">−</button>
-  <span class="zoom-value" id="zoomValue">100%</span>
-  <button type="button" id="zoomIn" aria-label="放大页面" title="放大">＋</button>
-</div>
+
+  <!-- ===== 🔍 页面缩放控件（唯一实现，逻辑在 main.js） ===== -->
+  <div class="zoom-controls" id="zoomControls" role="group" aria-label="页面缩放">
+    <button type="button" id="zoomOut" aria-label="缩小页面" title="缩小">−</button>
+    <span class="zoom-value" id="zoomValue" aria-live="polite">100%</span>
+    <button type="button" id="zoomIn" aria-label="放大页面" title="放大">＋</button>
+  </div>
 </body>
 </html>

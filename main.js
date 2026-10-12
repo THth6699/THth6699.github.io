@@ -4,8 +4,10 @@ const themes = {
   miku: { name: '初音未来', vars: { '--primary': '#39c5bb', '--primary-rgb': '57, 197, 187', '--secondary': '#007070', '--secondary-rgb': '0, 112, 112', '--accent': '#00ffcc', '--accent-rgb': '0, 255, 204', '--bg-color': '#071113', '--bg-rgb': '7, 17, 19', '--modal-bg': '#0e1f22', '--text-main': '#e6f5f4', '--text-muted': '#a0c4c2', '--text-dim': '#6a8a88', '--primary-light': '#7dd9d3' } },
   genshin: { name: '原神星空', vars: { '--primary': '#ffcc00', '--primary-rgb': '255, 204, 0', '--secondary': '#4a3b6b', '--secondary-rgb': '74, 59, 107', '--accent': '#ffffff', '--accent-rgb': '255, 255, 255', '--bg-color': '#121020', '--bg-rgb': '18, 16, 32', '--modal-bg': '#1d1a2e', '--text-main': '#f5f0e8', '--text-muted': '#c4b8d6', '--text-dim': '#8a7fa0', '--primary-light': '#ffdd55' } },
   sakura: { name: '樱花治愈', vars: { '--primary': '#ff9db5', '--primary-rgb': '255, 157, 181', '--secondary': '#fbc2eb', '--secondary-rgb': '251, 194, 235', '--accent': '#a6c1ee', '--accent-rgb': '166, 193, 238', '--bg-color': '#1f1822', '--bg-rgb': '31, 24, 34', '--modal-bg': '#2c2431', '--text-main': '#fdf5fa', '--text-muted': '#d4c4d0', '--text-dim': '#9a8a98', '--primary-light': '#ffc0d0' } },
-  cyber: { name: '赛博朋克', vars: { '--primary': '#fcee0a', '--primary-rgb': '252, 238, 10', '--secondary': '#ff003c', '--secondary-rgb': '255, 0, 60', '--accent': '#00f0ff', '--accent-rgb': '0, 240, 255', '--bg-color': '#0a0a0a', '--bg-rgb': '10, 10, 10', '--modal-bg': '#161616', '--text-main': '#f5f5f5', '--text-muted': '#b0b0b0', '--text-dim': '#707070', '--primary-light': '#fff68f' } }
+  cyber: { name: '赛博朋克', vars: { '--primary': '#fcee0a', '--primary-rgb': '252, 238, 10', '--secondary': '#ff003c', '--secondary-rgb': '255, 0, 60', '--accent': '#00f0ff', '--accent-rgb': '0, 240, 255', '--bg-color': '#0a0a0a', '--bg-rgb': '10, 10, 10', '--modal-bg': '#161616', '--text-main': '#f5f5f5', '--text-muted': '#b0b0b0', '--text-dim': '#949494', '--primary-light': '#fff68f' } }
 };
+
+const THEME_COLORS = { eva: '#0b0b14', miku: '#071113', genshin: '#121020', sakura: '#1f1822', cyber: '#0a0a0a' };
 
 function applyTheme(themeKey) {
   const theme = themes[themeKey];
@@ -13,6 +15,14 @@ function applyTheme(themeKey) {
   const root = document.documentElement;
   for (const [key, value] of Object.entries(theme.vars)) {
     root.style.setProperty(key, value);
+  }
+  // 同步 data-theme：CSS 里 html[data-theme="…"] 定义了按钮前景色与渐变端点。
+  // main.js 用内联 style 设置变量（优先级更高，会正确覆盖属性选择器），
+  // 这里保留属性只是为了让 CSS 侧与 JS 侧始终指向同一套主题。
+  root.setAttribute('data-theme', themeKey);
+  const themeColorMeta = document.querySelector('meta[name="theme-color"]');
+  if (themeColorMeta && THEME_COLORS[themeKey]) {
+    themeColorMeta.setAttribute('content', THEME_COLORS[themeKey]);
   }
   try { localStorage.setItem('acg_lab_theme', themeKey); } catch (_) {}
   document.querySelectorAll('.theme-option').forEach(btn => {
@@ -40,12 +50,59 @@ if (themeToggle && themePanel) {
       applyTheme(btn.dataset.theme);
     });
   });
-  const savedTheme = localStorage.getItem('acg_lab_theme');
+  // localStorage 在隐私模式/禁用存储时会直接抛异常。此处位于顶层作用域，
+  // 一旦抛出，其后的导航、reveal、粒子、名片、灯箱、音乐、缩放、GSAP/Lenis 全部不会绑定。
+  let savedTheme = null;
+  try { savedTheme = localStorage.getItem('acg_lab_theme'); } catch (_) {}
   if (savedTheme && themes[savedTheme]) {
     applyTheme(savedTheme);
+  } else {
+    // 与 <head> 中的防闪脚本保持一致：即使没有保存值，也要让 data-theme 有明确的取值
+    document.documentElement.setAttribute('data-theme', 'eva');
   }
   themeToggle.setAttribute('aria-expanded', 'false');
 }
+
+// ===== 0.4 🐞 调试日志开关 =====
+// 以前有 7 处 console.log 直接留在生产代码里，控制台会比较吵。
+// 需要排查时在浏览器控制台执行 __acgDebug = true 即可恢复输出。
+let __acgDebug = false;
+try { __acgDebug = localStorage.getItem('acg_lab_debug') === '1'; } catch (_) {}
+try {
+  Object.defineProperty(window, '__acgDebug', {
+    get() { return __acgDebug; },
+    set(v) { __acgDebug = !!v; try { localStorage.setItem('acg_lab_debug', v ? '1' : '0'); } catch (_) {} }
+  });
+} catch (_) {}
+const dbg = (...args) => { if (__acgDebug) console.log(...args); };
+
+// ===== 0.5 🔒 共享滚动锁（引用计数） =====
+// 原先每个弹窗各自执行 document.body.style.overflow=''，5 个弹窗共用同一个字符串属性，
+// 于是「关掉任意一个（哪怕它本来就没打开）」都会把别的弹窗的滚动锁一起清掉。
+// 这里改为计数：只有最后一个持锁者释放时才真正解锁。
+const __scrollLock = {
+  count: 0,
+  activeFlag() {
+    return document.querySelector('.modal-overlay.active, .lightbox-overlay.active') !== null;
+  },
+  lock() {
+    this.count += 1;
+    __scrollLock.lock();
+    // Lenis 用滚轮事件自行驱动滚动，光设 body.overflow 锁不住，必须显式停掉
+    if (window.__lenis && typeof window.__lenis.stop === 'function') {
+      try { window.__lenis.stop(); } catch (_) {}
+    }
+  },
+  unlock() {
+    this.count = Math.max(0, this.count - 1);
+    if (this.count === 0) {
+      __scrollLock.unlock();
+      if (window.__lenis && typeof window.__lenis.start === 'function') {
+        try { window.__lenis.start(); } catch (_) {}
+      }
+    }
+  }
+};
 
 // ===== 1. 导航栏滚动 =====
 const nav = document.getElementById('nav');
@@ -188,12 +245,12 @@ function openProfileModal() {
     authDirection.value = profile.direction || '全能';
   }
   authModal.classList.add('active');
-  document.body.style.overflow = 'hidden';
+  __scrollLock.lock();
   setTimeout(() => authUsername.focus(), 0);
 }
 function closeProfileModal() {
   authModal.classList.remove('active');
-  document.body.style.overflow = '';
+  __scrollLock.unlock();
   authForm.reset();
 }
 
@@ -226,27 +283,44 @@ if (loginBtn && authModal && authForm) {
 document.getElementById('year').textContent = new Date().getFullYear();
 
 // ===== 8. 图片灯箱 =====
-const galleryImages = document.querySelectorAll('.gallery-item img');
-if (galleryImages.length > 0) {
+// 监听必须绑在 .gallery-item 这个 <button> 上，而不是里面的 <img>：
+// 可聚焦、带 aria-label 的是外层按钮，绑到 img 上会导致 Tab 聚焦后按 Enter 毫无反应。
+const galleryItems = document.querySelectorAll('.gallery-item');
+if (galleryItems.length > 0) {
   const overlay = document.createElement('div');
   overlay.className = 'lightbox-overlay';
-  overlay.innerHTML = '<button class="lightbox-close">✕</button><img src="" alt="Preview">';
+  overlay.setAttribute('role', 'dialog');
+  overlay.setAttribute('aria-modal', 'true');
+  overlay.setAttribute('aria-label', '图片预览');
+  overlay.innerHTML = '<button class="lightbox-close" type="button" aria-label="关闭预览">✕</button><img src="" alt="">';
   document.body.appendChild(overlay);
   const overlayImg = overlay.querySelector('img');
   const closeBtn = overlay.querySelector('.lightbox-close');
+  let lastFocused = null;
 
-  galleryImages.forEach(img => {
-    img.style.cursor = 'pointer';
-    img.addEventListener('click', () => {
-      overlayImg.src = img.src;
+  galleryItems.forEach(item => {
+    const img = item.querySelector('img');
+    if (!img) return;
+    const openLightbox = () => {
+      lastFocused = document.activeElement;
+      // 用 currentSrc：<picture> 场景下会取浏览器实际选中的那个源（通常是 WebP），
+      // 直接读 img.src 会永远拿到 JPEG 兜底地址
+      overlayImg.src = img.currentSrc || img.src;
+      // 用外层按钮已有的 aria-label 作为图片替代文本，顺带修掉 alt="Preview" 这个无效描述
+      overlayImg.alt = item.getAttribute('aria-label') || img.alt || '图片预览';
       overlay.classList.add('active');
-      document.body.style.overflow = 'hidden';
-    });
+      __scrollLock.lock();
+      closeBtn.focus();
+    };
+    item.addEventListener('click', openLightbox);
   });
 
   const closeLightbox = () => {
     overlay.classList.remove('active');
-    document.body.style.overflow = '';
+    overlayImg.removeAttribute('src');
+    __scrollLock.unlock();
+    if (lastFocused && typeof lastFocused.focus === 'function') lastFocused.focus();
+    lastFocused = null;
   };
   closeBtn.addEventListener('click', closeLightbox);
   overlay.addEventListener('click', (e) => { if (e.target === overlay) closeLightbox(); });
@@ -323,13 +397,13 @@ if (deptCards.length > 0 && deptModal) {
         deptModalTitle.textContent = deptName;
         deptModalContent.innerHTML = data.content;
         deptModal.classList.add('active');
-        document.body.style.overflow = 'hidden';
+        __scrollLock.lock();
       }
     });
   });
   const closeDeptModal = () => {
     deptModal.classList.remove('active');
-    document.body.style.overflow = '';
+    __scrollLock.unlock();
   };
   deptModalClose.addEventListener('click', closeDeptModal);
   deptModal.addEventListener('click', (e) => { if (e.target === deptModal) closeDeptModal(); });
@@ -362,14 +436,15 @@ if (activityList) {
 }
 
 // ===== 12. 画廊筛选 =====
-const galleryItems = [...document.querySelectorAll('[data-gallery-category]')];
+// 注意：变量名不能叫 galleryItems——第 8 节灯箱已用了这个名字（同处顶层作用域会重复声明报错）
+const galleryFilterItems = [...document.querySelectorAll('[data-gallery-category]')];
 const galleryEmpty = document.getElementById('galleryEmpty');
 document.querySelectorAll('[data-gallery-filter]').forEach(btn => btn.addEventListener('click', () => {
   document.querySelectorAll('[data-gallery-filter]').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   const filter = btn.dataset.galleryFilter;
   let visible = 0;
-  galleryItems.forEach(item => {
+  galleryFilterItems.forEach(item => {
     const show = filter === 'all' || item.dataset.galleryCategory === filter;
     item.hidden = !show; if (show) visible++;
   });
@@ -456,19 +531,23 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
     if (!contributorModal) return;
     contributorModal.classList.add('active');
     contributorModal.setAttribute('aria-hidden', 'false');
-    document.body.style.overflow = 'hidden';
+    __scrollLock.lock();
   };
   const close = () => {
     if (!contributorModal) return;
     contributorModal.classList.remove('active');
     contributorModal.setAttribute('aria-hidden', 'true');
-    document.body.style.overflow = '';
+    __scrollLock.unlock();
   };
 
   if (contributorBtn) contributorBtn.addEventListener('click', open);
   if (contributorClose) contributorClose.addEventListener('click', close);
   if (contributorModal) contributorModal.addEventListener('click', e => { if (e.target === contributorModal) close(); });
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
+  document.addEventListener('keydown', e => {
+    // 必须判断自己的弹窗是否打开：close() 会释放共享滚动锁，
+    // 无条件调用会把别的弹窗的滚动锁一起清掉
+    if (e.key === 'Escape' && contributorModal && contributorModal.classList.contains('active')) close();
+  });
 })();
 
 // ===== 19. 网站开发者中心 =====
@@ -493,7 +572,10 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
   };
 
   const updateDebugInfo = async () => {
-    const themeKey = localStorage.getItem('acg_lab_theme') || 'eva';
+    // 这里也要保护：隐私模式下 localStorage 读取会抛异常，
+    // 会让整个 async 函数变成 rejected Promise，状态永远停在“检测中…”
+    let themeKey = 'eva';
+    try { themeKey = localStorage.getItem('acg_lab_theme') || 'eva'; } catch (_) {}
     const themeNames = { eva: 'EVA 红黑', miku: '初音未来', genshin: '原神星空', sakura: '樱花治愈', cyber: '赛博朋克' };
     const sw = 'serviceWorker' in navigator;
 
@@ -524,14 +606,14 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
     if (!modal) return;
     modal.classList.add('active');
     modal.setAttribute('aria-hidden', 'false');
-    document.body.style.overflow = 'hidden';
+    __scrollLock.lock();
     updateDebugInfo();
   };
   const close = () => {
     if (!modal) return;
     modal.classList.remove('active');
     modal.setAttribute('aria-hidden', 'true');
-    document.body.style.overflow = '';
+    __scrollLock.unlock();
   };
 
   if (openBtn) openBtn.addEventListener('click', open);
@@ -558,7 +640,8 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
       e.preventDefault();
       open();
     }
-    if (e.key === 'Escape') close();
+    // 同样要判断自身是否打开，否则 Esc 会误释放别的弹窗的滚动锁
+    if (e.key === 'Escape' && modal && modal.classList.contains('active')) close();
   });
 
   window.addEventListener('resize', updateDebugInfo, { passive: true });
@@ -788,7 +871,7 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
   function fallbackPlain() {
     if (settled) return;
     settled = true;
-    console.log('[ACG] GSAP 未加载，动画改为普通显示');
+    dbg('[ACG] GSAP 未加载，动画改为普通显示');
     var k;
     for (k = 0; k !== heroEls.length; k++) heroEls[k].classList.add('show');
     for (k = 0; k !== waitEls.length; k++) waitEls[k].classList.add('show');
@@ -799,7 +882,7 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
     if (settled || !window.gsap || !window.ScrollTrigger) return;
     settled = true;
     gsap.registerPlugin(ScrollTrigger);
-    console.log('[ACG] GSAP + ScrollTrigger 已接管动画');
+    dbg('[ACG] GSAP + ScrollTrigger 已接管动画');
 
     // 首屏依次上浮（和之前一样）
     for (var a = 0; a !== heroEls.length; a++) heroEls[a].classList.remove('reveal');
@@ -867,7 +950,7 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
   var started = false;
 
   function fail() {
-    console.log('[ACG] Lenis 未启用，保持原生滚动');
+    dbg('[ACG] Lenis 未启用，保持原生滚动');
   }
 
   function boot(LenisCtor) {
@@ -875,7 +958,10 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
     started = true;
     var lenis;
     try {
-      lenis = new LenisCtor({ smoothWheel: true });  // 只平滑鼠标滚轮；手机触屏保持原生
+      // autoRaf:false 必须显式关掉：Lenis 1.x 默认自建 rAF 循环，
+      // 而下方无论走 GSAP 还是自建 rAF 都会再驱动一次，等于每帧 raf 跑两遍
+      // → 阻尼叠加、滚动发飘、CPU 翻倍。这里统一由外部单一时钟驱动。
+      lenis = new LenisCtor({ smoothWheel: true, autoRaf: false });  // 只平滑鼠标滚轮；手机触屏保持原生
     } catch (e) { fail(); return; }
 
     window.__lenis = lenis;  // 暴露给"返回顶部"按钮和第 16 节使用
@@ -904,11 +990,11 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
       lenis.on('scroll', ScrollTrigger.update);
       gsap.ticker.add(function (time) { lenis.raf(time * 1000); });
       gsap.ticker.lagSmoothing(0);
-      console.log('[ACG] Lenis 平滑滚动已启用（GSAP 同步驱动）');
+      dbg('[ACG] Lenis 平滑滚动已启用（GSAP 同步驱动）');
     } else {
       function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
       requestAnimationFrame(raf);
-      console.log('[ACG] Lenis 平滑滚动已启用');
+      dbg('[ACG] Lenis 平滑滚动已启用');
     }
   }
 
@@ -988,7 +1074,7 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
   function trigger() {
     if (busy) return;
     busy = true;
-    console.log('[ACG] 暴走モード 発動！');
+    dbg('[ACG] 暴走モード 発動！');
     beep();
 
     document.documentElement.classList.add('berserk-mode');
@@ -1311,7 +1397,7 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
     } catch (e) {
       failed = true;
       analyser = null;
-      console.log('[ACG] 频谱不可用，音频保持原样播放');
+      dbg('[ACG] 频谱不可用，音频保持原样播放');
       try { if (srcNode && ac) srcNode.connect(ac.destination); } catch (e2) {}
       return false;
     }
