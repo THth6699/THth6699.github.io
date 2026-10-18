@@ -1,4 +1,4 @@
-const CACHE = 'acg-lab-v53';
+const CACHE = 'acg-lab-v55';
 const CORE = [
   './', './index.html', './style.css', './main.js', './manifest.webmanifest', './icon.svg', './404.html',
   './assets/images/favicon-32.png', './assets/images/icon-192.png', './assets/images/icon-512.png',

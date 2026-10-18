@@ -410,10 +410,10 @@ const deptJoinBtn = document.getElementById('deptJoinBtn');
 const deptData = {
   '产粮部': { icon: '🎨', content: `<p><strong>定位：</strong>社团的产粮主力，用画笔创造世界。</p><p style="margin-top:12px;"><strong>我们平时做什么：</strong></p><ul><li>课余在教室开绘茶会，带上平板或画本互相催更。</li><li>社团海报、周边、网站配图的创作。</li><li>互相交流板绘、手绘、同人创作技巧。</li></ul><p style="margin-top:12px;"><strong>招募要求：</strong>不论你是大触还是零基础萌新，只要热爱画画，我们都欢迎！</p>` },
   '观影吐槽部': { icon: '📺', content: `<p><strong>定位：</strong>追番先锋队，负责看番和疯狂吐槽。</p><p style="margin-top:12px;"><strong>我们平时做什么：</strong></p><ul><li>每季新番同步追，在群里实况弹幕式吐槽。</li><li>社团课时间在多媒体教室集中观影，现场提供笑点支持。</li><li>老番补习班、神作安利、烂片排雷。</li></ul><p style="margin-top:12px;"><strong>招募要求：</strong>喜欢看番，自带吐槽技能，能接受「禁止打架但可以激情互喷」的观影氛围。</p>` },
-  'Cos变装部': { icon: '👗', content: `<p><strong>定位：</strong>社团的颜值担当和出片主力。</p><p style="margin-top:12px;"><strong>我们平时做什么：</strong></p><ul><li>校园取景出片，教学楼、操场、绿化带都是我们的外景地。</li><li>互相当摄影师，技术支援部负责后期与成片归档。</li><li>试妆交流，男扮女装不是梦，女扮男装帅断腿。</li></ul><p style="margin-top:12px;"><strong>招募要求：</strong>男女不限，社恐可治，零基础也 OK，关键要敢于表现自己！<br><em>注：社团活动均在校内进行，不组织校外活动。</em></p>` },
+  'Cos变装部': { icon: '👗', content: `<p><strong>定位：</strong>社团的颜值担当和出片主力。</p><p style="margin-top:12px;"><strong>我们平时做什么：</strong></p><ul><li>校园取景出片，教学楼的走廊、操场边的树荫都是常见机位。</li><li>互相当摄影师，技术支援部负责后期与成片归档。</li><li>试妆交流，男扮女装不是梦，女扮男装帅断腿。</li></ul><p style="margin-top:12px;"><strong>招募要求：</strong>男女不限，社恐可治，零基础也 OK，关键要敢于表现自己！</p>` },
   '技术支援部': { icon: '💻', content: `<p><strong>定位：</strong>社团的极客大脑，用代码给社团开挂。</p><p style="margin-top:12px;"><strong>我们平时做什么：</strong></p><ul><li>搭建与更新社团官网（这个网站就是我们的作品）。</li><li>写网页、做工具、搞自动化脚本。</li><li>整理作品与活动资料，维护社团的线上档案。</li></ul><p style="margin-top:12px;"><strong>招募要求：</strong>对编程、网页设计、网站维护有兴趣，愿意学习新技术的同学。</p>` },
   '什么都不干部': { icon: '🛋️', content: `<p><strong>定位：</strong>社团的灵魂部门！负责围观、吃瓜、当气氛组。</p><p style="margin-top:12px;"><strong>我们平时做什么：</strong></p><ul><li>在群里发表情包、点赞、喊「666」。</li><li>成为各项活动的「啦啦队」和「第一观众」。</li><li>享受纯粹的二次元聊天氛围，不承担任何硬性任务。</li></ul><p style="margin-top:12px;"><strong>招募要求：</strong>只要你热爱二次元，不想内卷，这里就是你的快乐老家！</p>` },
-  '加入方式': { icon: '✨', content: `<p>在 QQ 群发言，或直接联系群主与各部部长。不限专业、不限年级，只要你热爱二次元！</p><p style="margin-top:12px;"><em>社团活动均安排在校内，不组织校外活动。</em></p>` }
+  '加入方式': { icon: '✨', content: `<p>在 QQ 群发言，或直接联系群主与各部部长。不限专业、不限年级，只要你热爱二次元！</p>` }
 };
 
 const deptCards = document.querySelectorAll('.dept-card');
@@ -446,25 +446,11 @@ if (deptCards.length > 0 && deptModal) {
 }
 
 // ===== 11. 活动中心 =====
-// 【改活动处】date 用 YYYY-MM 格式；status 只能取「进行中 / 计划中 / 已结束」三个值之一。
-// 注意：社团活动一律安排在校内，请勿添加校外场地活动。
-const activities = [
-  {
-    date: '2026-06', icon: '📷', tag: '校内摄影 / 出 c', status: '进行中',
-    title: '校园取景出片',
-    desc: '在校园里选点位拍场照与社团合影，Cos 变装部负责妆造，技术支援部负责修图与成片归档。'
-  },
-  {
-    date: '2026-09', icon: '💻', tag: '网站搭建与更新', status: '计划中',
-    title: '社团官网改版',
-    desc: '技术支援部负责：改进版式与入场动画、整理作品与活动资料、持续更新社团动态。'
-  },
-  {
-    date: '2026-03', icon: '🎨', tag: '校内绘画工作坊', status: '已结束',
-    title: '教室绘茶会',
-    desc: '课余把桌子拼起来就开画，板绘与手绘都欢迎，现场有纸张与公用画具，画完一起吃茶点。'
-  }
-];
+// 【改活动处】date 用 YYYY-MM 格式；status 只能取「进行中 / 计划中 / 已结束」三个值。
+// 目前按站点主人要求清空，页面会显示"暂无数据"。
+// 以后要加活动，往这个数组里塞对象即可，格式：
+//   { date: '2026-06', icon: '📷', tag: '标签', status: '进行中', title: '标题', desc: '描述' }
+const activities = [];
 const activityList = document.getElementById('activity-list');
 if (activityList) {
   const renderActivities = (filter = 'all') => {
@@ -478,7 +464,7 @@ if (activityList) {
         <div class="activity-dot">${esc(item.icon)}</div>
         <div class="activity-body"><div class="activity-meta"><span class="tag">${esc(item.tag)}</span><span class="status status-${esc(item.status)}">${esc(item.status)}</span></div><h3>${esc(item.title)}</h3><p>${esc(item.desc)}</p></div>
       </article>`;
-    }).join('') || '<div class="empty-state">这个分类暂时没有活动。</div>';
+    }).join('') || '<div class="empty-state">暂无数据</div>';
   };
   renderActivities();
   document.querySelectorAll('[data-activity-filter]').forEach(btn => btn.addEventListener('click', () => {
@@ -701,7 +687,7 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
   window.addEventListener('offline', updateDebugInfo);
 })();
 
-// ===== 20. 🎵 音乐侧边栏（简洁稳定版） =====
+// ===== 20. 🎵 音乐播放器（v2：音量 / 歌单 / 拖动修复 / 状态记忆 / 快捷键） =====
 (() => {
   const side = document.getElementById('musicSide');
   const tab = document.getElementById('msTab');
@@ -718,127 +704,295 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
     now: document.getElementById('msNow'),
     total: document.getElementById('msTotal'),
     seek: document.getElementById('msSeek'),
+    progress: document.getElementById('msProgress'),
     play: document.getElementById('msPlay'),
     prev: document.getElementById('msPrev'),
-    next: document.getElementById('msNext')
+    next: document.getElementById('msNext'),
+    vol: document.getElementById('msVol'),
+    mute: document.getElementById('msMute'),
+    list: document.getElementById('msList'),
+    eq: document.getElementById('msEq')
   };
 
-  // 备用列表（如果 playlist.json 加载失败，就用这一首）
   const fallbackPlaylist = [
     { src: 'assets/music/bgm.mp3', title: '次元基地', artist: 'BGM 01', emoji: '🎧' }
   ];
 
   let playlist = [...fallbackPlaylist];
   let index = 0;
+  let seeking = false;          // 拖动进度条时暂停被动更新，避免和 timeupdate 抢
+  let wantPlay = false;         // 用户是否表达过"要播放"（用于切歌后续播）
+
+  // ---------- 本地记忆：曲目、音量、静音、进度 ----------
+  const LS_KEY = 'acg_lab_music';
+  const store = {
+    read() {
+      try {
+        const raw = localStorage.getItem(LS_KEY);
+        return raw ? JSON.parse(raw) : null;
+      } catch (_) { return null; }
+    },
+    write() {
+      try {
+        localStorage.setItem(LS_KEY, JSON.stringify({
+          index: index,
+          volume: audio.volume,
+          muted: audio.muted,
+          time: audio.currentTime || 0
+        }));
+      } catch (_) {}
+    }
+  };
 
   const fmt = (s) => {
-    if (!isFinite(s) || isNaN(s)) return '0:00';
+    if (!isFinite(s) || isNaN(s) || s < 0) return '0:00';
     const m = Math.floor(s / 60);
     const sec = Math.floor(s % 60).toString().padStart(2, '0');
     return `${m}:${sec}`;
   };
 
-  const load = (i) => {
-    index = (i + playlist.length) % playlist.length;
-    const t = playlist[index];
-    audio.src = t.src;
-    el.name.textContent = t.title;
-    el.artist.textContent = t.artist;
-    el.cover.textContent = t.emoji;
-    el.seek.value = 0;
-    el.now.textContent = '0:00';
-    el.total.textContent = '0:00';
-  };
-
-  const play = () => {
-    audio.play().then(() => {
-      side.classList.add('playing');
-      el.play.textContent = '⏸';
-      tabIcon.textContent = '🎶';
-    }).catch(() => {
-      el.name.textContent = '播放失败，请检查音频文件';
+  // ---------- 渲染 ----------
+  const renderList = () => {
+    if (!el.list) return;
+    el.list.innerHTML = playlist.map((t, i) => `
+      <li>
+        <button type="button" class="ms-item${i === index ? ' active' : ''}" data-ms-index="${i}">
+          <span class="ms-item-emoji">${t.emoji || '🎵'}</span>
+          <span class="ms-item-text">
+            <span class="ms-item-title"></span>
+            <span class="ms-item-artist"></span>
+          </span>
+          <span class="ms-item-state" aria-hidden="true">${i === index ? '▶' : ''}</span>
+        </button>
+      </li>`).join('');
+    // 用 textContent 填标题，避免歌名里的特殊字符被当成 HTML
+    el.list.querySelectorAll('.ms-item').forEach((btn, i) => {
+      const t = playlist[i] || {};
+      const tt = btn.querySelector('.ms-item-title');
+      const ar = btn.querySelector('.ms-item-artist');
+      if (tt) tt.textContent = t.title || '';
+      if (ar) ar.textContent = t.artist || '';
     });
   };
 
-  const pause = () => {
-    audio.pause();
-    side.classList.remove('playing');
-    el.play.textContent = '▶';
-    tabIcon.textContent = '🎵';
+  const paint = () => {
+    side.classList.toggle('is-playing', !audio.paused);
+    el.play.textContent = audio.paused ? '▶' : '⏸';
+    el.play.setAttribute('aria-label', audio.paused ? '播放' : '暂停');
+    tabIcon.textContent = audio.paused ? '🎵' : '🎶';
+    if (el.eq) el.eq.classList.toggle('on', !audio.paused);
+    if (el.list) {
+      el.list.querySelectorAll('.ms-item').forEach((b, i) => {
+        b.classList.toggle('active', i === index);
+        const st = b.querySelector('.ms-item-state');
+        if (st) st.textContent = i === index ? (audio.paused ? '❙❙' : '▶') : '';
+      });
+    }
   };
 
-  const toggle = () => audio.paused ? play() : pause();
+  const setProgressUI = (ratio) => {
+    const p = Math.max(0, Math.min(1, ratio || 0));
+    if (el.progress) el.progress.style.width = (p * 100).toFixed(2) + '%';
+    if (!seeking) el.seek.value = String(Math.round(p * 1000));
+  };
+
+  const load = (i, opts) => {
+    const o = opts || {};
+    if (!playlist.length) return;
+    index = ((i % playlist.length) + playlist.length) % playlist.length;
+    const t = playlist[index];
+    audio.src = t.src;
+    el.name.textContent = t.title || '未知曲目';
+    el.artist.textContent = t.artist || '';
+    el.cover.textContent = t.emoji || '🎧';
+    el.seek.value = '0';
+    setProgressUI(0);
+    el.now.textContent = '0:00';
+    el.total.textContent = '0:00';
+    renderList();
+    store.write();          // 记住当前曲目，刷新后可恢复
+    if (o.time) {
+      // 恢复上次进度（要等 metadata 才能 set currentTime）
+      const want = o.time;
+      const once = () => {
+        audio.removeEventListener('loadedmetadata', once);
+        if (isFinite(audio.duration) && want < audio.duration - 2) {
+          audio.currentTime = want;
+        }
+      };
+      audio.addEventListener('loadedmetadata', once);
+    }
+  };
+
+  const play = () => {
+    wantPlay = true;
+    const p = audio.play();
+    if (p && p.then) {
+      p.then(() => paint()).catch((err) => {
+        // 自动播放被拦截或文件缺失：给出可读提示，不抛到控制台
+        wantPlay = false;
+        el.name.textContent = '播放失败，点 ▶ 重试';
+        paint();
+        if (window.__acgDebug) console.warn('[音乐] 播放失败', err);
+      });
+    }
+  };
+
+  const pause = () => {
+    wantPlay = false;
+    audio.pause();
+    paint();
+  };
+
+  const toggle = () => (audio.paused ? play() : pause());
 
   const openDrawer = () => {
     side.classList.add('open');
+    drawer.setAttribute('aria-hidden', 'false');
     tab.setAttribute('aria-expanded', 'true');
+    tab.setAttribute('aria-label', '收起音乐播放器');
   };
   const closeDrawer = () => {
     side.classList.remove('open');
+    drawer.setAttribute('aria-hidden', 'true');
     tab.setAttribute('aria-expanded', 'false');
+    tab.setAttribute('aria-label', '打开音乐播放器');
   };
-  const toggleDrawer = () => {
-    if (side.classList.contains('open')) closeDrawer();
-    else openDrawer();
-  };
+  const toggleDrawer = () => (side.classList.contains('open') ? closeDrawer() : openDrawer());
 
-  tab.addEventListener('click', (e) => {
-    e.stopPropagation();
-    toggleDrawer();
-  });
+  // ---------- 事件 ----------
+  tab.addEventListener('click', (e) => { e.stopPropagation(); toggleDrawer(); });
   closeBtn.addEventListener('click', closeDrawer);
 
   document.addEventListener('click', (e) => {
-    if (!side.contains(e.target) && side.classList.contains('open')) {
-      closeDrawer();
-    }
+    if (!side.contains(e.target) && side.classList.contains('open')) closeDrawer();
   });
-
-  audio.addEventListener('timeupdate', () => {
-    if (audio.duration) {
-      el.seek.value = (audio.currentTime / audio.duration) * 100;
-      el.now.textContent = fmt(audio.currentTime);
-    }
-  });
-  audio.addEventListener('loadedmetadata', () => {
-    el.total.textContent = fmt(audio.duration);
-  });
-  audio.addEventListener('ended', () => {
-    load(index + 1);
-    play();
-  });
-  audio.addEventListener('play', () => {
-    side.classList.add('playing');
-    el.play.textContent = '⏸';
-    tabIcon.textContent = '🎶';
-  });
-  audio.addEventListener('pause', () => {
-    side.classList.remove('playing');
-    el.play.textContent = '▶';
-    tabIcon.textContent = '🎵';
-  });
+  drawer.addEventListener('click', (e) => e.stopPropagation());
 
   el.play.addEventListener('click', toggle);
   el.prev.addEventListener('click', () => { load(index - 1); play(); });
   el.next.addEventListener('click', () => { load(index + 1); play(); });
+
+  // 播放列表点击
+  if (el.list) {
+    el.list.addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-ms-index]');
+      if (!btn) return;
+      const i = Number(btn.dataset.msIndex);
+      if (i === index) { toggle(); return; }
+      load(i);
+      play();
+    });
+  }
+
+  // 进度条：拖动时锁定 UI，松手才落盘
+  el.seek.addEventListener('pointerdown', () => { seeking = true; });
+  el.seek.addEventListener('pointerup', () => { seeking = false; });
+  el.seek.addEventListener('pointercancel', () => { seeking = false; });
   el.seek.addEventListener('input', () => {
-    if (audio.duration) audio.currentTime = (el.seek.value / 100) * audio.duration;
+    seeking = true;
+    const r = Number(el.seek.value) / 1000;
+    if (isFinite(audio.duration) && audio.duration > 0) {
+      if (el.progress) el.progress.style.width = (r * 100).toFixed(2) + '%';
+      el.now.textContent = fmt(r * audio.duration);
+      el.seek.setAttribute('aria-valuetext', fmt(r * audio.duration));
+    }
+  });
+  el.seek.addEventListener('change', () => {
+    if (isFinite(audio.duration) && audio.duration > 0) {
+      audio.currentTime = (Number(el.seek.value) / 1000) * audio.duration;
+    }
+    seeking = false;
+    store.write();
   });
 
-  load(0);
+  // 音量
+  const paintVol = () => {
+    const v = audio.muted ? 0 : audio.volume;
+    el.mute.textContent = v === 0 ? '🔇' : (v < 0.5 ? '🔉' : '🔊');
+    el.mute.setAttribute('aria-label', audio.muted || v === 0 ? '取消静音' : '静音');
+    if (el.vol) el.vol.value = String(Math.round((audio.muted ? 0 : audio.volume) * 100));
+  };
+  el.vol.addEventListener('input', () => {
+    const v = Number(el.vol.value) / 100;
+    audio.volume = Math.max(0, Math.min(1, v));
+    audio.muted = v === 0;
+    paintVol();
+    store.write();
+  });
+  el.mute.addEventListener('click', () => {
+    audio.muted = !audio.muted;
+    paintVol();
+    store.write();
+  });
 
-  // 从 playlist.json 读取完整歌单（加歌只需改这个文件）
+  // 音频事件
+  audio.addEventListener('timeupdate', () => {
+    if (seeking) return;
+    const d = audio.duration;
+    if (isFinite(d) && d > 0) {
+      const r = audio.currentTime / d;
+      setProgressUI(r);
+      el.now.textContent = fmt(audio.currentTime);
+      el.seek.setAttribute('aria-valuetext', fmt(audio.currentTime));
+    }
+  });
+  audio.addEventListener('loadedmetadata', () => {
+    el.total.textContent = fmt(audio.duration);
+    if (el.seek) el.seek.setAttribute('aria-valuemax', '1000');
+  });
+  audio.addEventListener('ended', () => {
+    load(index + 1);
+    if (wantPlay) play(); else paint();
+  });
+  audio.addEventListener('play', paint);
+  audio.addEventListener('pause', paint);
+  audio.addEventListener('error', () => {
+    el.name.textContent = '音频加载失败';
+    el.artist.textContent = '请检查 assets/music/ 下的文件';
+    paint();
+  });
+
+  // 快捷键：播放器打开时生效，避免干扰页面滚动
+  document.addEventListener('keydown', (e) => {
+    if (!side.classList.contains('open')) return;
+    const tag = (e.target && e.target.tagName) || '';
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || e.target.isContentEditable) return;
+    if (e.key === ' ' || e.key === 'Spacebar') { e.preventDefault(); toggle(); }
+    else if (e.key === 'ArrowLeft') { e.preventDefault(); audio.currentTime = Math.max(0, audio.currentTime - 5); }
+    else if (e.key === 'ArrowRight') { e.preventDefault(); audio.currentTime = Math.min(audio.duration || 0, audio.currentTime + 5); }
+    else if (e.key === 'm' || e.key === 'M') { audio.muted = !audio.muted; paintVol(); store.write(); }
+    else if (e.key === 'Escape') { closeDrawer(); }
+  });
+
+  // 定期存进度（每 5 秒）
+  setInterval(() => { if (!audio.paused) store.write(); }, 5000);
+
+  // ---------- 启动 ----------
+  const saved = store.read();
+  if (saved) {
+    if (typeof saved.volume === 'number') audio.volume = Math.max(0, Math.min(1, saved.volume));
+    if (typeof saved.muted === 'boolean') audio.muted = saved.muted;
+  }
+  paintVol();
+
+  load(0);
+  paint();
+
   fetch('assets/music/playlist.json')
     .then(res => res.ok ? res.json() : Promise.reject('JSON 加载失败'))
     .then(data => {
       if (Array.isArray(data) && data.length > 0) {
         playlist = data;
-        index = 0;
-        load(0);
+        const startIndex = saved && Number.isInteger(saved.index) && saved.index < playlist.length ? saved.index : 0;
+        load(startIndex, { time: saved ? saved.time : 0 });
+        paintVol();
+        paint();
       }
     })
     .catch(err => {
       console.warn('无法加载 playlist.json，使用默认列表：', err);
+      renderList();
     });
 })();
 
@@ -1363,7 +1517,7 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
     '<div class="acgb-scene acgb-s2"></div>' +
     '<div class="acgb-scene acgb-s1">' +
       '<div class="acgb-s1-logo">' +
-        '<span class="acgb-s1-mark">整</span>' +
+        '<span class="acgb-s1-mark"><svg class="acg-mark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" aria-hidden="true" focusable="false"><g transform="translate(32 32) scale(0.1404) translate(-256 -228)"><path transform="translate(97.59 150.74)" fill="currentColor" d="M1.72,139.73 L49.5,14.78 L64.45,14.78 L112.23,139.73 L86.88,139.73 L56.98,54.4 L27.07,139.73 Z M24.66,119.71 L24.66,97.02 L90.41,97.02 L90.41,119.71 Z M172.89,141.02 C163.32,141.02 155.17,139.2 148.44,135.57 C141.71,131.93 136.57,126.63 133.02,119.67 C129.46,112.71 127.69,104.3 127.69,94.45 L127.69,60.16 C127.69,50.24 129.46,41.82 133.02,34.89 C136.57,27.96 141.71,22.66 148.44,18.99 C155.17,15.33 163.32,13.49 172.89,13.49 C180.8,13.49 187.83,15.18 193.99,18.56 C200.15,21.94 205.25,26.84 209.29,33.26 C213.32,39.67 216.12,47.47 217.66,56.63 L217.66,56.63 L193.26,56.63 L193.26,56.63 C192.34,52.45 190.92,48.91 189,46.02 C187.08,43.13 184.76,40.91 182.04,39.36 C179.32,37.81 176.27,37.04 172.89,37.04 C166.3,37.04 161.19,39.06 157.55,43.1 C153.91,47.14 152.09,52.82 152.09,60.16 L152.09,94.45 C152.09,101.78 153.91,107.45 157.55,111.46 C161.19,115.47 166.3,117.48 172.89,117.48 C178.05,117.48 182.4,115.77 185.95,112.36 C189.51,108.95 191.94,104.13 193.26,97.88 L193.26,97.88 L217.66,97.88 L217.66,97.88 C216.06,106.99 213.24,114.77 209.2,121.21 C205.16,127.66 200.08,132.57 193.95,135.95 C187.82,139.33 180.8,141.02 172.89,141.02 Z M271.79,69.87 L315.1,69.87 L315.1,94.27 C315.1,103.67 313.21,111.88 309.43,118.89 C305.65,125.91 300.36,131.36 293.57,135.22 C286.79,139.09 278.81,141.02 269.64,141.02 C260.47,141.02 252.42,139.2 245.49,135.57 C238.56,131.93 233.19,126.8 229.38,120.18 C225.57,113.57 223.66,105.85 223.66,97.02 L223.66,60.16 C223.66,50.76 225.57,42.57 229.38,35.58 C233.19,28.59 238.49,23.16 245.28,19.29 C252.07,15.43 260.02,13.49 269.13,13.49 C276.69,13.49 283.58,15.04 289.79,18.13 C296.01,21.23 301.24,25.55 305.48,31.11 C309.72,36.67 312.58,43.17 314.07,50.62 L314.07,50.62 L288.63,50.62 L288.63,50.62 C287.37,46.55 284.88,43.41 281.16,41.21 C277.43,39 273.42,37.9 269.13,37.9 C262.71,37.9 257.6,39.93 253.79,44 C249.98,48.07 248.07,53.45 248.07,60.16 L248.07,97.02 C248.07,102.98 250.03,107.74 253.96,111.29 C257.88,114.84 263.11,116.62 269.64,116.62 C276,116.62 281.1,114.68 284.94,110.82 C288.78,106.95 290.7,101.55 290.7,94.62 L290.7,92.55 L271.79,92.55 Z"/></g></svg></span>' +
         '<span class="acgb-s1-text">次元整研社 · ACG LAB</span>' +
       '</div>' +
     '</div>' +
