@@ -711,7 +711,9 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
     vol: document.getElementById('msVol'),
     mute: document.getElementById('msMute'),
     list: document.getElementById('msList'),
-    eq: document.getElementById('msEq')
+    eq: document.getElementById('msEq'),
+    count: document.getElementById('msCount'),
+    error: document.getElementById('msError')
   };
 
   const fallbackPlaylist = [
@@ -722,6 +724,19 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
   let index = 0;
   let seeking = false;          // 拖动进度条时暂停被动更新，避免和 timeupdate 抢
   let wantPlay = false;         // 用户是否表达过"要播放"（用于切歌后续播）
+  let playlistSource = 'fallback';   // fallback / json / repaired
+
+  // ---------- 歌单错误提示 ----------
+  const showError = (msg) => {
+    if (!el.error) return;
+    el.error.textContent = msg;
+    el.error.hidden = false;
+  };
+  const clearError = () => {
+    if (!el.error) return;
+    el.error.hidden = true;
+    el.error.textContent = '';
+  };
 
   // ---------- 本地记忆：曲目、音量、静音、进度 ----------
   const LS_KEY = 'acg_lab_music';
@@ -744,6 +759,78 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
     }
   };
 
+  // 解析歌单：容错 + 规范化。返回 {list, repaired} 或抛错
+  function parsePlaylist(rawText) {
+    let text = String(rawText || '').replace(/^\uFEFF/, '').trim();
+    if (!text) throw new Error('歌单文件是空的');
+
+    // 逐步尝试：原样 → 补对象间逗号 → 去多余尾逗号 → 补外层方括号
+    const attempts = [
+      { label: 'strict', fn: () => JSON.parse(text) },
+      { label: 'comma', fn: () => JSON.parse(text.replace(/}\s*{/g, '},{')) },
+      { label: 'comma+trail', fn: () => JSON.parse(text.replace(/}\s*{/g, '},{').replace(/,\s*([}\]])/g, '$1')) },
+      { label: 'bracket', fn: () => JSON.parse('[' + text.replace(/^\s*\[/, '').replace(/\]\s*$/, '') + ']') }
+    ];
+
+    let data = null, repaired = false, lastErr = null;
+    for (const a of attempts) {
+      try {
+        data = a.fn();
+        repaired = a.label !== 'strict';
+        break;
+      } catch (e) {
+        lastErr = e;
+      }
+    }
+    if (data === null) {
+      // 把 JSON.parse 的报错整理成人话
+      const msg = lastErr && lastErr.message ? lastErr.message.replace(/^JSON\.parse: /, '') : '格式错误';
+      throw new Error('歌单格式有误（' + msg + '），常见原因是两首歌之间漏了逗号');
+    }
+
+    // 允许 { songs: [...] } 包装
+    let arr = data;
+    if (arr && !Array.isArray(arr) && Array.isArray(arr.songs)) arr = arr.songs;
+    if (!Array.isArray(arr)) throw new Error('歌单最外层应该是 [ ] 数组');
+
+    const withDir = (src) => {
+      const s = String(src).trim();
+      if (!s) return '';
+      if (/^(https?:)?\/\//.test(s) || s.startsWith('/') || s.includes('/')) return encodeURI(s);
+      return 'assets/music/' + encodeURI(s);   // 只写文件名时自动补目录
+    };
+    const pretty = (src) => String(src).split('/').pop()
+      .replace(/\.[a-z0-9]+$/i, '')
+      .replace(/[_-]+/g, ' ')
+      .trim();
+
+    const out = [];
+    let skipped = 0;
+    for (let i = 0; i < arr.length; i++) {
+      const t = arr[i];
+      // 支持最省事的写法：直接写文件名 "bgm5.mp3"
+      if (typeof t === 'string') {
+        const src = withDir(t);
+        if (!src) { skipped++; continue; }
+        out.push({ src, title: pretty(src), artist: '', emoji: '🎵' });
+        continue;
+      }
+      if (!t || typeof t !== 'object') { skipped++; continue; }
+      const srcRaw = t.src || t.file || t.url || t.path;
+      if (!srcRaw || typeof srcRaw !== 'string') { skipped++; continue; }
+      const src = withDir(srcRaw);
+      out.push({
+        src,
+        title: (t.title || t.name || pretty(srcRaw)).toString(),
+        artist: (t.artist || t.author || '').toString(),
+        emoji: (t.emoji || '🎵').toString()
+      });
+    }
+
+    if (!out.length) throw new Error('歌单里没有可用的曲目（每条至少要有文件名或 src）');
+    return { list: out, repaired: repaired, skipped: skipped };
+  }
+
   const fmt = (s) => {
     if (!isFinite(s) || isNaN(s) || s < 0) return '0:00';
     const m = Math.floor(s / 60);
@@ -753,6 +840,7 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
 
   // ---------- 渲染 ----------
   const renderList = () => {
+    if (el.count) el.count.textContent = String(playlist.length);
     if (!el.list) return;
     el.list.innerHTML = playlist.map((t, i) => `
       <li>
@@ -772,6 +860,7 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
       const ar = btn.querySelector('.ms-item-artist');
       if (tt) tt.textContent = t.title || '';
       if (ar) ar.textContent = t.artist || '';
+      if (t.__bad) btn.classList.add('bad');
     });
   };
 
@@ -831,7 +920,8 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
       p.then(() => paint()).catch((err) => {
         // 自动播放被拦截或文件缺失：给出可读提示，不抛到控制台
         wantPlay = false;
-        el.name.textContent = '播放失败，点 ▶ 重试';
+        // 如果是音频本身加载失败，交给 error 事件去说明原因，别覆盖它
+        if (!audio.error) el.name.textContent = '播放失败，点 ▶ 重试';
         paint();
         if (window.__acgDebug) console.warn('[音乐] 播放失败', err);
       });
@@ -948,8 +1038,13 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
   audio.addEventListener('play', paint);
   audio.addEventListener('pause', paint);
   audio.addEventListener('error', () => {
-    el.name.textContent = '音频加载失败';
-    el.artist.textContent = '请检查 assets/music/ 下的文件';
+    const t = playlist[index] || {};
+    const file = (t.src || '').split('/').pop() || '';
+    if (t) t.__bad = true;
+    el.name.textContent = '这首歌加载失败';
+    el.artist.textContent = file ? ('找不到 ' + decodeURIComponent(file)) : '请检查 assets/music/ 目录';
+    showError('无法播放「' + (t.title || file) + '」：文件可能没上传，或格式浏览器不支持');
+    renderList();   // 让该曲在列表里标红
     paint();
   });
 
@@ -979,19 +1074,31 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
   load(0);
   paint();
 
-  fetch('assets/music/playlist.json')
-    .then(res => res.ok ? res.json() : Promise.reject('JSON 加载失败'))
-    .then(data => {
-      if (Array.isArray(data) && data.length > 0) {
-        playlist = data;
-        const startIndex = saved && Number.isInteger(saved.index) && saved.index < playlist.length ? saved.index : 0;
-        load(startIndex, { time: saved ? saved.time : 0 });
-        paintVol();
-        paint();
+  // 读取歌单：失败时【明确报错】，不再静默退化成单曲
+  fetch('assets/music/playlist.json', { cache: 'no-cache' })
+    .then(res => {
+      if (!res.ok) throw new Error('playlist.json 读取失败（HTTP ' + res.status + '）');
+      return res.text();
+    })
+    .then(text => {
+      const parsed = parsePlaylist(text);
+      playlist = parsed.list;
+      playlistSource = parsed.repaired ? 'repaired' : 'json';
+      clearError();
+      if (parsed.repaired) {
+        showError('歌单格式有自动修复（可能漏了逗号），建议修正 playlist.json');
+      } else if (parsed.skipped > 0) {
+        showError('有 ' + parsed.skipped + ' 条曲目缺少文件名，已跳过');
       }
+      const startIndex = saved && Number.isInteger(saved.index) && saved.index < playlist.length ? saved.index : 0;
+      load(startIndex, { time: saved ? saved.time : 0 });
+      paintVol();
+      paint();
     })
     .catch(err => {
-      console.warn('无法加载 playlist.json，使用默认列表：', err);
+      // 关键：告诉用户"歌单没读到"，而不是让列表莫名只剩一首
+      console.warn('[音乐] 歌单加载失败，使用兜底曲目：', err);
+      showError('歌单读取失败：' + (err && err.message ? err.message : '未知错误') + '。当前只有兜底曲目，请检查 assets/music/playlist.json');
       renderList();
     });
 })();
