@@ -875,10 +875,12 @@ html.acg-boot-lock, html.acg-boot-lock body { overflow: hidden !important; }
   padding-bottom: 26px;   /* 视觉重心略高于几何中心 */
 }
 /* 准星与文字块同心叠放：环在文字外侧，不把文字推下去 */
-.acgb-cross { position: relative; width: clamp(210px, 42vh, 300px); aspect-ratio: 1; flex: none; }
+.acgb-cross { --acgb-ring: clamp(260px, 34vw, 360px); position: relative; width: var(--acgb-ring); aspect-ratio: 1; flex: none; }
 .acgb-copy {
   position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
-  width: min(86vw, 640px);
+  /* 宽度给足：不跟环宽绑定。副标题保持单行居中，最长的那条也能完整显示；
+     中文主字本来就短，居中后仍在环内。 */
+  width: max(320px, calc(var(--acgb-ring) * 1.15));
 }
 .acgb-ring {
   position: absolute; inset: 0; border-radius: 50%;
@@ -910,10 +912,12 @@ html.acg-boot-lock, html.acg-boot-lock body { overflow: hidden !important; }
 .acgb-sub, .acgb-status { text-align: center; }
 .acgb-sub {
   font-family: var(--acgb-mono);
-  font-size: clamp(.58rem, 1.9vw, .8rem);
-  letter-spacing: clamp(.14em, .8vw, .34em);
+  /* 字号按"最长副标题一行放得下"定：26 字符 × ~0.62em + 字距 ≈ 环宽的 0.9 倍 */
+  font-size: clamp(.5rem, 1.15vw, .6rem);
+  letter-spacing: clamp(.04em, .28vw, .12em);
   color: var(--acgb-ink-soft); text-transform: uppercase;
-  margin-bottom: 12px; min-height: 1.4em;
+  margin-bottom: 10px; min-height: 1.3em;
+  white-space: nowrap;   /* 单行：这一档字号下最长的副标题也能完整放下 */
 }
 .acgb-status {
   font-family: var(--acgb-zh);
@@ -1006,7 +1010,7 @@ html.acg-boot-lock, html.acg-boot-lock body { overflow: hidden !important; }
   .acgb-brand-line { font-size: 1.35rem; }
   .acgb-meta { position: static; margin-top: 12px; }
   .acgb-foot { display: none; }
-  .acgb-cross { width: min(78vw, 300px); }
+  .acgb-cross { --acgb-ring: min(80vw, 300px); }
 }
 
 /* ===================================================================
@@ -1429,10 +1433,10 @@ body { background: var(--v8-bg); }
 /* ===================================================================
    13 · 首屏"揭幕即浮现"
    -------------------------------------------------------------------
-   之前首屏动画在页面加载时就跑完了，全程被入场层挡着 ——
+   之前首屏 GSAP 动画在页面加载时就跑完了，全程被开屏遮住 ——
    等幕布拉开，主界面只剩一个裸淡入，看起来就是"直接跳出来"。
    现在改成声明式：首屏元素默认隐藏，只有在 <html> 出现 data-acg-loaded
-   时才浮现（JS 在故障揭幕那一刻写入这个属性）。
+   时才错峰浮现（main.js 第 25 节的 reveal() 在色散揭幕那一刻写入这个属性）。
    不依赖 GSAP 是否加载成功，路径唯一，不会两处争状态。
    =================================================================== */
 .hero-inner > * { opacity: 0; }
@@ -1452,293 +1456,877 @@ html[data-acg-immediate] .hero-inner > * { opacity: 1 !important; transform: non
 /* ===== 视觉方案 v0.8 覆盖层结束 ===== */
 
 /* ===================================================================
-   🎬 入场动画 v0.8 · 全屏聚焦 + 左侧竖进度条
+   ☀️ 视觉方案 v0.9 · 暖白 · 手机优先
    -------------------------------------------------------------------
-   手法来源：对 Hypergryph 终末地官网开屏动画的分析（仅借鉴手法，不含其素材）。
-   核心三条：
-     1. 进度是【真实】资源加载完成数，不是定时器演的假进度
-     2. 只写一个 CSS 变量 --p，进度条与背景模糊都由它派生，绝不出现两处不同步
-     3. blur = 8px * (1 - p/100)，线性收束：画面随加载完成逐渐"对上焦"
-   退出：CSS 类做「停 0.9s + 淡出 0.93s」，JS 的卸载定时器（2400ms）必须大于两者之和。
+   这是文件的最后一层，权威覆盖前面的深色方案（v0.8 覆盖层保留在文件里，
+   但被本层按优先级压过去；想整体回到深色只需删掉本段）。
+
+   两个根本改变：
+     1. 配色从"深色底 + 铺满暗插画 + 大量灰字"改成暖白底 + 墨色正文 + 红色强调
+        —— 之前显得沉闷，主要是灰字太多、暗图铺满、缺少亮面。
+     2. 手机优先：先按 390px 定好所有规则，再用 min-width 往上加。
+        之前是先做桌面再补 max-width，手机上处处将就，才会出现导航塞爆、
+        按钮过胖、数据行换行、正文满宽贴边这些问题。
+
+   断点：默认 = 手机；>=560 大屏手机；>=820 平板；>=1100 桌面
    =================================================================== */
-#acgEnter {
-  --acgb-accent: #ff0033;
-  --acgb-bg: #e5e3df;
-  --acgb-bg-2: #eceae6;
-  --acgb-ink: #0a0a0a;
-  --acgb-ink-2: #3a3936;
-  --acgb-muted: #7a7873;
-  --acgb-hair: rgba(10, 10, 10, .16);
-  --acgb-hair-soft: rgba(10, 10, 10, .07);
-  --acgb-glitch-a: #ff3b30;
-  --acgb-glitch-b: #2971b8;
-  --acgb-bar: #ff0033;            /* 进度条与读数（参考站是亮黄 #fff a00，这里用本站主题红） */
-  --acgb-din: "Bahnschrift", "DIN Alternate", "HarmonyOS Sans SC", "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
-  --acgb-mono: "Cascadia Mono", "SFMono-Regular", Consolas, Menlo, ui-monospace, monospace;
-  --acgb-zh: "Microsoft YaHei", "PingFang SC", "HarmonyOS Sans SC", "Noto Sans SC", sans-serif;
-  --acgb-ease: cubic-bezier(.22, .61, .36, 1);
-  --p: 0;                          /* 唯一数据源：0 → 100，由 JS 写入 */
-
-  position: fixed; inset: 0; z-index: 1300;
-  overflow: hidden; background: #06060a; color: var(--acgb-ink);
-  font-family: var(--acgb-din);
-  cursor: default; -webkit-user-select: none; user-select: none;
-  -webkit-tap-highlight-color: transparent;
-  -webkit-font-smoothing: antialiased;
-  contain: layout paint style;
-}
-#acgEnter.acgb-out { opacity: 0; transition: opacity .93s var(--acgb-ease) .9s; }
-html.acg-enter-lock, html.acg-enter-lock body { overflow: hidden !important; }
-
-/* —— 背景层：全出血插画，模糊随进度收束 —— */
-/* 【换图处】把 url() 换成你想要的开屏主视觉即可，结构不用动 */
-.acge-bg {
-  position: absolute; inset: -4%;
-  background: url('../assets/images/bg.jpg') center 32% / cover no-repeat,
-              linear-gradient(160deg, #14141d, #06060a);
-  filter: blur(calc(8px * (1 - var(--p) / 100))) saturate(calc(.72 + var(--p) / 360));
-  transform: scale(calc(1.08 - var(--p) / 1400));
-  will-change: filter, transform;
-  transition: filter .5s linear, transform .5s linear;
-}
-.acge-scrim {
-  position: absolute; inset: 0; pointer-events: none;
-  background:
-    linear-gradient(90deg, rgba(6,6,10,.92) 0%, rgba(6,6,10,.58) 52%, rgba(6,6,10,.30) 100%),
-    linear-gradient(0deg, rgba(6,6,10,.86) 0%, transparent 42%);
-}
-/* 极淡方格网：把前面两版的"档案"质感带进来 */
-.acge-grid {
-  position: absolute; inset: 0; pointer-events: none; opacity: .5;
-  background-image:
-    repeating-linear-gradient(0deg, rgba(255,255,255,.05) 0 1px, transparent 1px 76px),
-    repeating-linear-gradient(90deg, rgba(255,255,255,.05) 0 1px, transparent 1px 76px);
+:root {
+  --v9-bg: #f7f4ec;          /* 暖白底 */
+  --v9-surface: #fffdf8;     /* 卡片面 */
+  --v9-band: #efe9dc;        /* 分区带 */
+  --v9-ink: #14110f;         /* 正文墨色 */
+  --v9-ink-2: #4a443d;       /* 次级文字 */
+  --v9-ink-3: #7d7468;       /* 说明文字 */
+  --v9-line: rgba(20, 17, 15, .14);
+  --v9-line-2: rgba(20, 17, 15, .08);
+  /* ⚠️ 强调色必须跟随主题，不能写死：
+     主题只定义了 --btn-grad-from/to 和 --on-primary，
+     若这里固定成 #e8122f，换主题就完全没有视觉变化，那个按钮形同虚设。 */
+  --v9-accent: var(--btn-grad-from, #e8122f);
+  --v9-accent-2: var(--btn-grad-to, #b3002a);
+  /* 红色文字要压深才够对比度；用 color-mix 从强调色派生，主题一换自动跟着变 */
+  --v9-accent-ink: color-mix(in srgb, var(--v9-accent) 50%, #14110f);
+  --v9-accent-soft: color-mix(in srgb, var(--v9-accent) 14%, #ffffff);
+  --v9-mint: #d7ebe4;
+  --v9-pink: var(--v9-accent-soft);
+  --v9-sun: #fdf1cf;
+  --v9-radius: 16px;
+  --v9-shadow: 0 1px 2px rgba(20,17,15,.05), 0 8px 24px rgba(20,17,15,.06);
+  --v9-din: "Bahnschrift", "DIN Alternate", "HarmonyOS Sans SC", "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
+  --v9-mono: "Cascadia Mono", "SFMono-Regular", Consolas, Menlo, ui-monospace, monospace;
 }
 
-/* —— 科技感细节 —— */
-/* 扫描带：一道缓慢下移的暗带，像在做全域扫描 */
-.acge-scan {
-  position: absolute; left: 0; right: 0; height: 34vh; pointer-events: none; opacity: .55;
-  background: linear-gradient(180deg, transparent, rgba(255,255,255,.05) 44%,
-              rgba(255,0,51,.12) 50%, rgba(255,255,255,.05) 56%, transparent);
-  animation: acgeScan 3.6s linear infinite;
+/* ---------- 基础 ---------- */
+body {
+  background: var(--v9-bg) !important;
+  color: var(--v9-ink) !important;
+  font-family: "Microsoft YaHei", "PingFang SC", "HarmonyOS Sans SC", "Noto Sans SC", system-ui, sans-serif;
 }
-@keyframes acgeScan { 0% { top: -34vh; } 100% { top: 100%; } }
-/* 细横纹：CRT 质感，很淡 */
-.acge-lines {
-  position: absolute; inset: 0; pointer-events: none; opacity: .32;
-  background: repeating-linear-gradient(0deg, rgba(255,255,255,.045) 0 1px, transparent 1px 3px);
-}
-/* 左侧刻度条：随进度生长 */
-.acge-scale {
-  position: absolute; left: 0; top: 0; bottom: 0; width: 3px; pointer-events: none;
-  background: var(--acgb-bar); opacity: .55;
-  transform-origin: top center;
-  transform: scaleY(calc(var(--p) / 100));
-  transition: transform .5s linear;
-}
-/* 四边中点短线：取景框感 */
-.acge-tick {
-  position: absolute; background: rgba(255,255,255,.28); pointer-events: none;
-  opacity: 0; animation: acgeRise .7s var(--acgb-ease) .5s forwards;
-}
-.acge-tick.t { top: 26px; left: 50%; width: 1px; height: 16px; }
-.acge-tick.b { bottom: 26px; left: 50%; width: 1px; height: 16px; }
-.acge-tick.l { left: 26px; top: 50%; width: 16px; height: 1px; }
-.acge-tick.r { right: 26px; top: 50%; width: 16px; height: 1px; }
-/* 右上角遥测读数 */
-.acge-hud {
-  position: absolute; top: clamp(44px, 8vh, 76px); right: clamp(30px, 5vw, 66px);
-  text-align: right; font-family: var(--acgb-mono);
-  font-size: .62rem; letter-spacing: .18em; text-transform: uppercase;
-  color: rgba(255,255,255,.36); line-height: 2;
-  opacity: 0; animation: acgeIn .8s var(--acgb-ease) .6s forwards;
-}
-.acge-hud b { color: rgba(255,255,255,.74); font-weight: 600; font-variant-numeric: tabular-nums; }
-.acge-hud .ok { color: var(--acgb-bar); }
-/* 任务名打字机光标 */
-.acge-task::after {
-  content: ""; display: inline-block; width: 6px; height: 11px; margin-left: 5px;
-  background: rgba(255,255,255,.5); vertical-align: -1px;
-  animation: acgeBlink .9s steps(1, end) infinite;
-}
-@keyframes acgeBlink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+.bg-image, .bg-grid, .glow { display: none !important; }
+#particles { display: none !important; }   /* 手机再省点电，粒子也让位给亮底 */
+::selection { background: var(--v9-accent); color: #fff; }
 
-/* —— 四角定位角标 —— */
-.acge-corners i {
-  position: absolute; width: 22px; height: 22px;
-  border: 1px solid rgba(255,255,255,.30); pointer-events: none;
-  opacity: 0; animation: acgeRise .7s var(--acgb-ease) .35s forwards;
+/* ---------- 导航：手机只留 3 件东西 ---------- */
+.nav {
+  background: rgba(247, 244, 236, .92) !important;
+  border-bottom: 1px solid var(--v9-line-2) !important;
+  backdrop-filter: blur(14px) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
 }
-.acge-corners i:nth-child(1) { top: 26px; left: 26px; border-right: 0; border-bottom: 0; }
-.acge-corners i:nth-child(2) { top: 26px; right: 26px; border-left: 0; border-bottom: 0; }
-.acge-corners i:nth-child(3) { bottom: 26px; left: 26px; border-right: 0; border-top: 0; }
-.acge-corners i:nth-child(4) { bottom: 26px; right: 26px; border-left: 0; border-top: 0; }
-@keyframes acgeRise { to { opacity: 1; } }
+.nav.scrolled { background: rgba(247, 244, 236, .98) !important; border-bottom-color: var(--v9-line) !important; }
+.nav-inner {
+  max-width: 1180px !important;
+  padding: 10px 16px !important;
+  min-height: 56px;
+}
+.logo { font-size: 1.02rem !important; gap: 8px !important; color: var(--v9-ink) !important; }
+.logo-mark {
+  width: 30px !important; height: 30px !important; border-radius: 9px !important;
+  background: var(--v9-accent) !important; box-shadow: none !important;
+  font-size: .92rem !important;
+}
+.logo-text em { color: var(--v9-ink) !important; }
 
-/* —— 左上品牌块（三行窄体，第三行强调色） —— */
-.acge-brand {
-  position: absolute; top: clamp(44px, 8vh, 78px); left: clamp(30px, 5vw, 66px);
-  opacity: 0; transform: translateY(10px);
-  animation: acgeIn .8s var(--acgb-ease) .12s forwards;
-}
-.acge-brand-line {
-  font-size: clamp(1.35rem, 4.2vw, 2.5rem);
-  font-weight: 800; line-height: 1.1; letter-spacing: .01em; color: #f2f1ee;
-  text-transform: uppercase;
-}
-.acge-brand-line.accent { color: var(--acgb-accent); }
-@keyframes acgeIn { to { opacity: 1; transform: none; } }
+/* 手机：把"主题钮 / 网站贡献者"从顶栏收进抽屉底部，顶栏只留 logo + 名片 + 汉堡 */
+.nav-toggle { display: flex !important; }
+.nav-toggle span { background: var(--v9-ink) !important; }
 
-/* —— 左下：当前正在加载的任务名（等宽小字） —— */
-.acge-task {
-  position: absolute; left: clamp(30px, 5vw, 66px); bottom: clamp(30px, 5vh, 54px);
-  font-family: var(--acgb-mono); font-size: .68rem; letter-spacing: .2em;
-  text-transform: uppercase; color: rgba(255,255,255,.42);
-  max-width: 40vw; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+.nav-auth {
+  margin-left: auto !important; margin-right: 8px !important;
+  gap: 6px !important;
 }
 
-/* —— 右侧：Slogan | 竖进度条 | 大读数（三列网格，读数有专属列，不会压到 slogan） —— */
-.acge-right {
-  position: absolute; right: clamp(56px, 9vw, 132px); top: 50%;
-  transform: translateY(-50%);
+/* ⚠️ 换色按钮：原来的样式是深色版留下的
+     border: 1px solid rgba(255,255,255,.15) + background: rgba(255,255,255,.05)
+   在暖白底上等于全透明，按钮"看不见"而不是"不存在"。这里改成实心描边按钮。 */
+.theme-toggle {
+  width: 34px !important; height: 34px !important;
+  border-radius: 10px !important;
+  border: 1px solid var(--v9-line) !important;
+  background: var(--v9-surface) !important;
+  color: var(--v9-ink) !important;
+  box-shadow: var(--v9-shadow);
+  font-size: .95rem !important;
+  display: grid !important; place-items: center !important;
+  cursor: pointer;
+  transition: border-color .18s, transform .18s, background .18s;
+}
+.theme-toggle:hover { border-color: var(--v9-accent) !important; transform: rotate(20deg); background: var(--v9-pink) !important; }
+
+/* 主题面板：深色弹层在亮底上很跳，改成亮色 */
+.theme-panel {
+  background: var(--v9-surface) !important;
+  border: 1px solid var(--v9-line) !important;
+  box-shadow: 0 12px 32px rgba(20,17,15,.14) !important;
+  border-radius: 14px !important;
+}
+.theme-panel-title { color: var(--v9-ink-3) !important; }
+.theme-option {
+  color: var(--v9-ink-2) !important;
+  border-radius: 8px !important;
+}
+.theme-option:hover { background: var(--v9-band) !important; color: var(--v9-ink) !important; }
+.theme-option.active {
+  background: var(--v9-pink) !important;
+  border-color: var(--v9-accent) !important;
+  color: var(--v9-accent-ink) !important;
+}
+
+/* 网站贡献者：手机上收成图标，和换色按钮同尺寸 */
+.developer-btn {
+  width: 34px !important; height: 34px !important;
+  padding: 0 !important;
+  border-radius: 10px !important;
+  border: 1px solid var(--v9-line) !important;
+  background: var(--v9-surface) !important;
+  color: var(--v9-ink) !important;
+  box-shadow: var(--v9-shadow);
+  font-size: 0 !important;
+  display: grid !important; place-items: center !important;
+  flex: none;
+}
+.developer-btn::before { content: '🛠️'; font-size: .95rem; }
+.developer-btn:hover { border-color: var(--v9-accent) !important; background: var(--v9-pink) !important; }
+.user-info { background: var(--v9-pink) !important; border-color: var(--v9-line) !important; color: var(--v9-ink) !important; }
+.user-name { color: var(--v9-ink) !important; max-width: 72px; }
+.btn-logout { color: var(--v9-ink-3) !important; }
+
+/* 抽屉：导航链接 + 底部两个收纳项 */
+.nav-links {
+  position: fixed !important;
+  top: 56px !important; left: 0 !important; right: 0 !important;
+  background: var(--v9-bg) !important;
+  backdrop-filter: none !important; -webkit-backdrop-filter: none !important;
+  border-bottom: 1px solid var(--v9-line) !important;
+  flex-direction: column !important;
+  gap: 0 !important;
+  padding: 8px 16px 20px !important;
+  transform: translateY(-130%) !important;
+  transition: transform .32s cubic-bezier(.22,.61,.36,1) !important;
+  max-height: calc(100dvh - 56px) !important;
+  overflow-y: auto !important;
+  display: flex !important;
+}
+.nav-links.open { transform: translateY(0) !important; }
+.nav-links a {
+  color: var(--v9-ink) !important;
+  padding: 14px 4px !important;
+  border-bottom: 1px solid var(--v9-line-2);
+  font-size: 1rem !important;
+  font-weight: 600;
+}
+.nav-links a::after { display: none !important; }
+.nav-links a:last-child { border-bottom: 0; }
+
+/* 抽屉打开时，在链接下方追加"主题 / 贡献者"两个入口（用顶层导航里的元素就位） */
+
+
+/* ---------- Hero：亮底 + 图片做成"卡片式主视觉" ---------- */
+.hero {
+  min-height: auto !important;
+  display: block !important;
+  padding: 76px 0 34px !important;
+  background: var(--v9-bg) !important;
+  isolation: auto !important;
+  overflow: visible !important;
+}
+.hero::before { display: none !important; }   /* 去掉全屏暗图 */
+.hero::after { display: none !important; }
+
+/* 主视觉图：圆角大卡，手机上也一眼看到，但不压住文字 */
+.hero-inner {
+  max-width: 1180px !important;
+  padding-inline: 16px !important;
   display: grid;
-  grid-template-columns: auto auto auto;
+  grid-template-columns: 1fr;
+  gap: 20px;
+  justify-items: start;      /* grid 默认 stretch，会把徽章和按钮都拉成满宽 */
+  text-align: left !important;
+}
+.hero-badge { justify-self: start !important; }
+.hero-actions { justify-self: start !important; }
+.hero-actions .btn { width: auto !important; }
+.hero-badge {
+  order: 0;
+  justify-self: start;
+  background: var(--v9-pink) !important;
+  border: 1px solid var(--v9-line) !important;
+  color: var(--v9-accent-ink) !important;
+  font-family: var(--v9-mono) !important;
+  font-size: .7rem !important;
+  letter-spacing: .08em !important;
+  padding: 6px 12px !important;
+  border-radius: 999px !important;
+  margin-bottom: 0 !important;
+}
+.hero-title {
+  order: 1;
+  font-family: var(--v9-din) !important;
+  font-size: clamp(1.75rem, 8.4vw, 3.6rem) !important;
+  line-height: 1.14 !important;
+  letter-spacing: -.02em !important;
+  color: var(--v9-ink) !important;
+  margin: 0 !important;
+  max-width: 20em;
+}
+/* 强调词是正文级文字，必须用压深后的 accent-ink；
+   直接上 --v9-accent 的话，金色/黄色主题对比度只有 1.1~1.4，几乎看不清。 */
+.hero-title .hero-em { color: var(--v9-accent-ink) !important; }
+.hero-sub {
+  order: 2;
+  font-size: .96rem !important;
+  line-height: 1.75 !important;
+  color: var(--v9-ink-2) !important;
+  max-width: 34em !important;
+  margin: 0 !important;
+}
+/* CTA：手机上门板不做"两块大馒头"，并排且高度收敛 */
+.hero-actions {
+  order: 3;
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: wrap !important;
+  gap: 10px !important;
+  margin: 2px 0 0 !important;
+  justify-content: flex-start !important;
+}
+.hero-actions .btn { flex: 0 1 auto; }
+/* 主视觉图（用伪元素挂在最后，避免动 HTML） */
+.hero-inner::after {
+  content: "";
+  order: 4;
+  justify-self: stretch;
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  margin-top: 4px;
+  border-radius: 20px;
+  border: 1px solid var(--v9-line);
+  box-shadow: var(--v9-shadow);
+  background: url('assets/images/bg.webp') center 30% / cover no-repeat, #d9d3c6;
+}
+/* 数据行：手机两列，数值和标签同一格，不再折行 */
+.hero-stats {
+  order: 5;
+  justify-self: stretch !important;   /* 数据行要通栏，不接受 start */
+  width: 100% !important;
+  display: grid !important;
+  grid-template-columns: repeat(2, 1fr) !important;
+  gap: 0 !important;
+  border-top: 1px solid var(--v9-line) !important;
+  border-bottom: 1px solid var(--v9-line) !important;
+  padding: 0 !important;
+  max-width: none !important;
+  margin-top: 18px;
+}
+.hero-stats .stat {
+  border-right: 1px solid var(--v9-line) !important;
+  border-bottom: 1px solid var(--v9-line) !important;
+  padding: 14px 12px !important;
+  text-align: left !important;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.hero-stats .stat:nth-child(2n) { border-right: 0 !important; }
+.hero-stats .stat:nth-last-child(-n+2) { border-bottom: 0 !important; }
+.hero-stats .stat strong {
+  background: none !important; -webkit-text-fill-color: currentColor !important;
+  color: var(--v9-accent-ink) !important;   /* 文字用压深版；金色主题上亮金几乎看不见 */
+  font-family: var(--v9-din) !important;
+  font-size: 1.55rem !important;
+  line-height: 1 !important;
+  display: inline !important;
+}
+.hero-stats .stat span {
+  color: var(--v9-ink-3) !important;
+  font-size: .76rem !important;
+  letter-spacing: .02em;
+  display: inline !important;
+}
+
+/* ---------- 按钮：手机不铺满，高度收敛 ---------- */
+.btn {
+  padding: 11px 20px !important;
+  font-size: .9rem !important;
+  font-weight: 700;
+  border-radius: 999px !important;
+  transition: transform .16s, box-shadow .16s, background .16s, border-color .16s;
+}
+.btn-primary {
+  /* 保留各主题原本的渐变与文字色（--on-primary 已按主题调好对比度） */
+  background: linear-gradient(135deg, var(--btn-grad-from), var(--btn-grad-to)) !important;
+  color: var(--on-primary, #fff) !important;
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--v9-accent) 30%, transparent) !important;
+}
+.btn-primary:hover {
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+}
+.btn-ghost {
+  background: var(--v9-surface) !important;
+  color: var(--v9-ink) !important;
+  border: 1px solid var(--v9-line) !important;
+}
+.btn-ghost:hover { border-color: var(--v9-ink-3) !important; }
+.btn-block { width: 100% !important; }
+
+/* ---------- 区段：亮底 + 留白 ---------- */
+.section { padding: 46px 0 !important; background: var(--v9-bg) !important; }
+.section-alt { background: var(--v9-band) !important; }
+.section-alt::before, .section-alt::after { display: none !important; }
+.container { max-width: 1180px !important; padding-inline: 16px !important; margin-inline: auto !important; }
+
+.section-label {
+  font-family: var(--v9-mono) !important;
+  font-size: .68rem !important;
+  letter-spacing: .2em !important;
+  color: var(--v9-accent-ink) !important;
+  text-align: left !important;
+  display: flex; align-items: center; gap: 10px;
+  margin: 0 0 10px !important;
+}
+.section-label::after {
+  content: ""; flex: 0 0 40px; height: 1px;
+  background: linear-gradient(90deg, var(--v9-accent), transparent);
+}
+.section-title {
+  font-family: var(--v9-din) !important;
+  font-size: clamp(1.35rem, 5.6vw, 2.1rem) !important;
+  line-height: 1.22 !important;
+  letter-spacing: -.015em;
+  color: var(--v9-ink) !important;
+  text-align: left !important;
+  margin: 0 0 10px !important;
+  max-width: 22em;
+}
+.section-title .grad {
+  background: none !important; -webkit-text-fill-color: currentColor !important;
+  color: var(--v9-ink) !important; animation: none !important;
+}
+.section-desc {
+  color: var(--v9-ink-2) !important;
+  font-size: .92rem !important;
+  line-height: 1.78 !important;
+  text-align: left !important;
+  max-width: 36em !important;      /* 手机上限制行宽，不再满宽贴边 */
+  margin: 0 0 26px !important;
+}
+.section-desc strong { color: var(--v9-accent-ink) !important; }
+/* 交错：桌面才右对齐，手机一律左对齐（手机右对齐会很难读） */
+@media (min-width: 820px) {
+  .section-alt .section-label { flex-direction: row-reverse; }
+  .section-alt .section-label::after { background: linear-gradient(270deg, var(--v9-accent), transparent); }
+  .section-alt .section-label,
+  .section-alt .section-title,
+  .section-alt .section-desc { text-align: right !important; margin-left: auto !important; margin-right: 0 !important; }
+}
+
+/* ---------- 卡片：白面 + 细线，手机单列 ---------- */
+.grid { display: grid !important; gap: 12px !important; grid-template-columns: 1fr !important; }
+.card {
+  background: var(--v9-surface) !important;
+  border: 1px solid var(--v9-line) !important;
+  border-radius: var(--v9-radius) !important;
+  padding: 20px 18px !important;
+  box-shadow: var(--v9-shadow);
+  transition: transform .18s, box-shadow .18s, border-color .18s;
+}
+.card:hover { transform: translateY(-2px); box-shadow: 0 2px 4px rgba(20,17,15,.06), 0 12px 28px rgba(20,17,15,.09); border-color: var(--v9-line) !important; }
+.card-icon { font-size: 1.4rem !important; margin-bottom: 10px !important; }
+.card h3 { font-size: 1rem !important; font-weight: 750; color: var(--v9-ink) !important; margin-bottom: 6px !important; }
+.card p { color: var(--v9-ink-2) !important; font-size: .88rem !important; line-height: 1.72 !important; }
+.dept-card::after { color: var(--v9-accent-ink) !important; font-family: var(--v9-mono); font-size: .7rem; }
+
+/* ---------- 活动：手机上下堆叠的条目 ---------- */
+.activity-toolbar, .gallery-toolbar {
+  justify-content: flex-start !important;
+  margin: 0 0 18px !important;
+  gap: 8px !important;
+}
+.filter-btn {
+  padding: 7px 14px !important;
+  font-size: .8rem !important;
+  border: 1px solid var(--v9-line) !important;
+  background: var(--v9-surface) !important;
+  color: var(--v9-ink-2) !important;
+  border-radius: 999px !important;
+}
+.filter-btn.active {
+  background: var(--v9-accent) !important;
+  border-color: var(--v9-accent) !important;
+  color: var(--on-primary, #fff) !important;
+}
+.activity-list { border-top: 1px solid var(--v9-line); display: flex; flex-direction: column; }
+.activity-item {
+  display: flex !important; flex-direction: column !important;
+  position: static !important; padding: 0 !important;
+}
+.activity-item .activity-dot { display: none !important; }
+/* 日期回到文档流并排到条目末尾当脚注：
+   原规则是 position:absolute + margin-left:56px，手机上会浮到标签胶囊上面重叠。 */
+.activity-date {
+  order: 3;
+  display: flex !important;
+  position: static !important;
+  margin: 0 !important;
+  top: auto !important; left: auto !important; right: auto !important;
+  align-items: baseline; gap: 6px !important;
+  font-family: var(--v9-mono); color: var(--v9-ink-3) !important;
+  padding: 0 2px 16px !important;
+  text-align: left !important;
+}
+.activity-date strong { display: inline !important; color: var(--v9-ink) !important; font-size: .9rem !important; }
+.activity-date span { font-size: .76rem !important; }
+.activity-body {
+  grid-column: auto !important;
+  position: static !important;
+  background: transparent !important; border: 0 !important;
+  border-bottom: 1px solid var(--v9-line-2) !important;
+  border-radius: 0 !important;
+  padding: 8px 2px 18px !important;
+}
+.activity-meta {
+  display: flex !important;
+  flex-wrap: nowrap !important;   /* 标签 + 状态尽量同一行；放不下时允许标签内部省略 */
+  gap: 6px !important;
   align-items: center;
-  gap: clamp(18px, 2.6vw, 34px);
+  margin-bottom: 8px !important;
+  overflow: hidden;
 }
-.acge-slogan { text-align: right; }
-.acge-slogan-en {
-  display: block; font-family: var(--acgb-mono);
-  font-size: clamp(.62rem, 1.5vw, .78rem); letter-spacing: .34em;
-  text-transform: uppercase; color: rgba(242,241,238,.86);
-  line-height: 1.9;
+.tag, .status {
+  font-size: .72rem !important;
+  padding: 3px 10px !important;
+  border-radius: 999px !important;
+  border: 1px solid var(--v9-line) !important;
+  background: var(--v9-surface) !important;
+  color: var(--v9-ink-2) !important;
+  white-space: nowrap;
+  display: inline-block !important;
+  margin: 0 !important;
+  flex: 0 0 auto;
 }
-.acge-slogan-cn {
-  display: block; margin-top: 12px; font-family: var(--acgb-zh);
-  font-size: clamp(.72rem, 1.7vw, .86rem); letter-spacing: .18em; color: rgba(255,255,255,.44);
+.tag {
+  /* 标签可能很长（如"网站搭建与更新"），允许收缩并省略，给状态胶囊让位 */
+  flex: 0 1 auto !important;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 62%;
 }
-/* 细渐变分隔线：参考站 divider 的写法（两端透明、中间最亮） */
-.acge-divider {
-  margin: 16px 0 0 auto; width: clamp(120px, 20vw, 240px); height: 1px;
-  background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.34) 50%, rgba(255,255,255,0) 100%);
+.status-进行中 { color: #0f7a5a !important; border-color: rgba(15,122,90,.3) !important; background: var(--v9-mint) !important; }
+.status-计划中 { color: #8a5a0a !important; border-color: rgba(138,90,10,.28) !important; background: var(--v9-sun) !important; }
+.status-已结束 { color: var(--v9-ink-3) !important; }
+.activity-body h3 { font-size: 1rem !important; color: var(--v9-ink) !important; margin-bottom: 4px !important; }
+.activity-body p { color: var(--v9-ink-2) !important; font-size: .88rem !important; line-height: 1.75 !important; }
+.empty-state { border: 1px solid var(--v9-line) !important; color: var(--v9-ink-3) !important; text-align: left !important; padding: 22px 16px !important; border-radius: var(--v9-radius) !important; }
+
+/* ---------- 画廊：手机两列等高，不再错位 ---------- */
+.gallery-grid {
+  display: grid !important;
+  grid-template-columns: repeat(2, 1fr) !important;
+  gap: 10px !important;
+}
+.gallery-item {
+  grid-column: auto !important;
+  position: relative !important;   /* 图注是 absolute，必须有定位基准 */
+  overflow: hidden;                /* 圆角裁切，图片不出界 */
+  /* 关键：卡片本身是 <button>，会被上面的 .btn 规则加上 11px 20px 内边距，
+     内边距一挤内容区就没了，图片自然不加载/不显示。这里全部清零。 */
+  padding: 0 !important;
+  font: inherit !important;
+  line-height: 0 !important;
+  display: block !important;
+  width: 100% !important;
+  aspect-ratio: 3 / 4 !important;      /* 统一比例 => 两列等高 */
+  border-radius: 12px !important;
+  border: 1px solid var(--v9-line) !important;
+  box-shadow: var(--v9-shadow);
+  margin: 0 !important;
+  background: var(--v9-band) !important;
+  cursor: pointer;
+}
+.gallery-item:nth-child(n) { grid-column: auto !important; aspect-ratio: 3 / 4 !important; margin: 0 !important; }
+/* <picture> 只当候选源容器：不设 height:100%，
+   否则 <img> 的 height:100% 会失去可解析的父高度（图片塌成 0 不加载）。
+   改为让 picture 绝对定位铺满卡片，img 再撑满 picture。 */
+.gallery-item picture {
+  display: block !important;
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+.gallery-item img {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  line-height: 0;
+}
+.gallery-item span {
+  position: absolute !important;   /* 不写这条会退回文档流，图注浮在图片中间 */
+  left: 8px !important; right: 8px !important; bottom: 8px !important;
+  padding: 6px 10px !important;
+  font-size: .7rem !important;
+  line-height: 1.4 !important;     /* 父级 line-height:0 会传到图注，压扁并贴底被裁 */
+  border-radius: 8px !important;
+  background: rgba(20, 17, 15, .78) !important;
+  backdrop-filter: blur(6px);
+  text-align: left !important;
+  display: block !important;
+  z-index: 2;
 }
 
-/* 竖进度条轨道 */
-.acge-progress {
-  position: relative; width: 7px; height: clamp(180px, 34vh, 300px);
-  background: rgba(255,255,255,.10); border-radius: 4px; overflow: visible; flex: none;
+/* ---------- 工具 / 每日 / 加入 ---------- */
+.tool-card .btn { align-self: stretch !important; margin-top: 4px; }
+#daily-acg-box, .join-box {
+  border: 1px solid var(--v9-line) !important;
+  border-radius: var(--v9-radius) !important;
 }
-/* 进度条本体：只写 scaleY，纯合成属性，不触发重排 */
-.acge-bar {
-  position: absolute; left: 0; right: 0; bottom: 0; top: 0;
-  background: var(--acgb-bar);
-  transform-origin: bottom center;
-  transform: scaleY(calc(var(--p) / 100));
-  border-radius: 4px;
-  transition: transform .5s linear;   /* tween 追赶：目标高频重设，渲染值自然平滑爬升 */
+.join-box {
+  background: var(--v9-surface) !important;
+  background-image: none !important;
+  padding: 28px 18px !important;
+  box-shadow: var(--v9-shadow);
 }
-/* 大读数：与进度条【同高】，用 padding-bottom 对齐条末端，避免绝对定位外溢压到 slogan */
-.acge-readout {
-  align-self: stretch; display: flex; align-items: flex-end;
-  padding-bottom: calc(var(--p) * 1%);
-  transition: padding-bottom .5s linear;
+.join-box .section-label, .join-box .section-label::after { justify-content: flex-start; display: none; }
+.join-box .section-title, .join-box .section-desc { text-align: left !important; margin-left: 0 !important; margin-right: 0 !important; }
+.social-matrix { display: grid !important; gap: 10px !important; grid-template-columns: 1fr; }
+.join-note {
+  font-family: var(--v9-mono) !important;
+  font-size: .74rem !important;
+  color: var(--v9-ink-3) !important;
+  margin-top: 16px !important;
 }
-.acge-readout-inner { display: flex; align-items: baseline; gap: 2px; }
-/* "Updating…" 跟着读数走：挂在读数块右下方 */
-.acge-state {
-  position: absolute; margin-top: 6px; white-space: nowrap;
-}
-.acge-readout { position: relative; }
-.acge-readout > .acge-state { top: 100%; left: 0; }
-.acge-mark {
-  align-self: center; width: 5px; height: 26px; margin-right: 10px;
-  background: var(--acgb-bar); border-radius: 3px;
-}
-.acge-value {
-  font-family: var(--acgb-din);
-  font-size: clamp(2.4rem, 5.6vw, 4rem); font-weight: 800; line-height: 1;
-  color: var(--acgb-bar); font-variant-numeric: tabular-nums;
-  letter-spacing: -.02em;
-}
-.acge-symbol {
-  font-family: var(--acgb-mono); font-size: clamp(.9rem, 2vw, 1.4rem);
-  color: var(--acgb-bar); margin-left: 2px;
-}
-.acge-state {
-  font-family: var(--acgb-mono);
-  font-size: .62rem; letter-spacing: .22em; text-transform: uppercase;
-  color: rgba(255,255,255,.40);
-}
+#daily-acg-box { background: var(--v9-surface) !important; border-style: solid !important; }
 
-/* —— 入场：进度读数与条延迟出现，先让画面"对上焦" —— */
-.acge-right, .acge-task {
-  opacity: 0; animation: acgeIn .7s var(--acgb-ease) .5s forwards;
-}
+/* ---------- 档案条：亮色版本 ---------- */
+.v8-plate { background: var(--v9-band) !important; color: var(--v9-ink) !important; padding: 30px 0 !important; }
+.v8-plate h3 { color: var(--v9-ink) !important; font-size: 1.05rem; }
+.v8-plate p { color: var(--v9-ink-2) !important; font-size: .88rem !important; }
+.v8-plate-kicker { color: var(--v9-ink-3) !important; }
+.v8-plate-inner { flex-direction: column !important; gap: 16px !important; }
+.v8-plate-corners i { border-color: var(--v9-line) !important; }
 
-/* —— 揭幕故障（加载完成瞬间） —— */
-.acge-glitch { position: absolute; inset: 0; pointer-events: none; opacity: 0; }
-.acge-glitch.on { animation: acgeGlitch .5s steps(2, end) forwards; }
-@keyframes acgeGlitch {
-  0%   { opacity: 0; transform: translate(0, 0); }
-  18%  { opacity: .85; transform: translate(-6px, 2px); }
-  40%  { opacity: .55; transform: translate(5px, -2px); }
-  64%  { opacity: .7; transform: translate(-3px, 0); }
-  100% { opacity: 0; transform: translate(0, 0); }
-}
-.acge-gbar { position: absolute; left: 0; right: 0; height: 2px; mix-blend-mode: screen; }
-.acge-gbar.a { background: var(--acgb-glitch-a); }
-.acge-gbar.b { background: var(--acgb-glitch-b); }
+/* ---------- 页脚 ---------- */
+.footer { background: var(--v9-ink) !important; color: #e9e4da !important; border-top: 0 !important; padding: 26px 0 !important; }
+.footer-brand { color: #f3efe6 !important; font-size: .92rem; }
+.footer-copy { color: #a9a29a !important; font-size: .76rem !important; }
+.version-link { color: #a9a29a !important; }
 
-/* —— 中央终幕方框 —— */
-.acge-box {
-  position: absolute; left: 50%; top: 50%;
-  transform: translate(-50%, -50%) scale(.96);
-  padding: clamp(16px, 3.4vw, 26px) clamp(24px, 6vw, 50px);
-  background: #0a0a0a; color: #f2f1ee;
-  font-family: var(--acgb-mono); font-size: clamp(.7rem, 2.2vw, .96rem);
-  letter-spacing: .3em; text-transform: uppercase; white-space: nowrap;
-  opacity: 0; transition: opacity .3s var(--acgb-ease), transform .3s var(--acgb-ease);
-}
-.acge-box.on { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-
-/* —— 跳过 —— */
-.acge-skip {
-  position: absolute; top: clamp(22px, 3.4vh, 32px); right: clamp(22px, 3vw, 34px);
-  font-family: var(--acgb-mono); font-size: .62rem; letter-spacing: .24em;
-  padding: 9px 15px; cursor: pointer; text-transform: uppercase;
-  background: transparent; color: rgba(255,255,255,.48);
-  border: 1px solid rgba(255,255,255,.22);
-  transition: color .2s, border-color .2s, background .2s;
-}
-.acge-skip:hover { color: #fff; border-color: rgba(255,255,255,.6); background: rgba(255,255,255,.06); }
-.acge-skip:focus-visible { outline: 2px solid var(--acgb-accent); outline-offset: 2px; }
-
-/* —— 窄屏：改横向布局，进度条移到底部 —— */
-@media (max-width: 760px) {
-  .acge-right {
-    right: auto; left: 0; right: 0; top: auto; bottom: 0;
-    transform: none; padding: 0 22px 22px;
-    flex-direction: column-reverse; align-items: stretch; gap: 12px;
+/* ---------- 缩放控件：手机上直接隐藏 ---------- */
+/* 手机上双指缩放是系统原生操作，这一排按钮既多余、又会压住正文和卡片。
+   桌面端保留（那里没有手势缩放）。 */
+.zoom-controls { display: none !important; }
+@media (min-width: 820px) {
+  .zoom-controls {
+    display: flex !important;
+    left: 14px !important; bottom: 14px !important;
+    padding: 3px !important;
+    background: var(--v9-surface) !important;
+    border: 1px solid var(--v9-line) !important;
+    box-shadow: var(--v9-shadow);
+    opacity: .85 !important;
+    z-index: 60 !important;
   }
-  .acge-slogan { text-align: left; padding-top: 0; }
-  .acge-divider { margin: 0 0 0 0; width: 100%; }
-  .acge-slogan-cn { margin-top: 8px; }
-  .acge-progress { width: 100%; height: 5px; }
-  .acge-bar { transform-origin: left center; transform: scaleX(calc(var(--p) / 100)); }
-  .acge-readout {
-    bottom: auto; top: auto; left: auto; right: 0; transform: none;
-    position: relative; display: flex; align-items: baseline; gap: 4px;
-    justify-content: flex-end;
+  .zoom-controls:hover, .zoom-controls:focus-within { opacity: 1 !important; }
+  .zoom-controls button { width: 26px !important; height: 26px !important; color: var(--v9-ink) !important; background: transparent !important; }
+  .zoom-value { color: var(--v9-ink-2) !important; font-size: .68rem !important; min-width: 38px !important; }
+}
+.back-top {
+  background: var(--v9-surface) !important; color: var(--v9-ink) !important;
+  border: 1px solid var(--v9-line) !important; box-shadow: var(--v9-shadow);
+  /* 手机：返回顶部挪到右下角，音乐页签在其上方，两者不再叠 */
+  right: 12px !important; bottom: 12px !important;
+  width: 38px !important; height: 38px !important;
+  z-index: 60 !important;
+}
+.scroll-progress { background: var(--v9-accent) !important; }
+
+/* 页面底部留出空间，避免固定控件压住最后一段内容 */
+main { padding-bottom: 8px; }
+
+/* ---------- 音乐侧栏：手机重排为右下角悬浮按钮 ---------- */
+.music-side { z-index: 70 !important; }
+@media (max-width: 819px) {
+  /* 原始实现靠 transform: translateX(280px) 把整个容器推到屏幕外，只露一个页签。
+     手机上这样会让页签跟着容器跑到可视区外（实测 left=390, right=590）。
+     这里改成：容器留在屏幕内、抽屉自己 fixed 滑入滑出。 */
+  .music-side {
+    position: fixed !important;
+    right: 12px !important;
+    bottom: 58px !important;   /* 让开右下角的"返回顶部"按钮 */
+    top: auto !important;
+    transform: none !important;
+    flex-direction: column !important;
+    align-items: flex-end !important;
+    max-width: calc(100vw - 24px) !important;
   }
-  .acge-mark { display: none; }
-  .acge-value { font-size: 1.9rem; }
-  .acge-state { display: none; }
-  .acge-task { max-width: 60vw; bottom: auto; top: clamp(30px, 6vh, 48px); }
-  .acge-brand-line { font-size: 1.3rem; }
+  .music-side.open { transform: none !important; }
+  /* 折叠态：缩成半透明小圆点，尽量不遮正文；展开后恢复完整按钮 */
+  .ms-tab {
+    position: static !important;
+    width: 34px !important; height: 34px !important;
+    border-radius: 50% !important;
+    opacity: .42 !important;
+    z-index: 72 !important;
+    transition: opacity .2s, width .2s, height .2s, border-radius .2s !important;
+  }
+  .music-side:not(.open) .ms-tab:hover,
+  .music-side:not(.open) .ms-tab:active { opacity: 1 !important; }
+  .music-side.open .ms-tab {
+    width: 42px !important; height: 42px !important;
+    border-radius: 12px !important;
+    opacity: 1 !important;
+  }
+  .ms-drawer {
+    position: fixed !important;
+    right: 0 !important; left: auto !important;
+    bottom: 0 !important; top: auto !important;
+    width: min(300px, 88vw) !important;
+    max-width: none !important;
+    border-radius: 16px 16px 0 0 !important;
+    transform: translateX(105%) !important;
+    transition: transform .32s cubic-bezier(.22,.61,.36,1) !important;
+    z-index: 71 !important;
+    padding-bottom: calc(16px + env(safe-area-inset-bottom)) !important;
+  }
+  .music-side.open .ms-drawer { transform: translateX(0) !important; }
+}
+.ms-tab { background: var(--v9-accent) !important; color: #fff !important; box-shadow: 0 4px 14px rgba(232,18,47,.3) !important; }
+.ms-drawer {
+  background: var(--v9-surface) !important;
+  border: 1px solid var(--v9-line) !important;
+  color: var(--v9-ink) !important;
+  box-shadow: var(--v9-shadow);
+  max-width: calc(100vw - 24px) !important;   /* 关键：不超出视口 */
+}
+.ms-name { color: var(--v9-ink) !important; }
+.ms-artist, .ms-head span { color: var(--v9-ink-3) !important; }
+.ms-bar span { color: var(--v9-ink-3) !important; }
+.ms-btn { background: var(--v9-band) !important; color: var(--v9-ink) !important; border: 1px solid var(--v9-line) !important; }
+.ms-play { background: var(--v9-accent) !important; color: var(--on-primary, #fff) !important; border-color: transparent !important; }
+.ms-seek { accent-color: var(--v9-accent); }
+.ms-spectrum { background: var(--v9-band) !important; border-color: var(--v9-line) !important; }
+.ms-close { color: var(--v9-ink-3) !important; }
+
+/* ---------- 弹窗：亮色 ---------- */
+.modal-overlay { background: rgba(20, 17, 15, .45) !important; backdrop-filter: blur(6px) !important; }
+.modal-card {
+  background: var(--v9-bg) !important;
+  border: 1px solid var(--v9-line) !important;
+  color: var(--v9-ink) !important;
+  box-shadow: 0 20px 60px rgba(20,17,15,.22) !important;
+  border-radius: 18px !important;
+  padding: 26px 20px !important;
+}
+.modal-close { color: var(--v9-ink-3) !important; }
+.modal-header h2 { color: var(--v9-ink) !important; }
+.modal-subtitle { color: var(--v9-ink-3) !important; }
+.input-group label { color: var(--v9-ink-2) !important; }
+.input-group input, .input-group select {
+  background: var(--v9-surface) !important;
+  border: 1px solid var(--v9-line) !important;
+  color: var(--v9-ink) !important;
+  font-size: 16px !important;   /* 防 iOS 聚焦自动放大 */
+}
+.input-group select option { background: var(--v9-surface) !important; color: var(--v9-ink) !important; }
+.modal-footer span { color: var(--v9-ink-3) !important; }
+.dev-panel, .developer-role { background: var(--v9-surface) !important; border-color: var(--v9-line) !important; color: var(--v9-ink) !important; }
+.dev-panel-title, .developer-role h3 { color: var(--v9-ink) !important; }
+.dev-panel p, .developer-role p { color: var(--v9-ink-2) !important; }
+.tech-tags span { background: var(--v9-band) !important; border-color: var(--v9-line) !important; color: var(--v9-ink-2) !important; }
+.status-list span, .debug-output span { color: var(--v9-ink-3) !important; }
+.status-list strong { color: var(--v9-accent-ink) !important; }
+.debug-output code { color: var(--v9-accent-ink) !important; }
+.changelog-item { color: var(--v9-ink-2) !important; }
+.changelog-item strong { color: var(--v9-ink) !important; }
+kbd { background: var(--v9-band) !important; border-color: var(--v9-line) !important; color: var(--v9-ink) !important; }
+.dept-detail-content, #deptModalContent { color: var(--v9-ink-2) !important; }
+.lightbox-overlay { background: rgba(12, 10, 8, .92) !important; }
+.giscus-container { background: var(--v9-surface) !important; border-color: var(--v9-line) !important; }
+
+/* ---------- 入场：亮色下轻微上浮，不做模糊 ---------- */
+.reveal {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity .5s cubic-bezier(.16,1,.3,1), transform .5s cubic-bezier(.16,1,.3,1);
+  filter: none !important;
+}
+.reveal.show, .reveal.in { opacity: 1; transform: none; filter: none !important; }
+
+/* ========== 大屏手机 ========== */
+@media (min-width: 560px) {
+  .nav-inner { padding: 12px 24px !important; }
+  .hero-inner { padding-inline: 24px !important; }
+  .container { padding-inline: 24px !important; }
+  .grid { grid-template-columns: repeat(2, 1fr) !important; }
+  .hero-stats { grid-template-columns: repeat(4, 1fr) !important; }
+  .hero-stats .stat { border-bottom: 0 !important; }
+  .hero-stats .stat:nth-child(2n) { border-right: 1px solid var(--v9-line) !important; }
+  .hero-stats .stat:last-child { border-right: 0 !important; }
+  .social-matrix { grid-template-columns: repeat(2, 1fr); }
+  .gallery-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 12px !important; }
+  .v9-lead { font-size: 1rem; }
+}
+
+/* ========== 平板 ========== */
+@media (min-width: 820px) {
+  .nav-inner { min-height: 64px; }
+  .nav-toggle { display: none !important; }
+  .nav-links {
+    position: static !important;
+    transform: none !important;
+    flex-direction: row !important;
+    gap: 22px !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: 0 !important;
+    max-height: none !important;
+    overflow: visible !important;
+    margin-left: auto;
+  }
+  .nav-links a { border-bottom: 0; padding: 6px 0 !important; font-size: .92rem !important; color: var(--v9-ink-2) !important; }
+  .nav-links a:hover { color: var(--v9-ink) !important; }
+  .nav-auth .theme-switcher, .nav-auth .developer-btn { display: flex !important; }
+  .nav-auth { margin-left: 20px !important; margin-right: 0 !important; }
+  
+
+  .hero { padding: 88px 0 40px !important; }
+  .hero-inner { grid-template-columns: 1.05fr .95fr; align-items: start; gap: 22px 36px; }
+  .hero-badge { grid-column: 1; }
+  .hero-title { grid-column: 1; }
+  .hero-sub { grid-column: 1; }
+  .hero-actions { grid-column: 1; }
+  .hero-inner::after {
+    grid-column: 2; grid-row: 1 / span 5;
+    aspect-ratio: auto;
+    height: clamp(300px, 38vw, 430px);   /* 用固定高度收敛，避免图太高把整行撑出空洞 */
+    align-self: start;
+    margin-top: 0;
+    min-height: 0;
+  }
+  /* 左栏行距略松一点，让文字自然填满图的高度 */
+  .hero-title { line-height: 1.16 !important; }
+  .hero-sub { margin-bottom: 4px !important; }
+  .hero-actions { margin-top: 18px !important; margin-bottom: 0 !important; }
+  .hero-stats { grid-column: 1 / -1; order: 6; justify-self: stretch !important; }
+  .grid { grid-template-columns: repeat(3, 1fr) !important; gap: 16px !important; }
+  .gallery-grid { grid-template-columns: repeat(3, 1fr) !important; gap: 14px !important; }
+  .section { padding: 64px 0 !important; }
+  .section-desc { font-size: .98rem !important; margin-bottom: 34px !important; }
+  .modal-card { padding: 34px 30px !important; }
+}
+
+/* ========== 桌面 ========== */
+@media (min-width: 1100px) {
+  .hero { padding: 96px 0 44px !important; }
+  .hero-inner::after { aspect-ratio: 5 / 6; }
+  .section { padding: 76px 0 !important; }
+  .social-matrix { grid-template-columns: repeat(2, max-content); justify-content: flex-start; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  /* 无障碍：不播开屏（JS 也会提前返回），这里兜底 */
-  #acgEnter { display: none !important; }
+  .reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
 }
+
+/* ===================================================================
+   导航栏两个图标按钮的最终尺寸（放在最末尾，保证压过后面的 .btn 规则）
+   -------------------------------------------------------------------
+   之前踩过的坑：.developer-btn 的 padding/font-size 写在 .btn 规则之前，
+   同优先级同 !important 时后者胜出，导致
+     · width:34px 被 40px padding 撑成 42.5px
+     · font-size:0 失效，文字"网站贡献者"溢出到导航栏外
+   这里用 .nav-auth 前缀提高优先级，并加 overflow:hidden 兜底。
+   =================================================================== */
+.nav-auth .theme-toggle,
+.nav-auth .developer-btn {
+  width: 34px !important;
+  height: 34px !important;
+  min-width: 34px !important;
+  min-height: 34px !important;
+  padding: 0 !important;
+  border-radius: 10px !important;
+  border: 1px solid var(--v9-line) !important;
+  background: var(--v9-surface) !important;
+  color: var(--v9-ink) !important;
+  box-shadow: var(--v9-shadow);
+  display: grid !important;
+  place-items: center !important;
+  overflow: hidden !important;
+  white-space: nowrap !important;
+  flex: none !important;
+  cursor: pointer;
+  transition: border-color .18s, background .18s, transform .18s !important;
+}
+.nav-auth .theme-toggle { font-size: .95rem !important; }
+.nav-auth .developer-btn { font-size: 0 !important; }          /* 只显示 ::before 的图标 */
+.nav-auth .developer-btn::before { content: '🛠️'; font-size: .95rem; }
+.nav-auth .theme-toggle:hover,
+.nav-auth .developer-btn:hover {
+  border-color: var(--v9-accent) !important;
+  background: var(--v9-pink) !important;
+}
+/* 「我的名片」跟图标按钮等高，一行才整齐 */
+.nav-auth #loginBtn {
+  height: 34px !important;
+  padding: 0 14px !important;
+  font-size: .82rem !important;
+  border-radius: 999px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+}
+
+/* ===================================================================
+   主题面板：改成 🎨 按钮下方的下拉菜单
+   -------------------------------------------------------------------
+   原来 @media 里把它写成了"底部抽屉"：position: fixed; bottom: 0; width: 100%。
+   但 .nav 上有 backdrop-filter，它会让 fixed 子元素以「导航栏」为定位基准，
+   于是抽屉被顶到屏幕外（实测 top: -275px），点了按钮像没反应。
+   现在改回锚定在按钮下方的绝对定位下拉，绕开这个坑。
+   =================================================================== */
+.nav-auth .theme-panel {
+  position: absolute !important;
+  top: calc(100% + 10px) !important;
+  right: 0 !important;
+  left: auto !important;
+  bottom: auto !important;
+  width: min(76vw, 232px) !important;
+  max-height: 60vh;
+  overflow-y: auto;
+  padding: 12px !important;
+  border-radius: 14px !important;
+  background: var(--v9-surface) !important;
+  border: 1px solid var(--v9-line) !important;
+  border-top: 1px solid var(--v9-line) !important;
+  box-shadow: 0 14px 36px rgba(20,17,15,.16) !important;
+  transform: translateY(-8px) !important;
+  z-index: 200;
+}
+.nav-auth .theme-panel.open { transform: translateY(0) !important; }
+.nav-auth .theme-panel-title {
+  text-align: left !important;
+  margin-bottom: 8px !important;
+  font-size: .72rem !important;
+  letter-spacing: .14em;
+}
+.nav-auth .theme-option {
+  text-align: left !important;
+  padding: 9px 12px !important;
+  margin-bottom: 4px !important;
+  font-size: .84rem !important;
+}
+/* 窄屏时别顶到屏幕右边外面 */
+@media (max-width: 400px) {
+  .nav-auth .theme-panel { right: -46px !important; }
+}
+
+body.scroll-locked { overflow: hidden !important; }
+
+/* 金色/黄色主题的文字色需要压得更深才够对比度（50% 混合实测仅 3.82 与 4.51）。
+   这两个主题单独收到 38%，其余主题保持 50% 以留住色彩。 */
+html[data-theme="genshin"] { --v9-accent-ink: color-mix(in srgb, var(--v9-accent) 38%, #14110f); }
+html[data-theme="cyber"]   { --v9-accent-ink: color-mix(in srgb, var(--v9-accent) 38%, #14110f); }
+
+/* ===== 视觉方案 v0.9 结束 ===== */

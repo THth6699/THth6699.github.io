@@ -57,7 +57,8 @@
       if (meta) meta.setAttribute('content', THEME_COLORS[key]);
     })();
 
-    // 入场动画的"是否会播"判定必须和 main.js 完全一致（同样的两个条件）。
+    // 开屏动画"是否会播"的判定必须和 main.js 第 25 节完全一致（同样的两个条件）：
+    // 系统开了减少动态效果，或本会话已经播过 → 不播。
     // 不播时立刻打上 data-acg-immediate，让首屏内容直接显示，否则会一直空着。
     (function () {
       var willPlay = true;
