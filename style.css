@@ -1023,3 +1023,722 @@ html.acg-boot-lock, html.acg-boot-lock body { overflow: hidden !important; }
 @media (max-width: 768px) {
   .ms-spectrum { height: 28px; margin-bottom: 10px; }
 }
+
+/* ===================================================================
+   🎨 视觉方案 v0.8 · 暗夜画廊 × 技术档案（A 80% + B 20%）
+   -------------------------------------------------------------------
+   这是追加在文件末尾的覆盖层，不动前面的启动动画与频谱模块。
+   融合原则：
+     · A（80%）—— 深色实底、全出血插画、卡片描边、画廊拼贴、交错节奏
+     · B（20%）—— 暖白细线、四角定位角标、等宽字距标签、区段编号、档案条目
+   想整体回滚：删掉本段即可（末尾有明确标记）。
+   =================================================================== */
+:root {
+  /* 深色层（A 的骨架） */
+  --v8-bg: #0d0d15;
+  --v8-bg-elev: #14141d;
+  --v8-card: #1a1a25;
+  --v8-card-hover: #1f1f2c;
+  --v8-line: rgba(255, 255, 255, .10);
+  --v8-line-strong: rgba(255, 255, 255, .18);
+
+  /* 暖白层（B 的档案感） */
+  --v8-paper: #e5e3df;
+  --v8-paper-ink: #0a0a0a;
+  --v8-paper-ink-2: #3a3936;
+  --v8-paper-line: rgba(10, 10, 10, .16);
+  --v8-paper-line-soft: rgba(10, 10, 10, .08);
+
+  /* 排版 */
+  --v8-zh: "Microsoft YaHei", "PingFang SC", "HarmonyOS Sans SC", "Noto Sans SC", system-ui, sans-serif;
+  --v8-din: "Bahnschrift", "DIN Alternate", "HarmonyOS Sans SC", "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
+  --v8-mono: "Cascadia Mono", "SFMono-Regular", Consolas, Menlo, ui-monospace, monospace;
+
+  /* 节奏 */
+  --v8-sec-y: clamp(66px, 8.5vw, 118px);
+  --v8-ease: cubic-bezier(.22, .61, .36, 1);
+  --v8-ease-out: cubic-bezier(.16, 1, .3, 1);
+}
+
+/* ===================================================================
+   1 · 背景层：去掉糊在各处的插画与光斑，只留一层极淡网格
+   =================================================================== */
+.bg-image { display: none !important; }          /* 人像不再全站透出（A 的核心修正） */
+.glow { display: none !important; }              /* 三个 blur 光斑：掉帧源，去掉 */
+#particles { opacity: .35 !important; }          /* 粒子降权，不抢内容 */
+.bg-grid {
+  opacity: .5 !important;
+  background-image:
+    repeating-linear-gradient(0deg, rgba(255,255,255,.028) 0 1px, transparent 1px 72px),
+    repeating-linear-gradient(90deg, rgba(255,255,255,.028) 0 1px, transparent 1px 72px) !important;
+  background-size: auto !important;
+}
+body { background: var(--v8-bg); }
+
+/* ===================================================================
+   2 · 导航栏：实底 + 细线，菜单带"档案编号"式等宽标签
+   =================================================================== */
+.nav {
+  background: rgba(13, 13, 21, .88) !important;
+  border-bottom: 1px solid var(--v8-line) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.nav.scrolled { background: rgba(13, 13, 21, .97) !important; border-bottom-color: var(--v8-line-strong) !important; }
+.nav-links a {
+  position: relative; letter-spacing: .02em;
+  color: var(--text-muted); transition: color .2s var(--v8-ease);
+}
+.nav-links a::after {
+  content: ""; position: absolute; left: 0; right: 100%; bottom: -6px; height: 1px;
+  background: var(--primary); transition: right .28s var(--v8-ease);
+}
+.nav-links a:hover { color: var(--text-main); }
+.nav-links a:hover::after { right: 0; }
+
+/* ===================================================================
+   3 · Hero：全出血插画 + 暗渐变，文字左对齐（A 的主视觉）
+   =================================================================== */
+.hero {
+  min-height: 92vh; align-items: center; justify-content: flex-start;
+  padding: clamp(96px, 13vh, 150px) 0 clamp(56px, 8vh, 92px);
+  position: relative; isolation: isolate; overflow: hidden;
+}
+.hero::before {
+  content: ""; position: absolute; inset: -3%; z-index: -2;
+  background: url('assets/images/bg.jpg') center 32% / cover no-repeat;
+  /* 聚焦手法：入场时从模糊到清晰（参考站的招牌） */
+  animation: v8Focus 1.5s var(--v8-ease-out) both;
+}
+.hero::after {
+  content: ""; position: absolute; inset: 0; z-index: -1;
+  background:
+    linear-gradient(90deg, rgba(9,9,15,.96) 0%, rgba(9,9,15,.80) 40%, rgba(9,9,15,.34) 100%),
+    linear-gradient(0deg, var(--v8-bg) 1%, transparent 46%);
+}
+@keyframes v8Focus {
+  from { filter: blur(12px) saturate(.7); transform: scale(1.06); }
+  to   { filter: blur(0) saturate(1);     transform: scale(1); }
+}
+.hero-inner { max-width: 1180px; width: 100%; margin-inline: auto; padding-inline: var(--gutter, clamp(18px, 4vw, 40px)); text-align: left; }
+.hero-badge {
+  background: transparent !important; border: 1px solid var(--v8-line-strong) !important;
+  color: var(--text-muted) !important; letter-spacing: .12em !important;
+  font-family: var(--v8-mono); font-size: .74rem !important;
+  padding: 6px 14px !important; margin-bottom: 26px !important;
+}
+.hero-title {
+  font-family: var(--v8-din);
+  font-size: clamp(2.3rem, 6.4vw, 4.6rem) !important;
+  line-height: 1.03 !important; letter-spacing: -.015em !important;
+  margin-bottom: 22px !important; max-width: 15em;
+}
+/* 标题不再用三色渐变（原来混进 --accent 会发青），改成实色 + 单点强调 */
+.hero-title .grad {
+  background: none !important; -webkit-text-fill-color: currentColor !important;
+  color: var(--text-main); animation: none !important;
+}
+.hero-sub {
+  font-size: clamp(.98rem, 1.6vw, 1.16rem) !important;
+  color: var(--text-muted) !important; max-width: 34em; margin-bottom: 34px !important;
+  line-height: 1.8;
+}
+.hero-actions { justify-content: flex-start !important; margin-bottom: 46px !important; }
+.hero-stats {
+  justify-content: flex-start !important; gap: 0 !important;
+  border-top: 1px solid var(--v8-line); padding-top: 26px; max-width: 640px;
+}
+.hero-stats .stat {
+  flex: 1 1 130px; text-align: left !important;
+  padding-right: 26px; border-right: 1px solid var(--v8-line);
+}
+.hero-stats .stat:last-child { border-right: 0; }
+.hero-stats .stat strong {
+  background: none !important; -webkit-text-fill-color: currentColor !important;
+  color: var(--text-main); font-family: var(--v8-din);
+  font-size: clamp(1.6rem, 3.4vw, 2.2rem) !important; display: block; line-height: 1.1;
+}
+.hero-stats .stat span { font-size: .78rem !important; color: var(--text-dim) !important; letter-spacing: .06em; }
+
+/* ===================================================================
+   4 · 区段：实底分层 + 细线分隔 + 编号抬头（B 的档案感）
+   =================================================================== */
+.section { padding: var(--v8-sec-y) 0 !important; background: var(--v8-bg); position: relative; }
+.section-alt { background: var(--v8-bg-elev) !important; }
+.section-alt::before, .section-alt::after {
+  content: ""; position: absolute; left: 0; right: 0; height: 1px; background: var(--v8-line);
+}
+.section-alt::before { top: 0; }
+.section-alt::after { bottom: 0; }
+
+/* 抬头：左对齐 + 等宽小标签 + 编号 */
+.section-label, .section-title, .section-desc { text-align: left !important; }
+.section .container { max-width: 1180px; margin-inline: auto; padding-inline: clamp(18px, 4vw, 40px); }
+.section-label {
+  font-family: var(--v8-mono) !important; font-size: .7rem !important;
+  letter-spacing: .26em !important; color: var(--primary) !important;
+  margin-bottom: 14px !important; display: flex; align-items: center; gap: 12px;
+}
+.section-label::after {
+  content: ""; flex: 0 0 64px; height: 1px;
+  background: linear-gradient(90deg, var(--primary), transparent);
+}
+.section-title {
+  font-family: var(--v8-din); font-size: clamp(1.55rem, 3.5vw, 2.5rem) !important;
+  line-height: 1.18 !important; letter-spacing: -.012em;
+  margin-bottom: 16px !important; max-width: 24em;
+}
+.section-title .grad {
+  background: none !important; -webkit-text-fill-color: currentColor !important;
+  color: var(--text-main); animation: none !important;
+}
+.section-desc {
+  color: var(--text-muted) !important; max-width: 46em !important;
+  margin: 0 0 clamp(30px, 4vw, 48px) !important; line-height: 1.8;
+}
+/* 交错节奏：偶数区段抬头靠右，打破"每段一样" */
+.section-alt .section-label,
+.section-alt .section-title,
+.section-alt .section-desc { margin-left: auto !important; text-align: right !important; }
+.section-alt .section-label { flex-direction: row-reverse; }
+.section-alt .section-label::after { background: linear-gradient(270deg, var(--primary), transparent); }
+.section-alt .section-title, .section-alt .section-desc { margin-right: 0 !important; }
+
+/* ===================================================================
+   5 · 卡片：实底 + 细线，悬停只做描边与位移（去掉发光）
+   =================================================================== */
+.card {
+  background: var(--v8-card) !important;
+  border: 1px solid var(--v8-line) !important;
+  border-radius: 16px !important; padding: 28px 26px !important;
+  transition: transform .3s var(--v8-ease), border-color .3s var(--v8-ease), background .3s var(--v8-ease) !important;
+  box-shadow: none !important;
+}
+.card:hover {
+  transform: translateY(-4px) !important;
+  background: var(--v8-card-hover) !important;
+  border-color: var(--v8-line-strong) !important;
+  box-shadow: none !important;
+}
+.card-icon { font-size: 1.7rem !important; margin-bottom: 16px !important; }
+.card h3 { font-size: 1.08rem !important; font-weight: 750; margin-bottom: 10px !important; }
+.card p { color: var(--text-muted) !important; font-size: .9rem !important; line-height: 1.78; }
+.dept-card::after {
+  content: "查看详情 →"; display: block; margin-top: 16px;
+  font-family: var(--v8-mono); font-size: .72rem; letter-spacing: .1em;
+  color: var(--primary); opacity: .85;
+}
+.grid { gap: 16px !important; }
+
+/* ===================================================================
+   6 · 画廊：不等高拼贴，竖幅完整呈现（不再 16:9 裁掉作品）
+   =================================================================== */
+.gallery-grid {
+  display: grid !important; gap: 14px !important;
+  grid-template-columns: repeat(6, 1fr) !important;
+}
+.gallery-item {
+  aspect-ratio: 3 / 4 !important; border-radius: 14px !important;
+  border: 1px solid var(--v8-line) !important;
+  grid-column: span 2;
+}
+/* 拼贴节奏：前两张并列偏大、第三张略小，但都控制在 1.2 屏以内 */
+.gallery-item:nth-child(1) { grid-column: span 3; aspect-ratio: 1 / 1 !important; }
+.gallery-item:nth-child(2) { grid-column: span 3; aspect-ratio: 1 / 1 !important; }
+.gallery-item:nth-child(3) { grid-column: span 2; }
+.gallery-item:nth-child(4) { grid-column: span 2; }
+.gallery-item:nth-child(5) { grid-column: span 2; }
+.gallery-item picture { display: block; width: 100%; height: 100%; }
+.gallery-item img { width: 100% !important; height: 100% !important; object-fit: cover !important; transition: transform .5s var(--v8-ease) !important; }
+.gallery-item:hover img { transform: scale(1.04) !important; }
+/* 图注：轻量胶囊式，不再用一条厚重的黑色渐变压住作品 */
+.gallery-item span {
+  left: auto !important; right: 10px !important; bottom: 10px !important;
+  padding: 6px 12px !important; border-radius: 999px !important;
+  font-size: .76rem !important; letter-spacing: .04em;
+  background: rgba(10, 10, 14, .78) !important;
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,.12);
+  width: auto !important; text-align: left;
+}
+@media (max-width: 860px) {
+  .gallery-grid { grid-template-columns: repeat(2, 1fr) !important; }
+  .gallery-item, .gallery-item:nth-child(n) { grid-column: span 1 !important; aspect-ratio: 3 / 4 !important; }
+  .gallery-item:nth-child(1), .gallery-item:nth-child(2) { aspect-ratio: 3 / 4 !important; }
+}
+
+/* ===================================================================
+   7 · 活动：档案条目（细线行 + 等宽日期 + 状态胶囊），不用卡片墙
+   =================================================================== */
+.activity-toolbar { justify-content: flex-start !important; margin: 0 0 26px !important; }
+.filter-btn {
+  border: 1px solid var(--v8-line) !important; background: transparent !important;
+  font-family: var(--v8-mono); font-size: .74rem; letter-spacing: .1em;
+  padding: 8px 15px !important;
+}
+.filter-btn.active {
+  border-color: var(--primary) !important; background: rgba(var(--primary-rgb), .12) !important;
+  color: var(--text-main) !important;
+}
+.activity-list { border-top: 1px solid var(--v8-line); margin: 0 !important; max-width: none !important; position: static !important; }
+.activity-list::before { display: none !important; }        /* 去掉原来的竖时间轴光带 */
+/* 条目改为网格。这里踩过两个坑，注释留作警示：
+   坑 1：圆点必须用 visibility:hidden 而不是 display:none —— 后者不占 grid 槽位，
+        后面的元素会自动补位，整个布局错位。
+   坑 2：条目有 3 个直接子元素（日期/圆点/内容）却只定义 2 列时，
+        第 3 个元素会被挤到第二行、落进第一列的窄格里，文字被迫逐字竖排。
+        所以内容列显式跨列（grid-column: 1 / -1），不再依赖自动放置。
+   坑 3：.activity-date strong 的选择器要写到 (0,2,1)，否则压不过原规则的 display:block。 */
+.activity-item {
+  display: grid !important;
+  grid-template-columns: 92px 1fr !important;
+  gap: 22px !important; align-items: start !important; padding: 0 !important;
+}
+.activity-item .activity-dot {
+  grid-row: 1 !important; grid-column: 2 !important;
+  visibility: hidden !important; width: 0 !important; height: 0 !important;
+  padding: 0 !important; border: 0 !important;
+}
+.activity-date {
+  grid-row: 1 !important; grid-column: 1 !important;
+  display: flex !important; align-items: baseline !important; gap: 6px !important;
+  justify-content: flex-start !important; text-align: left !important; padding-top: 24px !important;
+  font-family: var(--v8-mono); color: var(--text-dim);
+}
+.activity-date strong { display: inline !important; font-size: .95rem !important; letter-spacing: .04em; color: var(--text-main); }
+.activity-date span { font-size: .78rem !important; color: var(--text-dim); }
+.activity-body {
+  grid-row: 2 !important; grid-column: 1 / -1 !important;   /* 内容跨满两列 */
+  background: transparent !important; border: 0 !important;
+  border-bottom: 1px solid var(--v8-line) !important; border-radius: 0 !important;
+  padding: 6px 4px 22px !important;
+  width: 100% !important; min-width: 0 !important;
+  transition: background .25s var(--v8-ease), padding-left .25s var(--v8-ease) !important;
+}
+.activity-list, .activity-item, .activity-item .activity-body { max-width: none !important; }
+.activity-body h3, .activity-body p { word-break: normal !important; overflow-wrap: break-word !important; }
+.activity-body:hover { transform: none !important; background: rgba(255,255,255,.03) !important; padding-left: 10px !important; box-shadow: none !important; }
+.activity-meta { gap: 10px !important; }
+.status { font-family: var(--v8-mono); font-size: .68rem !important; letter-spacing: .1em; padding: 4px 11px !important; }
+.card-line::before { display: none; }
+.empty-state { text-align: left !important; border-style: solid !important; padding: 26px 4px !important; border-width: 1px 0 0 !important; }
+
+/* ===================================================================
+   8 · 工具 / 加入 / 每日：统一到同一条语言
+   =================================================================== */
+.tool-card { border-radius: 16px !important; }
+.tool-card .btn { align-self: flex-start !important; }
+.zoom-controls {
+  opacity: .55 !important; border-color: var(--v8-line) !important;
+  background: rgba(20,20,29,.92) !important;
+}
+.zoom-controls:hover, .zoom-controls:focus-within { opacity: 1 !important; }
+
+.join-box {
+  position: relative; overflow: hidden;
+  background: var(--v8-bg-elev) !important;
+  border: 1px solid var(--v8-line) !important;
+  border-radius: 18px !important;
+  background-image: linear-gradient(0deg, rgba(9,9,15,.94), rgba(9,9,15,.80)),
+                    url('assets/images/gallery3.jpg') !important;
+  background-size: cover !important; background-position: center 42% !important;
+}
+.join-box .section-label, .join-box .section-title, .join-box .section-desc { text-align: center !important; margin-left: auto !important; margin-right: auto !important; }
+.join-box .section-label { justify-content: center; }
+.join-box .section-label::after { display: none; }
+.social-matrix { gap: 12px !important; }
+.join-note { font-family: var(--v8-mono); font-size: .74rem !important; letter-spacing: .08em; color: var(--text-dim) !important; }
+.daily-acg-box, #daily-acg-box { border-style: solid !important; border-color: var(--v8-line) !important; }
+
+/* ===================================================================
+   9 · 底部两处暖白"档案条"，把 B 的语言点进来（占比约 20%）
+   =================================================================== */
+.v8-plate {
+  background: var(--v8-paper); color: var(--v8-paper-ink);
+  position: relative; padding: clamp(34px, 5vw, 58px) 0;
+}
+.v8-plate .container { max-width: 1180px; margin-inline: auto; padding-inline: clamp(18px, 4vw, 40px); }
+.v8-plate-inner { display: flex; flex-wrap: wrap; gap: 22px 40px; align-items: baseline; justify-content: space-between; }
+.v8-plate-kicker {
+  font-family: var(--v8-mono); font-size: .68rem; letter-spacing: .26em;
+  text-transform: uppercase; color: var(--v8-paper-line-strong, #7a7873); display: block; margin-bottom: 10px;
+}
+.v8-plate h3 { font-family: var(--v8-din); font-size: clamp(1.1rem, 2.2vw, 1.5rem); font-weight: 800; letter-spacing: -.01em; }
+.v8-plate p { color: var(--v8-paper-ink-2); font-size: .92rem; line-height: 1.8; max-width: 40em; margin-top: 10px; }
+.v8-plate-corners i { position: absolute; width: 20px; height: 20px; border: 1px solid var(--v8-paper-line); pointer-events: none; }
+.v8-plate-corners i:nth-child(1) { top: 20px; left: 20px; border-right: 0; border-bottom: 0; }
+.v8-plate-corners i:nth-child(2) { top: 20px; right: 20px; border-left: 0; border-bottom: 0; }
+.v8-plate-corners i:nth-child(3) { bottom: 20px; left: 20px; border-right: 0; border-top: 0; }
+.v8-plate-corners i:nth-child(4) { bottom: 20px; right: 20px; border-left: 0; border-top: 0; }
+
+/* ===================================================================
+   10 · 页脚：深色 + 细线 + 等宽
+   =================================================================== */
+.footer { border-top: 1px solid var(--v8-line) !important; background: var(--v8-bg) !important; padding: 34px 0 !important; }
+.footer-copy { font-size: .8rem !important; color: var(--text-dim) !important; }
+.version-link { font-family: var(--v8-mono); }
+
+/* ===================================================================
+   11 · 丝滑动画：入场用 blur + 位移，全部走 transform/opacity/filter
+   =================================================================== */
+.reveal {
+  opacity: 0; transform: translateY(22px); filter: blur(6px);
+  transition: opacity .7s var(--v8-ease-out), transform .7s var(--v8-ease-out), filter .7s var(--v8-ease-out);
+  will-change: opacity, transform;
+}
+.reveal.show, .reveal.in { opacity: 1; transform: none; filter: blur(0); }
+/* 卡片错峰入场 */
+.grid .reveal:nth-child(2), .activity-list .reveal:nth-child(2) { transition-delay: .07s; }
+.grid .reveal:nth-child(3), .activity-list .reveal:nth-child(3) { transition-delay: .14s; }
+.grid .reveal:nth-child(4) { transition-delay: .21s; }
+.grid .reveal:nth-child(5) { transition-delay: .28s; }
+.grid .reveal:nth-child(6) { transition-delay: .35s; }
+/* 首屏三次闪烁再常亮（参考站 flashing 的节奏） */
+@keyframes v8Flash {
+  0% { opacity: 0; } 10% { opacity: .5; } 11% { opacity: 0; }
+  20% { opacity: .5; } 21% { opacity: 0; } 40% { opacity: .5; } 41% { opacity: 0; }
+  100% { opacity: 1; }
+}
+.reveal.flash { animation: v8Flash .9s steps(1, end) both; }
+.reveal.flash.show { opacity: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1 !important; transform: none !important; filter: none !important; transition: none !important; }
+  .hero::before { animation: none !important; }
+}
+
+/* ===================================================================
+   12 · 响应式补齐
+   =================================================================== */
+@media (max-width: 900px) {
+  .hero { min-height: 82vh; }
+  .hero-stats .stat { border-right: 0; padding-right: 0; padding-bottom: 16px; }
+  .section-alt .section-label, .section-alt .section-title, .section-alt .section-desc {
+    text-align: left !important; margin-left: 0 !important;
+  }
+  .section-alt .section-label { flex-direction: row; }
+}
+@media (max-width: 620px) {
+  .hero::before { background-position: center 26%; }
+  .v8-plate-inner { flex-direction: column; gap: 14px; }
+}
+
+/* Hero 里的强调词：实色，不用三色渐变（避免混进 --accent 发青） */
+.hero-title .hero-em { color: var(--primary); font-style: normal; }
+
+/* ===================================================================
+   13 · 首屏"揭幕即浮现"
+   -------------------------------------------------------------------
+   之前首屏动画在页面加载时就跑完了，全程被入场层挡着 ——
+   等幕布拉开，主界面只剩一个裸淡入，看起来就是"直接跳出来"。
+   现在改成声明式：首屏元素默认隐藏，只有在 <html> 出现 data-acg-loaded
+   时才浮现（JS 在故障揭幕那一刻写入这个属性）。
+   不依赖 GSAP 是否加载成功，路径唯一，不会两处争状态。
+   =================================================================== */
+.hero-inner > * { opacity: 0; }
+.hero-inner > * { transition: opacity .62s var(--v8-ease-out), transform .62s var(--v8-ease-out); transform: translateY(20px); }
+html[data-acg-loaded="1"] .hero-inner > * { opacity: 1; transform: none; }
+html[data-acg-loaded="1"] .hero-inner > *:nth-child(1) { transition-delay: .06s; }
+html[data-acg-loaded="1"] .hero-inner > *:nth-child(2) { transition-delay: .16s; }
+html[data-acg-loaded="1"] .hero-inner > *:nth-child(3) { transition-delay: .28s; }
+html[data-acg-loaded="1"] .hero-inner > *:nth-child(4) { transition-delay: .38s; }
+html[data-acg-loaded="1"] .hero-inner > *:nth-child(5) { transition-delay: .48s; }
+/* 入场层不播时（减少动态效果 / 同会话已播过）直接显示，否则首屏会一直空着 */
+html[data-acg-immediate] .hero-inner > * { opacity: 1 !important; transform: none !important; transition: none !important; }
+@media (prefers-reduced-motion: reduce) {
+  .hero-inner > * { opacity: 1 !important; transform: none !important; transition: none !important; }
+}
+
+/* ===== 视觉方案 v0.8 覆盖层结束 ===== */
+
+/* ===================================================================
+   🎬 入场动画 v0.8 · 全屏聚焦 + 左侧竖进度条
+   -------------------------------------------------------------------
+   手法来源：对 Hypergryph 终末地官网开屏动画的分析（仅借鉴手法，不含其素材）。
+   核心三条：
+     1. 进度是【真实】资源加载完成数，不是定时器演的假进度
+     2. 只写一个 CSS 变量 --p，进度条与背景模糊都由它派生，绝不出现两处不同步
+     3. blur = 8px * (1 - p/100)，线性收束：画面随加载完成逐渐"对上焦"
+   退出：CSS 类做「停 0.9s + 淡出 0.93s」，JS 的卸载定时器（2400ms）必须大于两者之和。
+   =================================================================== */
+#acgEnter {
+  --acgb-accent: #ff0033;
+  --acgb-bg: #e5e3df;
+  --acgb-bg-2: #eceae6;
+  --acgb-ink: #0a0a0a;
+  --acgb-ink-2: #3a3936;
+  --acgb-muted: #7a7873;
+  --acgb-hair: rgba(10, 10, 10, .16);
+  --acgb-hair-soft: rgba(10, 10, 10, .07);
+  --acgb-glitch-a: #ff3b30;
+  --acgb-glitch-b: #2971b8;
+  --acgb-bar: #ff0033;            /* 进度条与读数（参考站是亮黄 #fff a00，这里用本站主题红） */
+  --acgb-din: "Bahnschrift", "DIN Alternate", "HarmonyOS Sans SC", "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
+  --acgb-mono: "Cascadia Mono", "SFMono-Regular", Consolas, Menlo, ui-monospace, monospace;
+  --acgb-zh: "Microsoft YaHei", "PingFang SC", "HarmonyOS Sans SC", "Noto Sans SC", sans-serif;
+  --acgb-ease: cubic-bezier(.22, .61, .36, 1);
+  --p: 0;                          /* 唯一数据源：0 → 100，由 JS 写入 */
+
+  position: fixed; inset: 0; z-index: 1300;
+  overflow: hidden; background: #06060a; color: var(--acgb-ink);
+  font-family: var(--acgb-din);
+  cursor: default; -webkit-user-select: none; user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-font-smoothing: antialiased;
+  contain: layout paint style;
+}
+#acgEnter.acgb-out { opacity: 0; transition: opacity .93s var(--acgb-ease) .9s; }
+html.acg-enter-lock, html.acg-enter-lock body { overflow: hidden !important; }
+
+/* —— 背景层：全出血插画，模糊随进度收束 —— */
+/* 【换图处】把 url() 换成你想要的开屏主视觉即可，结构不用动 */
+.acge-bg {
+  position: absolute; inset: -4%;
+  background: url('../assets/images/bg.jpg') center 32% / cover no-repeat,
+              linear-gradient(160deg, #14141d, #06060a);
+  filter: blur(calc(8px * (1 - var(--p) / 100))) saturate(calc(.72 + var(--p) / 360));
+  transform: scale(calc(1.08 - var(--p) / 1400));
+  will-change: filter, transform;
+  transition: filter .5s linear, transform .5s linear;
+}
+.acge-scrim {
+  position: absolute; inset: 0; pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(6,6,10,.92) 0%, rgba(6,6,10,.58) 52%, rgba(6,6,10,.30) 100%),
+    linear-gradient(0deg, rgba(6,6,10,.86) 0%, transparent 42%);
+}
+/* 极淡方格网：把前面两版的"档案"质感带进来 */
+.acge-grid {
+  position: absolute; inset: 0; pointer-events: none; opacity: .5;
+  background-image:
+    repeating-linear-gradient(0deg, rgba(255,255,255,.05) 0 1px, transparent 1px 76px),
+    repeating-linear-gradient(90deg, rgba(255,255,255,.05) 0 1px, transparent 1px 76px);
+}
+
+/* —— 科技感细节 —— */
+/* 扫描带：一道缓慢下移的暗带，像在做全域扫描 */
+.acge-scan {
+  position: absolute; left: 0; right: 0; height: 34vh; pointer-events: none; opacity: .55;
+  background: linear-gradient(180deg, transparent, rgba(255,255,255,.05) 44%,
+              rgba(255,0,51,.12) 50%, rgba(255,255,255,.05) 56%, transparent);
+  animation: acgeScan 3.6s linear infinite;
+}
+@keyframes acgeScan { 0% { top: -34vh; } 100% { top: 100%; } }
+/* 细横纹：CRT 质感，很淡 */
+.acge-lines {
+  position: absolute; inset: 0; pointer-events: none; opacity: .32;
+  background: repeating-linear-gradient(0deg, rgba(255,255,255,.045) 0 1px, transparent 1px 3px);
+}
+/* 左侧刻度条：随进度生长 */
+.acge-scale {
+  position: absolute; left: 0; top: 0; bottom: 0; width: 3px; pointer-events: none;
+  background: var(--acgb-bar); opacity: .55;
+  transform-origin: top center;
+  transform: scaleY(calc(var(--p) / 100));
+  transition: transform .5s linear;
+}
+/* 四边中点短线：取景框感 */
+.acge-tick {
+  position: absolute; background: rgba(255,255,255,.28); pointer-events: none;
+  opacity: 0; animation: acgeRise .7s var(--acgb-ease) .5s forwards;
+}
+.acge-tick.t { top: 26px; left: 50%; width: 1px; height: 16px; }
+.acge-tick.b { bottom: 26px; left: 50%; width: 1px; height: 16px; }
+.acge-tick.l { left: 26px; top: 50%; width: 16px; height: 1px; }
+.acge-tick.r { right: 26px; top: 50%; width: 16px; height: 1px; }
+/* 右上角遥测读数 */
+.acge-hud {
+  position: absolute; top: clamp(44px, 8vh, 76px); right: clamp(30px, 5vw, 66px);
+  text-align: right; font-family: var(--acgb-mono);
+  font-size: .62rem; letter-spacing: .18em; text-transform: uppercase;
+  color: rgba(255,255,255,.36); line-height: 2;
+  opacity: 0; animation: acgeIn .8s var(--acgb-ease) .6s forwards;
+}
+.acge-hud b { color: rgba(255,255,255,.74); font-weight: 600; font-variant-numeric: tabular-nums; }
+.acge-hud .ok { color: var(--acgb-bar); }
+/* 任务名打字机光标 */
+.acge-task::after {
+  content: ""; display: inline-block; width: 6px; height: 11px; margin-left: 5px;
+  background: rgba(255,255,255,.5); vertical-align: -1px;
+  animation: acgeBlink .9s steps(1, end) infinite;
+}
+@keyframes acgeBlink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+
+/* —— 四角定位角标 —— */
+.acge-corners i {
+  position: absolute; width: 22px; height: 22px;
+  border: 1px solid rgba(255,255,255,.30); pointer-events: none;
+  opacity: 0; animation: acgeRise .7s var(--acgb-ease) .35s forwards;
+}
+.acge-corners i:nth-child(1) { top: 26px; left: 26px; border-right: 0; border-bottom: 0; }
+.acge-corners i:nth-child(2) { top: 26px; right: 26px; border-left: 0; border-bottom: 0; }
+.acge-corners i:nth-child(3) { bottom: 26px; left: 26px; border-right: 0; border-top: 0; }
+.acge-corners i:nth-child(4) { bottom: 26px; right: 26px; border-left: 0; border-top: 0; }
+@keyframes acgeRise { to { opacity: 1; } }
+
+/* —— 左上品牌块（三行窄体，第三行强调色） —— */
+.acge-brand {
+  position: absolute; top: clamp(44px, 8vh, 78px); left: clamp(30px, 5vw, 66px);
+  opacity: 0; transform: translateY(10px);
+  animation: acgeIn .8s var(--acgb-ease) .12s forwards;
+}
+.acge-brand-line {
+  font-size: clamp(1.35rem, 4.2vw, 2.5rem);
+  font-weight: 800; line-height: 1.1; letter-spacing: .01em; color: #f2f1ee;
+  text-transform: uppercase;
+}
+.acge-brand-line.accent { color: var(--acgb-accent); }
+@keyframes acgeIn { to { opacity: 1; transform: none; } }
+
+/* —— 左下：当前正在加载的任务名（等宽小字） —— */
+.acge-task {
+  position: absolute; left: clamp(30px, 5vw, 66px); bottom: clamp(30px, 5vh, 54px);
+  font-family: var(--acgb-mono); font-size: .68rem; letter-spacing: .2em;
+  text-transform: uppercase; color: rgba(255,255,255,.42);
+  max-width: 40vw; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+}
+
+/* —— 右侧：Slogan | 竖进度条 | 大读数（三列网格，读数有专属列，不会压到 slogan） —— */
+.acge-right {
+  position: absolute; right: clamp(56px, 9vw, 132px); top: 50%;
+  transform: translateY(-50%);
+  display: grid;
+  grid-template-columns: auto auto auto;
+  align-items: center;
+  gap: clamp(18px, 2.6vw, 34px);
+}
+.acge-slogan { text-align: right; }
+.acge-slogan-en {
+  display: block; font-family: var(--acgb-mono);
+  font-size: clamp(.62rem, 1.5vw, .78rem); letter-spacing: .34em;
+  text-transform: uppercase; color: rgba(242,241,238,.86);
+  line-height: 1.9;
+}
+.acge-slogan-cn {
+  display: block; margin-top: 12px; font-family: var(--acgb-zh);
+  font-size: clamp(.72rem, 1.7vw, .86rem); letter-spacing: .18em; color: rgba(255,255,255,.44);
+}
+/* 细渐变分隔线：参考站 divider 的写法（两端透明、中间最亮） */
+.acge-divider {
+  margin: 16px 0 0 auto; width: clamp(120px, 20vw, 240px); height: 1px;
+  background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.34) 50%, rgba(255,255,255,0) 100%);
+}
+
+/* 竖进度条轨道 */
+.acge-progress {
+  position: relative; width: 7px; height: clamp(180px, 34vh, 300px);
+  background: rgba(255,255,255,.10); border-radius: 4px; overflow: visible; flex: none;
+}
+/* 进度条本体：只写 scaleY，纯合成属性，不触发重排 */
+.acge-bar {
+  position: absolute; left: 0; right: 0; bottom: 0; top: 0;
+  background: var(--acgb-bar);
+  transform-origin: bottom center;
+  transform: scaleY(calc(var(--p) / 100));
+  border-radius: 4px;
+  transition: transform .5s linear;   /* tween 追赶：目标高频重设，渲染值自然平滑爬升 */
+}
+/* 大读数：与进度条【同高】，用 padding-bottom 对齐条末端，避免绝对定位外溢压到 slogan */
+.acge-readout {
+  align-self: stretch; display: flex; align-items: flex-end;
+  padding-bottom: calc(var(--p) * 1%);
+  transition: padding-bottom .5s linear;
+}
+.acge-readout-inner { display: flex; align-items: baseline; gap: 2px; }
+/* "Updating…" 跟着读数走：挂在读数块右下方 */
+.acge-state {
+  position: absolute; margin-top: 6px; white-space: nowrap;
+}
+.acge-readout { position: relative; }
+.acge-readout > .acge-state { top: 100%; left: 0; }
+.acge-mark {
+  align-self: center; width: 5px; height: 26px; margin-right: 10px;
+  background: var(--acgb-bar); border-radius: 3px;
+}
+.acge-value {
+  font-family: var(--acgb-din);
+  font-size: clamp(2.4rem, 5.6vw, 4rem); font-weight: 800; line-height: 1;
+  color: var(--acgb-bar); font-variant-numeric: tabular-nums;
+  letter-spacing: -.02em;
+}
+.acge-symbol {
+  font-family: var(--acgb-mono); font-size: clamp(.9rem, 2vw, 1.4rem);
+  color: var(--acgb-bar); margin-left: 2px;
+}
+.acge-state {
+  font-family: var(--acgb-mono);
+  font-size: .62rem; letter-spacing: .22em; text-transform: uppercase;
+  color: rgba(255,255,255,.40);
+}
+
+/* —— 入场：进度读数与条延迟出现，先让画面"对上焦" —— */
+.acge-right, .acge-task {
+  opacity: 0; animation: acgeIn .7s var(--acgb-ease) .5s forwards;
+}
+
+/* —— 揭幕故障（加载完成瞬间） —— */
+.acge-glitch { position: absolute; inset: 0; pointer-events: none; opacity: 0; }
+.acge-glitch.on { animation: acgeGlitch .5s steps(2, end) forwards; }
+@keyframes acgeGlitch {
+  0%   { opacity: 0; transform: translate(0, 0); }
+  18%  { opacity: .85; transform: translate(-6px, 2px); }
+  40%  { opacity: .55; transform: translate(5px, -2px); }
+  64%  { opacity: .7; transform: translate(-3px, 0); }
+  100% { opacity: 0; transform: translate(0, 0); }
+}
+.acge-gbar { position: absolute; left: 0; right: 0; height: 2px; mix-blend-mode: screen; }
+.acge-gbar.a { background: var(--acgb-glitch-a); }
+.acge-gbar.b { background: var(--acgb-glitch-b); }
+
+/* —— 中央终幕方框 —— */
+.acge-box {
+  position: absolute; left: 50%; top: 50%;
+  transform: translate(-50%, -50%) scale(.96);
+  padding: clamp(16px, 3.4vw, 26px) clamp(24px, 6vw, 50px);
+  background: #0a0a0a; color: #f2f1ee;
+  font-family: var(--acgb-mono); font-size: clamp(.7rem, 2.2vw, .96rem);
+  letter-spacing: .3em; text-transform: uppercase; white-space: nowrap;
+  opacity: 0; transition: opacity .3s var(--acgb-ease), transform .3s var(--acgb-ease);
+}
+.acge-box.on { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+
+/* —— 跳过 —— */
+.acge-skip {
+  position: absolute; top: clamp(22px, 3.4vh, 32px); right: clamp(22px, 3vw, 34px);
+  font-family: var(--acgb-mono); font-size: .62rem; letter-spacing: .24em;
+  padding: 9px 15px; cursor: pointer; text-transform: uppercase;
+  background: transparent; color: rgba(255,255,255,.48);
+  border: 1px solid rgba(255,255,255,.22);
+  transition: color .2s, border-color .2s, background .2s;
+}
+.acge-skip:hover { color: #fff; border-color: rgba(255,255,255,.6); background: rgba(255,255,255,.06); }
+.acge-skip:focus-visible { outline: 2px solid var(--acgb-accent); outline-offset: 2px; }
+
+/* —— 窄屏：改横向布局，进度条移到底部 —— */
+@media (max-width: 760px) {
+  .acge-right {
+    right: auto; left: 0; right: 0; top: auto; bottom: 0;
+    transform: none; padding: 0 22px 22px;
+    flex-direction: column-reverse; align-items: stretch; gap: 12px;
+  }
+  .acge-slogan { text-align: left; padding-top: 0; }
+  .acge-divider { margin: 0 0 0 0; width: 100%; }
+  .acge-slogan-cn { margin-top: 8px; }
+  .acge-progress { width: 100%; height: 5px; }
+  .acge-bar { transform-origin: left center; transform: scaleX(calc(var(--p) / 100)); }
+  .acge-readout {
+    bottom: auto; top: auto; left: auto; right: 0; transform: none;
+    position: relative; display: flex; align-items: baseline; gap: 4px;
+    justify-content: flex-end;
+  }
+  .acge-mark { display: none; }
+  .acge-value { font-size: 1.9rem; }
+  .acge-state { display: none; }
+  .acge-task { max-width: 60vw; bottom: auto; top: clamp(30px, 6vh, 48px); }
+  .acge-brand-line { font-size: 1.3rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* 无障碍：不播开屏（JS 也会提前返回），这里兜底 */
+  #acgEnter { display: none !important; }
+}

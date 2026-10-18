@@ -30,6 +30,7 @@
 
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="icon" href="icon.svg" type="image/svg+xml" />
+  <link rel="icon" href="assets/images/favicon-32.png" sizes="32x32" type="image/png" />
   <link rel="icon" href="assets/images/icon-192.png" sizes="192x192" type="image/png" />
   <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png" />
 
@@ -54,6 +55,18 @@
       document.documentElement.setAttribute('data-theme', key);
       var meta = document.querySelector('meta[name="theme-color"]');
       if (meta) meta.setAttribute('content', THEME_COLORS[key]);
+    })();
+
+    // 入场动画的"是否会播"判定必须和 main.js 完全一致（同样的两个条件）。
+    // 不播时立刻打上 data-acg-immediate，让首屏内容直接显示，否则会一直空着。
+    (function () {
+      var willPlay = true;
+      try {
+        if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) willPlay = false;
+        else if (sessionStorage.getItem('acg_lab_enter')) willPlay = false;
+      } catch (_) {}
+      if (willPlay) document.documentElement.setAttribute('data-acg-willplay', '1');
+      else document.documentElement.setAttribute('data-acg-immediate', '1');
     })();
   </script>
 </head>
@@ -116,55 +129,56 @@
   <main id="main-content">
     <section class="hero" id="home">
       <div class="hero-inner">
-        <p class="hero-badge reveal">✨ 仙居技师学院 · 二次元文化研究社</p>
-        <h1 class="hero-title reveal"><span class="grad">次元整研社</span></h1>
-        <p class="hero-sub reveal">绘画 · Cos · 观影 · 专注整活<br />用爱发电，不负热爱，这里是我们共同的次元基地！</p>
+        <p class="hero-badge reveal">仙居技师学院 · 二次元文化研究社</p>
+        <h1 class="hero-title reveal">绘画 · Cos · 观影<br>我们在这里<b class="hero-em">认真整活</b></h1>
+        <p class="hero-sub reveal">拒绝内卷，专注整活，快乐二次元。所有活动均在校内进行，用爱发电，不负热爱。</p>
         <div class="hero-actions reveal">
           <a href="#join" class="btn btn-primary">申请入社</a>
-          <a href="#activities" class="btn btn-ghost">看看我们在搞什么</a>
+          <a href="#works" class="btn btn-ghost">看看我们的作品</a>
         </div>
         <div class="hero-stats reveal">
           <div class="stat"><strong data-count="19">0</strong><span>在册同好</span></div>
-          <div class="stat"><strong data-count="1">0</strong><span>年度整活</span></div>
           <div class="stat"><strong data-count="5">0</strong><span>特色部门</span></div>
+          <div class="stat"><strong data-count="3">0</strong><span>作品投稿</span></div>
+          <div class="stat"><strong data-count="100">0</strong><span>% 校内活动</span></div>
         </div>
       </div>
     </section>
 
     <section class="section" id="about">
       <div class="container">
-        <p class="section-label reveal">ABOUT US</p>
+        <p class="section-label reveal">01 / ABOUT US</p>
         <h2 class="section-title reveal">什么是<span class="grad">次元整研社</span>？</h2>
-        <p class="section-desc reveal">我们是仙居技师学院的一群二次元浓度超标患者。在这里，你可以是画手太太，可以是女装大佬（或帅气coser），也可以是深夜追番的吐槽役。核心宗旨是：<strong>拒绝内卷，专注整活，快乐二次元！</strong></p>
+        <p class="section-desc reveal">我们是仙居技师学院的一群二次元浓度超标患者。在这里，你可以是画手太太，可以是帅气 coser，也可以是深夜追番的吐槽役。所有活动都在<strong>校内</strong>进行，核心宗旨是：<strong>拒绝内卷，专注整活，快乐二次元！</strong></p>
         <div class="grid grid-3">
-          <article class="card reveal"><div class="card-icon">🎨</div><h3>绘画 · 产粮</h3><p>板绘、手绘、摸鱼、同人，只要你画，我们就疯狂打call！偶尔掉落线下绘茶会。</p></article>
-          <article class="card reveal"><div class="card-icon">👗</div><h3>Cos · 变装</h3><p>出c、试妆、场照、漫展组团。男扮女装不是梦，女扮男装帅断腿，这里没有社恐！</p></article>
-          <article class="card reveal"><div class="card-icon">📺</div><h3>观影 · 吐槽</h3><p>新番同步追，老番补习班。线下放映会，实行"禁止打架但可以激情互喷"的弹幕式观影。</p></article>
+          <article class="card reveal"><div class="card-icon">🎨</div><h3>绘画 · 产粮</h3><p>板绘、手绘、摸鱼、同人，只要你画，我们就疯狂打 call！课余在教室开绘茶会，铺开桌子就能画。</p></article>
+          <article class="card reveal"><div class="card-icon">👗</div><h3>Cos · 变装</h3><p>试妆、场照、社团合影，都在校园里取景。男扮女装不是梦，女扮男装帅断腿，这里没有社恐！</p></article>
+          <article class="card reveal"><div class="card-icon">📺</div><h3>追番 · 吐槽</h3><p>新番同步追，老番补习班。社团课时间在多媒体教室集中观影，实行「禁止打架但可以激情互喷」的弹幕式吐槽。</p></article>
         </div>
       </div>
     </section>
 
     <section class="section section-alt" id="departments">
       <div class="container">
-        <p class="section-label reveal">DEPARTMENTS</p>
+        <p class="section-label reveal">02 / DEPARTMENTS</p>
         <h2 class="section-title reveal">加入我们<span class="grad">的部门</span></h2>
         <p class="section-desc reveal">不论你是大触还是萌新，总有一个部门适合你摸鱼！点击卡片查看详情。</p>
         <div class="grid grid-3">
-          <article class="card reveal dept-card" data-dept="产粮部"><div class="card-icon">🎨</div><h3>产粮部</h3><p>社团的产粮主力！负责绘制海报、周边、插画。只要你敢画，我们就敢疯狂打call！</p></article>
-          <article class="card reveal dept-card" data-dept="观影吐槽部"><div class="card-icon">📺</div><h3>观影吐槽部</h3><p>追番先锋队！组织线上放映会，负责弹幕式吐槽，在群里安利神作、排雷烂片。</p></article>
-          <article class="card reveal dept-card" data-dept="Cos变装部"><div class="card-icon">👗</div><h3>Cos变装部</h3><p>出片担当！负责漫展组团、试妆、场照。无论男扮女装还是女扮男装，这里零门槛！</p></article>
-          <article class="card reveal dept-card" data-dept="技术支援部"><div class="card-icon">💻</div><h3>技术支援部</h3><p>极客聚集地！负责网站维护、代码整活、工具开发。用技术给社团开挂！</p></article>
+          <article class="card reveal dept-card" data-dept="产粮部"><div class="card-icon">🎨</div><h3>产粮部</h3><p>社团的产粮主力！负责绘制海报、周边、插画，也负责社团活动的现场作画展示。只要你敢画，我们就敢疯狂打 call！</p></article>
+          <article class="card reveal dept-card" data-dept="观影吐槽部"><div class="card-icon">📺</div><h3>观影吐槽部</h3><p>追番先锋队！负责选片、排片与放映，在群里安利神作、排雷烂片，现场负责带节奏吐槽。</p></article>
+          <article class="card reveal dept-card" data-dept="Cos变装部"><div class="card-icon">👗</div><h3>Cos变装部</h3><p>出片担当！负责妆造、校园取景与社团合影。无论男扮女装还是女扮男装，这里零门槛！</p></article>
+          <article class="card reveal dept-card" data-dept="技术支援部"><div class="card-icon">💻</div><h3>技术支援部</h3><p>极客聚集地！负责网站搭建与更新、内容排版、工具开发。用技术给社团开挂！</p></article>
           <article class="card reveal dept-card" data-dept="什么都不干部"><div class="card-icon">🛋️</div><h3>什么都不干部</h3><p>社团的灵魂部门！负责围观、聊天、当气氛组。我们负责用爱发电，你负责吃瓜点赞。</p></article>
-          <article class="card reveal dept-card" data-dept="加入方式"><div class="card-icon">✨</div><h3>加入方式</h3><p>在QQ群发言，或直接联系群主/各部部长。不限专业、不限年级，只要你热爱二次元！</p></article>
+          <article class="card reveal dept-card" data-dept="加入方式"><div class="card-icon">✨</div><h3>加入方式</h3><p>在 QQ 群发言，或直接联系群主与各部部长。不限专业、不限年级，只要你热爱二次元！</p></article>
         </div>
       </div>
     </section>
 
     <section class="section" id="activities">
       <div class="container">
-        <p class="section-label reveal">ACTIVITIES</p>
+        <p class="section-label reveal">03 / ACTIVITIES</p>
         <h2 class="section-title reveal">我们的<span class="grad">搞事日常</span></h2>
-        <p class="section-desc reveal">暂无数据</p>
+        <p class="section-desc reveal">社团的活动安排会在这里更新。所有活动均在校内进行。</p>
         <div class="activity-toolbar reveal" role="toolbar" aria-label="活动筛选">
           <button class="filter-btn active" data-activity-filter="all">全部</button>
           <button class="filter-btn" data-activity-filter="进行中">进行中</button>
@@ -177,7 +191,7 @@
 
     <section class="section section-alt" id="gallery">
       <div class="container">
-        <p class="section-label reveal">GALLERY</p>
+        <p class="section-label reveal">04 / GALLERY</p>
         <h2 class="section-title reveal">次元<span class="grad">记录</span></h2>
         <p class="section-desc reveal">作品、Cos、活动照片都可以分类展示；点击图片进入全屏预览。</p>
         <div class="gallery-toolbar reveal" role="toolbar" aria-label="画廊筛选">
@@ -198,7 +212,7 @@
     <section class="section" id="daily">
       <div class="container">
         <div class="join-box reveal" style="padding: 40px 24px;">
-          <p class="section-label">DAILY ACG</p>
+          <p class="section-label">05 / DAILY ACG</p>
           <h2 class="section-title">今日<span class="grad">次元运势</span></h2>
           <p class="section-desc" style="margin-bottom: 24px;">点击下方按钮，抽取你的今日专属动漫安利！</p>
           <div id="daily-acg-box" style="background: rgba(0,0,0,.3); padding: 24px; border-radius: 16px; border: 1px dashed rgba(var(--primary-rgb), .4); margin: 0 auto; max-width: 500px; min-height: 120px; display: flex; flex-direction: column; justify-content: center; align-items: center;">
@@ -212,7 +226,7 @@
 
     <section class="section section-alt" id="tools">
       <div class="container">
-        <p class="section-label reveal">TOOLS</p>
+        <p class="section-label reveal">06 / TOOLS</p>
         <h2 class="section-title reveal">次元<span class="grad">工具箱</span></h2>
         <p class="section-desc reveal">去码头整点薯条</p>
         <div class="grid grid-3">
@@ -226,7 +240,7 @@
     <section class="section" id="join">
       <div class="container">
         <div class="join-box reveal">
-          <p class="section-label">JOIN US</p>
+          <p class="section-label">07 / JOIN US</p>
           <h2 class="section-title">准备好<span class="grad">穿越次元</span>了吗？</h2>
           <p class="section-desc">仙居技师学院在校生，不限专业、不限年级、零基础也完全OK！<br />加入官方群聊，获取第一手活动资讯。</p>
           <div class="social-matrix">
@@ -240,7 +254,7 @@
 
     <section class="section section-alt" id="comments">
       <div class="container">
-        <p class="section-label reveal">MESSAGES</p>
+        <p class="section-label reveal">08 / MESSAGES</p>
         <h2 class="section-title reveal">次元<span class="grad">留言板</span></h2>
         <p class="section-desc reveal">有什么想对社团说的？在这里留下你的足迹吧！（需 GitHub 账号登录）</p>
         <div class="giscus-container reveal" style="margin-top: 40px;">
@@ -264,6 +278,24 @@
     </section>
   </main>
 
+  <!-- 档案条（视觉方案 v0.8：把"技术档案"的暖白语言点进深色画廊，占比约 20%） -->
+  <section class="v8-plate" aria-labelledby="plateTitle">
+    <div class="v8-plate-corners" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="container">
+      <div class="v8-plate-inner">
+        <div>
+          <span class="v8-plate-kicker">Club Record · 社团档案</span>
+          <h3 id="plateTitle">仙居技师学院 · 次元整研社</h3>
+          <p>成立至今，社团活动全部安排在校内：课余绘画、校园取景出片、社团课集中追番，以及网站的搭建与更新。欢迎在校同学随时加入。</p>
+        </div>
+        <div>
+          <span class="v8-plate-kicker">Archive No.</span>
+          <h3>ACG-LAB · 2026</h3>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <button class="back-top" id="backTop" aria-label="返回顶部">↑</button>
   <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
 
@@ -275,7 +307,7 @@
       </div>
       <p class="footer-copy">
         © <span id="year">2026</span> 次元整研社 · 用爱发电，Made with ✨ <br>
-        <button class="version-link" id="devCenterFooterBtn" type="button" aria-label="打开网站开发者中心">v0.7</button>
+        <button class="version-link" id="devCenterFooterBtn" type="button" aria-label="打开网站开发者中心">v0.8</button>
         <span class="footer-dot">·</span>
         <span id="busuanzi_container_site_pv" style="font-size:0.75rem; opacity:0.7;">本站总访问量 <span id="busuanzi_value_site_pv">0</span> 次</span>
       </p>
@@ -287,13 +319,14 @@
     <div class="modal-card dev-center-card">
       <button class="modal-close" id="devCenterClose" aria-label="关闭网站开发者中心">✕</button>
       <div class="modal-header">
-        <p class="section-label">DEVELOPER CENTER · v0.7</p>
+        <p class="section-label">DEVELOPER CENTER · v0.8</p>
         <h2 id="devCenterTitle">网站开发者中心</h2>
         <p class="modal-subtitle">这里记录本站的技术栈、更新历史与运行状态。</p>
       </div>
       <div class="dev-center-grid">
         <article class="dev-panel dev-panel-wide"><div class="dev-panel-title">🧩 技术栈</div><div class="tech-tags"><span>HTML</span><span>CSS</span><span>JavaScript</span><span>GitHub Pages</span><span>PWA</span></div></article>
         <article class="dev-panel"><div class="dev-panel-title">📅 更新日志</div><div class="changelog">
+          <div class="changelog-item"><strong>v0.8</strong><span>整体界面改版（暗夜画廊 × 技术档案）：全出血主视觉、细线分隔与区段编号、卡片实底化、画廊改竖幅拼贴、活动改档案条目；入场动画改为真实加载进度（背景随载入从模糊到清晰）；活动内容调整为全部校内。</span></div>
           <div class="changelog-item"><strong>v0.7</strong><span>开屏动画重做：黑幕标识 → 过曝洗白 → 暖白「技术档案」底板 → 五步授权 → 色散故障揭幕。支持点击 / Enter 确认、右上角跳过、Esc 退出，终幕读取你的次元名片昵称，并加入现场合成的轻音效（不含任何音频文件）。</span></div>
           <div class="changelog-item"><strong>v0.6</strong><span>修复 PWA 无法安装（补回 manifest 引用与图标）、修好「安装本站」与调试面板的显示开关；修正搜索引擎与分享卡片信息；补齐按钮对比度、键盘操作与滚动锁；图片转 WebP，体积减少约 69%。</span></div>
           <div class="changelog-item"><strong>v0.5</strong><span>更丝滑的动画，添加首屏入站动画。</span></div>

@@ -378,12 +378,12 @@ const deptModalContent = document.getElementById('deptModalContent');
 const deptJoinBtn = document.getElementById('deptJoinBtn');
 
 const deptData = {
-  '产粮部': { icon: '🎨', content: `<p><strong>定位：</strong>社团的产粮主力，用画笔创造世界。</p><p style="margin-top:12px;"><strong>我们平时做什么：</strong></p><ul><li>线下摸鱼绘茶会，带上平板或画本互相催更。</li><li>社团海报、周边、网站配图的创作。</li><li>互相交流板绘、手绘、同人创作技巧。</li></ul><p style="margin-top:12px;"><strong>招募要求：</strong>不论你是大触还是零基础萌新，只要热爱画画，我们都欢迎！</p>` },
-  '观影吐槽部': { icon: '📺', content: `<p><strong>定位：</strong>追番先锋队，负责看番和疯狂吐槽。</p><p style="margin-top:12px;"><strong>我们平时做什么：</strong></p><ul><li>每季新番同步追，在群里实况弹幕式吐槽。</li><li>组织线上放映会，提供笑点支持。</li><li>老番补习班、神作安利、烂片排雷。</li></ul><p style="margin-top:12px;"><strong>招募要求：</strong>喜欢看番，自带吐槽技能，能接受"禁止打架但可以激情互喷"的观影氛围。</p>` },
-  'Cos变装部': { icon: '👗', content: `<p><strong>定位：</strong>社团的颜值担当和出片主力。</p><p style="margin-top:12px;"><strong>我们平时做什么：</strong></p><ul><li>漫展组团远征，包车、帮妆、看行李一条龙服务。</li><li>校园外景团建，互相当摄影师，出片率极高。</li><li>试妆交流，男扮女装不是梦，女扮男装帅断腿。</li></ul><p style="margin-top:12px;"><strong>招募要求：</strong>男女不限，社恐可治，零基础也OK，关键要敢于表现自己！</p>` },
-  '技术支援部': { icon: '💻', content: `<p><strong>定位：</strong>社团的极客大脑，用代码给社团开挂。</p><p style="margin-top:12px;"><strong>我们平时做什么：</strong></p><ul><li>维护社团官网（这个网站就是我们的作品）。</li><li>写网页、做工具、搞自动化脚本。</li><li>探索 Git、GitHub Pages 等前沿技术。</li></ul><p style="margin-top:12px;"><strong>招募要求：</strong>对编程、网页设计、网站维护有兴趣，愿意学习新技术的同学。</p>` },
-  '什么都不干部': { icon: '🛋️', content: `<p><strong>定位：</strong>社团的灵魂部门！负责围观、吃瓜、当气氛组。</p><p style="margin-top:12px;"><strong>我们平时做什么：</strong></p><ul><li>在群里发表情包、点赞、喊"666"。</li><li>成为各项活动的"啦啦队"和"第一观众"。</li><li>享受纯粹的二次元聊天氛围，不承担任何硬性任务。</li></ul><p style="margin-top:12px;"><strong>招募要求：</strong>只要你热爱二次元，不想内卷，这里就是你的快乐老家！</p>` },
-  '加入方式': { icon: '✨', content: `<p>在QQ群发言，或直接联系群主/各部部长。不限专业、不限年级，只要你热爱二次元！</p>` }
+  '产粮部': { icon: '🎨', content: `<p><strong>定位：</strong>社团的产粮主力，用画笔创造世界。</p><p style="margin-top:12px;"><strong>我们平时做什么：</strong></p><ul><li>课余在教室开绘茶会，带上平板或画本互相催更。</li><li>社团海报、周边、网站配图的创作。</li><li>互相交流板绘、手绘、同人创作技巧。</li></ul><p style="margin-top:12px;"><strong>招募要求：</strong>不论你是大触还是零基础萌新，只要热爱画画，我们都欢迎！</p>` },
+  '观影吐槽部': { icon: '📺', content: `<p><strong>定位：</strong>追番先锋队，负责看番和疯狂吐槽。</p><p style="margin-top:12px;"><strong>我们平时做什么：</strong></p><ul><li>每季新番同步追，在群里实况弹幕式吐槽。</li><li>社团课时间在多媒体教室集中观影，现场提供笑点支持。</li><li>老番补习班、神作安利、烂片排雷。</li></ul><p style="margin-top:12px;"><strong>招募要求：</strong>喜欢看番，自带吐槽技能，能接受「禁止打架但可以激情互喷」的观影氛围。</p>` },
+  'Cos变装部': { icon: '👗', content: `<p><strong>定位：</strong>社团的颜值担当和出片主力。</p><p style="margin-top:12px;"><strong>我们平时做什么：</strong></p><ul><li>校园取景出片，教学楼、操场、绿化带都是我们的外景地。</li><li>互相当摄影师，技术支援部负责后期与成片归档。</li><li>试妆交流，男扮女装不是梦，女扮男装帅断腿。</li></ul><p style="margin-top:12px;"><strong>招募要求：</strong>男女不限，社恐可治，零基础也 OK，关键要敢于表现自己！<br><em>注：社团活动均在校内进行，不组织校外活动。</em></p>` },
+  '技术支援部': { icon: '💻', content: `<p><strong>定位：</strong>社团的极客大脑，用代码给社团开挂。</p><p style="margin-top:12px;"><strong>我们平时做什么：</strong></p><ul><li>搭建与更新社团官网（这个网站就是我们的作品）。</li><li>写网页、做工具、搞自动化脚本。</li><li>整理作品与活动资料，维护社团的线上档案。</li></ul><p style="margin-top:12px;"><strong>招募要求：</strong>对编程、网页设计、网站维护有兴趣，愿意学习新技术的同学。</p>` },
+  '什么都不干部': { icon: '🛋️', content: `<p><strong>定位：</strong>社团的灵魂部门！负责围观、吃瓜、当气氛组。</p><p style="margin-top:12px;"><strong>我们平时做什么：</strong></p><ul><li>在群里发表情包、点赞、喊「666」。</li><li>成为各项活动的「啦啦队」和「第一观众」。</li><li>享受纯粹的二次元聊天氛围，不承担任何硬性任务。</li></ul><p style="margin-top:12px;"><strong>招募要求：</strong>只要你热爱二次元，不想内卷，这里就是你的快乐老家！</p>` },
+  '加入方式': { icon: '✨', content: `<p>在 QQ 群发言，或直接联系群主与各部部长。不限专业、不限年级，只要你热爱二次元！</p><p style="margin-top:12px;"><em>社团活动均安排在校内，不组织校外活动。</em></p>` }
 };
 
 const deptCards = document.querySelectorAll('.dept-card');
@@ -416,17 +416,39 @@ if (deptCards.length > 0 && deptModal) {
 }
 
 // ===== 11. 活动中心 =====
-const activities = [];
+// 【改活动处】date 用 YYYY-MM 格式；status 只能取「进行中 / 计划中 / 已结束」三个值之一。
+// 注意：社团活动一律安排在校内，请勿添加校外场地活动。
+const activities = [
+  {
+    date: '2026-06', icon: '📷', tag: '校内摄影 / 出 c', status: '进行中',
+    title: '校园取景出片',
+    desc: '在校园里选点位拍场照与社团合影，Cos 变装部负责妆造，技术支援部负责修图与成片归档。'
+  },
+  {
+    date: '2026-09', icon: '💻', tag: '网站搭建与更新', status: '计划中',
+    title: '社团官网改版',
+    desc: '技术支援部负责：改进版式与入场动画、整理作品与活动资料、持续更新社团动态。'
+  },
+  {
+    date: '2026-03', icon: '🎨', tag: '校内绘画工作坊', status: '已结束',
+    title: '教室绘茶会',
+    desc: '课余把桌子拼起来就开画，板绘与手绘都欢迎，现场有纸张与公用画具，画完一起吃茶点。'
+  }
+];
 const activityList = document.getElementById('activity-list');
 if (activityList) {
   const renderActivities = (filter = 'all') => {
     const list = filter === 'all' ? activities : activities.filter(item => item.status === filter);
-    activityList.innerHTML = list.map(item => `
+    const esc = s => { const d = document.createElement('i'); d.textContent = String(s == null ? '' : s); return d.innerHTML; };
+    activityList.innerHTML = list.map(item => {
+      const date = String(item.date || '');
+      return `
       <article class="activity-item reveal show">
-        <div class="activity-date"><strong>${item.date.slice(5)}</strong><span>${item.date.slice(0,4)}</span></div>
-        <div class="activity-dot">${item.icon}</div>
-        <div class="activity-body"><div class="activity-meta"><span class="tag">${item.tag}</span><span class="status status-${item.status}">${item.status}</span></div><h3>${item.title}</h3><p>${item.desc}</p></div>
-      </article>`).join('') || '<div class="empty-state">这个分类暂时没有活动。</div>';
+        <div class="activity-date"><strong>${esc(date.slice(5))}</strong><span>${esc(date.slice(0, 4))}</span></div>
+        <div class="activity-dot">${esc(item.icon)}</div>
+        <div class="activity-body"><div class="activity-meta"><span class="tag">${esc(item.tag)}</span><span class="status status-${esc(item.status)}">${esc(item.status)}</span></div><h3>${esc(item.title)}</h3><p>${esc(item.desc)}</p></div>
+      </article>`;
+    }).join('') || '<div class="empty-state">这个分类暂时没有活动。</div>';
   };
   renderActivities();
   document.querySelectorAll('[data-activity-filter]').forEach(btn => btn.addEventListener('click', () => {
@@ -837,13 +859,13 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
   });
 })();
 
-// ===== 22. ✨ GSAP 动画系统（首屏入场 + 滚动入场；整段删除即可完全回滚） =====
+// ===== 22. ✨ GSAP 动画系统（滚动入场；整段删除即可完全回滚） =====
 (function () {
   // 系统开了"减少动态效果"：什么都不做，全部交给原来的 reveal 系统
   if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
   var settled = false;   // 是否已有结果（动画接管 或 普通显示）
-  var heroEls = [];      // 首屏元素
+  var heroEls = [];      // 首屏元素（只用于把它们从旧观察系统里摘出来）
   var waitEls = [];      // 滚动到才出现的元素
   var heroBox = document.querySelector('.hero-inner');
 
@@ -867,33 +889,26 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
     }
   }
 
-  // ② 库加载失败时的兜底：直接全部显示，绝不留白
+  // ② 库加载失败时的兜底：滚动元素直接显示，绝不留白
   function fallbackPlain() {
     if (settled) return;
     settled = true;
     dbg('[ACG] GSAP 未加载，动画改为普通显示');
-    var k;
-    for (k = 0; k !== heroEls.length; k++) heroEls[k].classList.add('show');
-    for (k = 0; k !== waitEls.length; k++) waitEls[k].classList.add('show');
+    for (var k = 0; k !== waitEls.length; k++) waitEls[k].classList.add('show');
   }
 
-  // ③ 库加载成功后：接管动画
+  // ③ 首屏浮现是声明式的（见 style.css 第 13 节）：
+  //    元素默认隐藏，入场揭幕写入 data-acg-loaded 后由 CSS 错峰浮现。
+  //    这里只把首屏元素从旧的 reveal 观察系统里摘出来，不再用 GSAP 碰它们 ——
+  //    之前两条路径争同一份 opacity，结果谁都管不住，首屏动画干脆没跑起来。
+  for (var a = 0; a !== heroEls.length; a++) heroEls[a].classList.remove('reveal');
+
+  // ④ 库加载成功后：接管滚动入场
   function init() {
     if (settled || !window.gsap || !window.ScrollTrigger) return;
     settled = true;
     gsap.registerPlugin(ScrollTrigger);
     dbg('[ACG] GSAP + ScrollTrigger 已接管动画');
-
-    // 首屏依次上浮（和之前一样）
-    for (var a = 0; a !== heroEls.length; a++) heroEls[a].classList.remove('reveal');
-    if (heroEls.length) {
-      gsap.timeline({ defaults: { duration: 0.7, ease: 'power3.out' } })
-        .from('.hero-badge',   { y: 24, opacity: 0 })
-        .from('.hero-title',   { y: 30, opacity: 0 }, '-=0.45')
-        .from('.hero-sub',     { y: 24, opacity: 0 }, '-=0.5')
-        .from('.hero-actions', { y: 20, opacity: 0 }, '-=0.5')
-        .from('.hero-stats',   { y: 20, opacity: 0 }, '-=0.5');
-    }
 
     // 滚动入场：进入视野后依次浮现
     if (waitEls.length) {
@@ -1131,273 +1146,292 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
   }
 })();
 
-// ===== 25. ⚡ 启动序列 · 技术档案版 =====
-// 黑幕标识 → 过曝洗白 → 暖白「技术档案」底板 → 五步授权 → 色散故障揭幕。
-// 风格参考 Hypergryph 式开机序列（视觉语言为通用 UI 语汇，代码与文案均为本站原创）。
-// 整段删除 + 删掉 style.css 里的 #acgBoot 段即可完全回滚，不影响其他功能。
+// ===== 25. 🎬 入场动画 · 全屏聚焦 + 竖进度条（真实任务计数版） =====
+// 手法参考 Hypergryph 终末地官网开屏（仅借鉴手法，未使用其任何素材）：
+//   1. 进度 = 真实资源加载完成数 / 总任务数，不是定时器演的假进度
+//   2. 只写一个 CSS 变量 --p，进度条与背景模糊都由它派生，避免两处不同步
+//   3. blur = 8px * (1 - p/100) 线性收束，画面随加载完成逐渐"对上焦"
+//   4. 退出 = CSS 类做「停 0.9s + 淡出 0.93s」，卸载定时器 2400ms 必须大于两者之和
+// 整段连 style.css 的 #acgEnter 段一起删除即可完全回滚。
 (function () {
   var ONCE_PER_SESSION = true;   // true = 同一标签页会话只播一次；false = 每次刷新都播
-  var SPEED = 1;                 // 整体快慢，1 = 原始速度；0.5 = 快一倍，2 = 慢一倍
 
-  // 【可调】六幕文案。中文主字 + 英文等宽副标题
-  var STEPS = [
-    { zh: '需要访问许可',      en: 'ACCESS PERMISSION REQUIRED', ask: true  },
-    { zh: '身份资料确认',      en: 'IDENTITY VERIFICATION',      ask: true  },
-    { zh: '接收访问需求',      en: 'ACCESS REQUEST RECEIVED',    ask: false },
-    { zh: '开始读取权限',      en: 'PERMISSION READ STARTED',    ask: false },
-    { zh: '读取完毕 · 核验通过', en: 'READ COMPLETE · VERIFIED',  ask: false },
-    { zh: '欢迎 {name} 访问',  en: 'WELCOME, {name}',            ask: false }
-  ];
-
-  var BRAND = ['次元整研社', 'ACG LABORATORY', 'XIANJU TECH'];   // 左上三行（第三行用强调色）
-  var FOOT = 'POWERED BY 次元整研社';                            // 右下角
-  var BOX_TEXT = 'ACG LAB · ACCESS GRANTED';                     // 揭幕后的黑底白字框
-
+  // 【改文案处】
+  var BRAND = ['次元整研社', 'ACG LABORATORY', 'XIANJU TECH'];
+  var SLOGAN_EN = ['OVER THE FRONTIER', 'INTO THE FRONT'];
+  var SLOGAN_CN = '校园之内 · 用爱发电';
+  var BOX_TEXT = 'ACG LAB · ACCESS GRANTED';
   var DEFAULT_NAME = '旅行者';
 
-  // 没开"减少动态效果"才播（这是无障碍要求，不做例外）
+  // 无障碍：开了"减少动态效果"就不播，直接进站（不做例外）
   if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  // 已经播过就跳过（sessionStorage 被禁用时照样播）
   try {
-    if (ONCE_PER_SESSION && sessionStorage.getItem('acg_lab_boot2')) return;
-    sessionStorage.setItem('acg_lab_boot2', '1');
+    if (ONCE_PER_SESSION && sessionStorage.getItem('acg_lab_enter')) return;
+    sessionStorage.setItem('acg_lab_enter', '1');
   } catch (e) {}
 
-  // ── 取访问者昵称：优先读本地「次元名片」，读不到就用默认值 ──
+  // ── 取访问者昵称：优先读本地「次元名片」 ──
   function readName() {
     try {
       var raw = localStorage.getItem('acg_lab_profile');
       if (!raw) return DEFAULT_NAME;
       var p = JSON.parse(raw);
-      return (p && typeof p.username === 'string' && p.username.trim()) ? p.username.trim().slice(0, 12) : DEFAULT_NAME;
+      return (p && typeof p.username === 'string' && p.username.trim())
+        ? p.username.trim().slice(0, 12) : DEFAULT_NAME;
     } catch (e) { return DEFAULT_NAME; }
   }
 
-  // ── 轻音效：全部用 Web Audio 现场合成，不引入任何音频文件 ──
-  // 浏览器要求先有用户交互才允许出声，所以首次点击/按键之前是静音的。
-  var Audio_ = (function () {
+  // ── 轻音效：Web Audio 现场合成，不引入任何音频文件 ──
+  var Sfx = (function () {
     var ac = null;
     function ctx() {
       if (ac) return ac;
-      try {
-        var AC = window.AudioContext || window.webkitAudioContext;
-        if (!AC) return null;
-        ac = new AC();
-      } catch (e) { ac = null; }
+      try { var AC = window.AudioContext || window.webkitAudioContext; if (!AC) return null; ac = new AC(); }
+      catch (e) { ac = null; }
       return ac;
     }
-    function tone(freq, dur, gain, type, slideTo) {
+    function tone(f1, dur, gain, type, f2) {
       var a = ctx(); if (!a) return;
       if (a.state === 'suspended' && a.resume) { try { a.resume(); } catch (e) {} }
       try {
-        var t = a.currentTime;
-        var osc = a.createOscillator(), g = a.createGain();
-        osc.type = type || 'sine';
-        osc.frequency.setValueAtTime(freq, t);
-        if (slideTo) osc.frequency.exponentialRampToValueAtTime(slideTo, t + dur);
+        var t = a.currentTime, o = a.createOscillator(), g = a.createGain();
+        o.type = type || 'sine'; o.frequency.setValueAtTime(f1, t);
+        if (f2) o.frequency.exponentialRampToValueAtTime(f2, t + dur);
         g.gain.setValueAtTime(0.0001, t);
-        g.gain.exponentialRampToValueAtTime(gain || 0.05, t + 0.012);
+        g.gain.exponentialRampToValueAtTime(gain || 0.04, t + 0.012);
         g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-        osc.connect(g); g.connect(a.destination);
-        osc.start(t); osc.stop(t + dur + 0.02);
+        o.connect(g); g.connect(a.destination); o.start(t); o.stop(t + dur + 0.02);
       } catch (e) {}
     }
-    function noise(dur, gain, cutoff, attack) {
+    function noise(dur, gain, cutoff) {
       var a = ctx(); if (!a) return;
       if (a.state === 'suspended' && a.resume) { try { a.resume(); } catch (e) {} }
       try {
         var t = a.currentTime, len = Math.max(1, Math.floor(a.sampleRate * dur));
         var buf = a.createBuffer(1, len, a.sampleRate), d = buf.getChannelData(0);
         for (var i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / len);
-        var src = a.createBufferSource(); src.buffer = buf;
-        var f = a.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = cutoff || 1400;
+        var s = a.createBufferSource(); s.buffer = buf;
+        var f = a.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = cutoff || 1600;
         var g = a.createGain();
-        var at = attack || 0.01;
         g.gain.setValueAtTime(0.0001, t);
-        g.gain.linearRampToValueAtTime(gain || 0.05, t + at);
+        g.gain.linearRampToValueAtTime(gain || 0.04, t + 0.01);
         g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-        src.connect(f); f.connect(g); g.connect(a.destination);
-        src.start(t); src.stop(t + dur + 0.02);
+        s.connect(f); f.connect(g); g.connect(a.destination); s.start(t); s.stop(t + dur + 0.02);
       } catch (e) {}
     }
     return {
-      tick:  function () { tone(1180, 0.035, 0.028, 'square'); },
-      step:  function () { tone(430, 0.20, 0.04, 'sine', 640); },
-      flash: function () { noise(0.55, 0.05, 800, 0.18); },
-      glitch: function () { noise(0.38, 0.07, 2200, 0.005); tone(90, 0.20, 0.035, 'sawtooth'); }
+      tick: function () { tone(1240, 0.03, 0.02, 'square'); },
+      done: function () { tone(420, 0.24, 0.05, 'sine', 700); },
+      glitch: function () { noise(0.34, 0.06, 2400); tone(88, 0.18, 0.03, 'sawtooth'); }
     };
   })();
 
-  // ── 预测量逐字渐显的每字间隔：先把文字放进 DOM 量宽度，避免量完闪烁 ──
-  function typeDelay(el, count, totalMs) {
-    var w0 = el.getBoundingClientRect().width;
-    if (!w0 || !count) return Math.max(12, Math.min(38, totalMs / Math.max(1, count)));
-    var probe = document.createElement('span');
-    probe.textContent = 'X';
-    probe.style.cssText = 'position:absolute;visibility:hidden;white-space:pre';
-    el.appendChild(probe);
-    var cw = probe.getBoundingClientRect().width;
-    el.removeChild(probe);
-    if (!cw) return 22;
-    return Math.max(12, Math.min(38, (totalMs * cw) / w0));
-  }
-
-  // ── 逐字渐显（用透明度而非截断，居中排版不会左右抖动）──
-  function typeIn(el, text, delay) {
-    el.textContent = '';
-    var frag = document.createDocumentFragment();
-    for (var i = 0; i < text.length; i++) {
-      var s = document.createElement('span');
-      s.className = 'acgb-ch';
-      s.textContent = text.charAt(i);
-      s.style.animationDelay = (i * delay) + 'ms';
-      frag.appendChild(s);
-    }
-    el.appendChild(frag);
-    // 强制一次重排后再加 .on，保证动画从头播（同一帧内加会不触发）
-    void el.offsetWidth;
-    el.classList.add('on');
-  }
-
+  // ── 建 DOM ──
   var finished = false;
   var timers = [];
   var root = document.documentElement;
   var name = readName();
+  var pct = 0;                    // 当前百分比（只用于读数文本，视觉由 --p 驱动）
 
-  function clearAll() {
-    for (var i = 0; i < timers.length; i++) clearTimeout(timers[i]);
-    timers = [];
-  }
-  function later(fn, ms) { timers.push(setTimeout(fn, ms * SPEED)); }
+  function later(fn, ms) { timers.push(setTimeout(fn, ms)); }
+  function clearAll() { for (var i = 0; i < timers.length; i++) clearTimeout(timers[i]); timers = []; }
 
-  // ── 搭 DOM ──
   var el = document.createElement('div');
-  el.id = 'acgBoot';
+  el.id = 'acgEnter';
   el.setAttribute('role', 'dialog');
   el.setAttribute('aria-modal', 'true');
-  el.setAttribute('aria-label', '次元整研社 · 启动序列');
+  el.setAttribute('aria-label', '次元整研社 · 正在载入');
+  el.setAttribute('aria-busy', 'true');
 
   var brandHtml = BRAND.map(function (line, i) {
-    return '<div class="acgb-brand-line' + (i === BRAND.length - 1 ? ' accent' : '') + '">' + line + '</div>';
+    return '<div class="acge-brand-line' + (i === BRAND.length - 1 ? ' accent' : '') + '">' + line + '</div>';
   }).join('');
 
   var barsHtml = '';
-  for (var b = 0; b < 6; b++) {
-    barsHtml += '<div class="acgb-gbar a" style="top:' + (14 + b * 13) + '%"></div>' +
-                '<div class="acgb-gbar b" style="top:' + (19 + b * 13) + '%"></div>';
+  for (var b = 0; b < 5; b++) {
+    barsHtml += '<div class="acge-gbar a" style="top:' + (16 + b * 15) + '%"></div>' +
+                '<div class="acge-gbar b" style="top:' + (22 + b * 15) + '%"></div>';
   }
 
   el.innerHTML =
-    '<div class="acgb-scene acgb-s3">' +
-      '<div class="acgb-corners"><i class="acgb-c bl"></i><i class="acgb-c br"></i></div>' +
-      '<div class="acgb-brand">' + brandHtml +
-        '<div class="acgb-meta">REV 0.7.0 · WEB PROFILE <span class="acgb-meta-rule"></span> <b class="acgb-clock">--:--:--</b></div>' +
-      '</div>' +
-      '<div class="acgb-steps">[ <b class="acgb-stepnow">00</b> / 0' + STEPS.length + ' ] BOOT</div>' +
-      '<div class="acgb-foot">' + FOOT + '<span class="acgb-foot-sq"></span></div>' +
-      '<div class="acgb-stage">' +
-        '<div class="acgb-cross">' +
-          '<div class="acgb-ring"></div>' +
-          '<div class="acgb-ring acgb-ring--mid"></div>' +
-          '<div class="acgb-ring acgb-ring--in"></div>' +
-          '<div class="acgb-cross-plus"></div>' +
-          '<div class="acgb-cross-plus v"></div>' +
-          '<div class="acgb-cross-dot"></div>' +
-          '<div class="acgb-copy">' +
-            '<div class="acgb-sub" aria-live="polite"></div>' +
-            '<div class="acgb-status"></div>' +
-          '</div>' +
-        '</div>' +
-        '<div class="acgb-ask" hidden>' +
-          '<button class="acgb-ask-btn" type="button">确认继续</button>' +
-          '<div class="acgb-ask-hint">ENTER / SPACE / 点击继续</div>' +
-        '</div>' +
-      '</div>' +
-      '<div class="acgb-progress"><i></i></div>' +
+    '<div class="acge-bg"></div>' +
+    '<div class="acge-scrim"></div>' +
+    '<div class="acge-grid"></div>' +
+    '<div class="acge-lines"></div>' +
+    '<div class="acge-scan"></div>' +
+    '<div class="acge-scale"></div>' +
+    '<div class="acge-corners" aria-hidden="true"><i></i><i></i><i></i><i></i></div>' +
+    '<i class="acge-tick t"></i><i class="acge-tick b"></i><i class="acge-tick l"></i><i class="acge-tick r"></i>' +
+    '<div class="acge-brand">' + brandHtml + '</div>' +
+    '<div class="acge-hud">' +
+      '<div>SYS <b>ACG-LAB</b></div>' +
+      '<div>MODE <b>LOAD</b></div>' +
+      '<div>STATE <b class="ok acge-hud-state">LOADING</b></div>' +
+      '<div>FRAME <b class="acge-hud-frame">000</b></div>' +
     '</div>' +
-    '<div class="acgb-scene acgb-s2"></div>' +
-    '<div class="acgb-scene acgb-s1">' +
-      '<div class="acgb-s1-logo">' +
-        '<span class="acgb-s1-mark">整</span>' +
-        '<span class="acgb-s1-text">次元整研社 · ACG LAB</span>' +
+    '<div class="acge-task">正在准备…</div>' +
+    '<div class="acge-right">' +
+      '<div class="acge-slogan">' +
+        '<span class="acge-slogan-en">' + SLOGAN_EN[0] + '<br>' + SLOGAN_EN[1] + '</span>' +
+        '<span class="acge-slogan-cn">' + SLOGAN_CN + '</span>' +
+        '<div class="acge-divider"></div>' +
+      '</div>' +
+      '<div class="acge-progress">' +
+        '<div class="acge-bar"></div>' +
+      '</div>' +
+      '<div class="acge-readout">' +
+        '<div class="acge-readout-inner">' +
+          '<span class="acge-mark"></span>' +
+          '<span class="acge-value">0</span><span class="acge-symbol">%</span>' +
+        '</div>' +
+        '<div class="acge-state">Updating…</div>' +
       '</div>' +
     '</div>' +
-    '<div class="acgb-glitch">' + barsHtml + '</div>' +
-    '<div class="acgb-box">' + BOX_TEXT + '</div>' +
-    '<button class="acgb-skip" type="button">跳过 SKIP</button>';
+    '<div class="acge-glitch" aria-hidden="true">' + barsHtml + '</div>' +
+    '<div class="acge-box">' + BOX_TEXT + '</div>' +
+    '<button class="acge-skip" type="button">跳过 SKIP</button>';
 
+  // 先把 --p 归零，避免浏览器从默认值开始插值
+  el.style.setProperty('--p', '0');
   document.body.appendChild(el);
-  root.classList.add('acg-boot-lock');
+  root.classList.add('acg-enter-lock');
 
-  var s1 = el.querySelector('.acgb-s1');
-  var s2 = el.querySelector('.acgb-s2');
-  var glitch = el.querySelector('.acgb-glitch');
-  var box = el.querySelector('.acgb-box');
-  var subEl = el.querySelector('.acgb-sub');
-  var statusEl = el.querySelector('.acgb-status');
-  var askEl = el.querySelector('.acgb-ask');
-  var askBtn = el.querySelector('.acgb-ask-btn');
-  var stepNow = el.querySelector('.acgb-stepnow');
-  var clockEl = el.querySelector('.acgb-clock');
-  var barEl = el.querySelector('.acgb-progress i');
-  var skipBtn = el.querySelector('.acgb-skip');
+  var taskEl = el.querySelector('.acge-task');
+  var valueEl = el.querySelector('.acge-value');
+  var glitchEl = el.querySelector('.acge-glitch');
+  var boxEl = el.querySelector('.acge-box');
+  var skipBtn = el.querySelector('.acge-skip');
+  var hudStateEl = el.querySelector('.acge-hud-state');
+  var hudFrameEl = el.querySelector('.acge-hud-frame');
 
-  // 实时时钟，给底板一点"正在运行"的感觉
-  function tickClock() {
-    var d = new Date(), p = function (n) { return n < 10 ? '0' + n : '' + n; };
-    if (clockEl) clockEl.textContent = p(d.getHours()) + ':' + p(d.getMinutes()) + ':' + p(d.getSeconds());
+  // HUD 帧计数：让它看起来真的在跑（数字滚动本身就是科技感的一部分）
+  var frameNo = 0;
+  var frameIv = setInterval(function () {
+    frameNo = (frameNo + 1) % 1000;
+    if (hudFrameEl) hudFrameEl.textContent = ('00' + frameNo).slice(-3);
+  }, 90);
+  timers.push(frameIv);
+
+  // ── 单一数据源：写 --p，条与模糊一起动 ──
+  function setProgress(v) {
+    pct = Math.max(0, Math.min(100, v));
+    el.style.setProperty('--p', String(pct));
+    if (valueEl) valueEl.textContent = String(Math.floor(pct));
   }
-  tickClock();
-  var clockIv = setInterval(function () {
-    if (finished) { clearInterval(clockIv); return; }
-    tickClock();
-  }, 1000);
 
-  // ── 幕次状态机 ──
-  var idx = 0, awaiting = false;
-  function goto(i, force) {
-    if (finished) return;
-    if (i >= STEPS.length) { reveal(); return; }
-    if (awaiting && !force) return;          // 等确认期间不接受自动推进
-    awaiting = false;
-    idx = i;
-    var st = STEPS[i];
-    var zh = st.zh.replace('{name}', name);
-    var en = st.en.replace('{name}', name.toUpperCase());
+  // ── 真实任务表：每项返回 Promise。进度 = 已完成数 / 总数 ──
+  // 【加任务处】想让开屏更"实"，就往这里加真正的准备工作
+  var TASKS = [
+    ['社团主视觉', function () { return loadImage('assets/images/bg.jpg'); }],
+    ['作品 01', function () { return loadImage('assets/images/gallery1.jpg'); }],
+    ['作品 02', function () { return loadImage('assets/images/gallery2.jpg'); }],
+    ['作品 03', function () { return loadImage('assets/images/gallery3.jpg'); }],
+    ['群二维码', function () { return loadImage('assets/images/qq-group.webp'); }],
+    ['图标', function () { return loadImage('assets/images/icon-192.png'); }],
+    ['字体', function () {
+      if (!document.fonts || !document.fonts.ready) return Promise.resolve();
+      return document.fonts.ready;
+    }],
+    ['页面布局', function () {
+      return new Promise(function (res) {
+        requestAnimationFrame(function () { requestAnimationFrame(res); });
+      });
+    }],
+    ['音效模块', function () {
+      // 首次点击前 AudioContext 是挂起的，这里只做构造尝试，失败也算完成
+      try { var AC = window.AudioContext || window.webkitAudioContext; if (AC) new AC(); } catch (e) {}
+      return Promise.resolve();
+    }]
+  ];
 
-    askEl.hidden = !st.ask;
-    if (stepNow) stepNow.textContent = ('0' + (i + 1)).slice(-2);
-    if (barEl) barEl.style.width = Math.round(((i + 1) / STEPS.length) * 100) + '%';
+  function loadImage(src) {
+    return new Promise(function (res) {
+      var im = new Image();
+      im.onload = im.onerror = function () { res(); };   // 失败也算完成，不能让开屏卡住
+      im.src = src;
+      // 兜底：单张图最多等 4 秒
+      setTimeout(res, 4000);
+    });
+  }
 
-    if (i > 0) Audio_.step();
+  var done = 0;
+  var total = TASKS.length;
+  var lastStep = 0;
+  // 最小步进间隔：小项目里图片会瞬间加载完，进度条一闪到底就没有"载入感"了。
+  // 这里给每次进度更新加一个下限间隔，让爬升从容、可见（900/9=100ms ≈ 0.9 秒走完）。
+  var MIN_STEP = 100;
 
-    // 中文主字与英文副标题共用一套逐字渐显
-    subEl.classList.remove('on');
-    statusEl.classList.remove('on');
-    var d1 = typeDelay(subEl, en.length, Math.min(1200, 520 + en.length * 16));
-    var d2 = typeDelay(statusEl, zh.length, 420);
-    typeIn(subEl, en, d1);
-    typeIn(statusEl, zh, d2);
+  // 让下一次进度推进至少间隔 MIN_STEP
+  function gate(fn) {
+    var wait = Math.max(0, MIN_STEP - (Date.now() - lastStep));
+    if (wait > 0) later(function () { lastStep = Date.now(); fn(); }, wait);
+    else { lastStep = Date.now(); fn(); }
+  }
 
-    if (st.ask) {
-      awaiting = true;
-      if (askBtn) { try { askBtn.focus(); } catch (e) {} }
-      return;   // 等用户确认后才推进
+  function runTasks() {
+    // 并发上限 3：与参考站「图片池限流」同理，避免一口气打满连接
+    var queue = TASKS.slice();
+    var running = 0;
+    function pump() {
+      while (running < 3 && queue.length) {
+        var t = queue.shift();
+        running++;
+        if (taskEl) taskEl.textContent = '正在载入 · ' + t[0];
+        Promise.resolve()
+          .then(t[1])
+          .catch(function () {})
+          .then(function () {
+            running--;
+            done++;
+            gate(function () {
+              setProgress(done / total * 100);
+              if (done > 0 && done < total) Sfx.tick();
+              if (done >= total) onAllDone();
+              else pump();
+            });
+          });
+      }
     }
-    later(function () { goto(idx + 1); }, 1150 + Math.min(600, en.length * 10));
+    pump();
   }
 
-  // ── 幕 6 之后：色散故障揭幕 ──
-  function reveal() {
+  // ── 全部完成：闪烁 → 故障揭幕 → 整层交叉淡出 → 卸载 ──
+  // 关键：揭幕必须先【完整呈现】再淡出。之前的写法是「淡出进行到一半才揭幕」，
+  // 所以看起来像主界面"跳"出来。现在把两者彻底分开。
+  var FLASH_MS = 450;    // 三次闪烁
+  var HOLD_MS = 700;     // 揭幕后、开始淡出前的停留
+  var FADE_DELAY = FLASH_MS + HOLD_MS;
+  var FADE_MS = 900;     // 淡出时长，必须与 CSS 里 #acgEnter.acgb-out 的 transition 一致
+  var UNMOUNT_MS = FADE_DELAY + FADE_MS + 120;
+
+  function onAllDone() {
     if (finished) return;
-    awaiting = false;
-    if (stepNow) stepNow.textContent = '0' + STEPS.length;
-    if (barEl) barEl.style.width = '100%';
+    setProgress(100);
+    if (taskEl) taskEl.textContent = '载入完成 · ' + name;
+    if (hudStateEl) hudStateEl.textContent = 'READY';
     if (skipBtn) skipBtn.style.opacity = '0';
-    Audio_.glitch();
-    glitch.classList.add('on');
-    box.classList.add('on');
-    later(function () { end(); }, 1400);
+    Sfx.done();
+
+    // ① 三次快速闪烁（参考站 flashing 的节奏），结束时把 opacity 归位
+    var flashes = 0;
+    var iv = setInterval(function () {
+      flashes++;
+      el.style.opacity = flashes % 2 ? '0.35' : '1';
+      if (flashes >= 5) { clearInterval(iv); el.style.opacity = '1'; }
+    }, FLASH_MS / 5);
+    timers.push(iv);
+
+    // ② 揭幕：故障色散 + 中央方框，并在此刻放行主界面的首屏动画
+    later(function () {
+      Sfx.glitch();
+      if (glitchEl) glitchEl.classList.add('on');
+      if (boxEl) boxEl.classList.add('on');
+      root.setAttribute('data-acg-loaded', '1');   // ← 主界面动画的起跑信号
+    }, FLASH_MS);
+
+    // ③ 揭幕完整停留 HOLD_MS 之后，才整层淡出
+    later(end, FADE_DELAY);
+    later(function () { if (el.parentNode) el.parentNode.removeChild(el); }, UNMOUNT_MS);
   }
 
   // ── 收尾 ──
@@ -1405,48 +1439,22 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
     if (finished) return;
     finished = true;
     clearAll();
-    awaiting = false;
     el.classList.add('acgb-out');
     setTimeout(function () {
       if (el.parentNode) el.parentNode.removeChild(el);
-      root.classList.remove('acg-boot-lock');
-    }, 460);
+      root.classList.remove('acg-enter-lock');
+    }, FADE_MS + 80);
   }
 
-  // ── 用户操作 ──
-  function confirm() {
-    if (finished) return;
-    Audio_.tick();
-    if (awaiting) goto(idx + 1, true);   // 强制推进当前确认步
-  }
-  if (askBtn) askBtn.addEventListener('click', function (e) { e.stopPropagation(); confirm(); });
   if (skipBtn) skipBtn.addEventListener('click', function (e) { e.stopPropagation(); end(); });
-  el.addEventListener('click', function (e) {
-    // 点空白处只推进"待确认"步骤，不直接跳过整段（避免误触丢失动画）
-    if (!awaiting) return;
-    var t = e.target;
-    if (t && t.closest && t.closest('.acgb-skip, .acgb-ask-btn')) return;
-    confirm();
-  });
-  function onKey(e) {
-    if (e.key === 'Escape') { end(); return; }
-    if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
-      if (awaiting) { e.preventDefault(); confirm(); }
-    }
-  }
+  function onKey(e) { if (e.key === 'Escape') end(); }
   document.addEventListener('keydown', onKey);
 
   // ── 起播 ──
-  // 幕 1（黑幕标识）→ 幕 2（过曝洗白）→ 幕 3（底板 + 第一步）
-  later(function () { if (s1) s1.style.display = 'none'; }, 1750);
-  later(function () { if (s2) s2.classList.add('on'); Audio_.flash(); }, 1800);
-  later(function () { if (s2) s2.style.display = 'none'; goto(0); }, 2900);
-
-  // 保险：无论中途发生什么，25 秒内一定消失并解锁滚动
-  setTimeout(function () { end(); }, 25000);
-  window.addEventListener('pagehide', function () {
-    document.removeEventListener('keydown', onKey);
-  });
+  runTasks();
+  // 保险：无论发生什么，12 秒内一定消失并解锁滚动
+  setTimeout(function () { end(); }, 12000);
+  window.addEventListener('pagehide', function () { document.removeEventListener('keydown', onKey); });
 })();
 
 // ===== 26. 📊 电台频谱（放歌时侧边栏出现随节奏跳动的频谱条；整段删除即可完全回滚） =====

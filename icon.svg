@@ -1,5 +1,14 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-<rect width="512" height="512" rx="110" fill="#0b0b14"/>
-<rect x="32" y="32" width="448" height="448" rx="90" fill="none" stroke="#ff0033" stroke-width="24"/>
-<text x="256" y="330" text-anchor="middle" font-size="230" font-family="sans-serif" font-weight="900" fill="#ff0033">整</text>
+  <rect width="512" height="512" rx="112" fill="#0b0b14"/>
+  <g fill="none" stroke="#ff0033" stroke-width="10" stroke-linecap="square">
+    <path d="M92 92 h44 M92 92 v44"/>
+    <path d="M420 92 h-44 M420 92 v44"/>
+    <path d="M92 420 h44 M92 420 v-44"/>
+    <path d="M420 420 h-44 M420 420 v-44"/>
+  </g>
+  <text x="256" y="292" text-anchor="middle" font-family="Bahnschrift, 'DIN Alternate', 'Arial Narrow', Oswald, sans-serif"
+        font-size="176" font-weight="700" letter-spacing="6" fill="#e5e3df">ACG</text>
+  <rect x="176" y="326" width="160" height="12" fill="#ff0033"/>
+  <text x="256" y="404" text-anchor="middle" font-family="'Cascadia Mono', Consolas, monospace"
+        font-size="40" letter-spacing="8" fill="#7a7873">LAB</text>
 </svg>
