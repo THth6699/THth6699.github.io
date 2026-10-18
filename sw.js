@@ -1,5 +1,9 @@
-const CACHE = 'acg-lab-v50';
-const CORE = ['./', './index.html', './style.css', './main.js', './manifest.webmanifest', './icon.svg', './404.html'];
+const CACHE = 'acg-lab-v51';
+const CORE = [
+  './', './index.html', './style.css', './main.js', './manifest.webmanifest', './icon.svg', './404.html',
+  './assets/images/favicon-32.png', './assets/images/icon-192.png', './assets/images/icon-512.png',
+  './assets/images/apple-touch-icon.png'
+];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(CORE)).then(() => self.skipWaiting()));
 });
