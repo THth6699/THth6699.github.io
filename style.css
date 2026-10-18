@@ -1476,7 +1476,7 @@ html[data-acg-immediate] .hero-inner > * { opacity: 1 !important; transform: non
   --v9-band: #efe9dc;        /* 分区带 */
   --v9-ink: #14110f;         /* 正文墨色 */
   --v9-ink-2: #4a443d;       /* 次级文字 */
-  --v9-ink-3: #7d7468;       /* 说明文字 */
+  --v9-ink-3: #6f6659;       /* 说明文字 */
   --v9-line: rgba(20, 17, 15, .14);
   --v9-line-2: rgba(20, 17, 15, .08);
   /* ⚠️ 强调色必须跟随主题，不能写死：
@@ -2328,5 +2328,218 @@ body.scroll-locked { overflow: hidden !important; }
    这两个主题单独收到 38%，其余主题保持 50% 以留住色彩。 */
 html[data-theme="genshin"] { --v9-accent-ink: color-mix(in srgb, var(--v9-accent) 38%, #14110f); }
 html[data-theme="cyber"]   { --v9-accent-ink: color-mix(in srgb, var(--v9-accent) 38%, #14110f); }
+
+/* ===================================================================
+   🐞 修复：画廊筛选失效
+   -------------------------------------------------------------------
+   筛选逻辑是 item.hidden = !show，但 .gallery-item 上写了
+   display: block !important（为了抵消 .btn 的规则），
+   于是 [hidden] 的 display:none 被覆盖，点了筛选永远显示全部。
+   这里用「类+属性」把它明确压回去。
+   =================================================================== */
+.gallery-item[hidden] { display: none !important; }
+
+/* 🐞 修复：今日运势文字与背景同色
+   --text-main 是 #eaeaf2（近白），而盒子底色被换成了 #fffdf8（近白），
+   文字等于隐身。这里把文字改成墨色，并给盒子一个像样的浅色卡片外观。 */
+#daily-acg-box {
+  background: var(--v9-band) !important;
+  border: 1px solid var(--v9-line) !important;
+  border-radius: 14px !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.7);
+}
+#daily-acg-text,
+#daily-acg-box p {
+  color: var(--v9-ink) !important;
+  line-height: 1.7 !important;
+}
+#daily-acg-box strong,
+#daily-acg-box em { color: var(--v9-accent-ink) !important; }
+#daily-acg-box small,
+#daily-acg-box .daily-meta { color: var(--v9-ink-3) !important; }
+
+
+/* ===================================================================
+   ✨ v0.9 视觉增强：渐变文字 + 动效
+   -------------------------------------------------------------------
+   之前为了修「标题渐变混进 --accent 发青」，我把渐变整个关掉了，
+   结果标题变成纯黑，确实单调。这里加回来，但改成从主题色派生：
+     --v9-grad-1  = accent-ink（已压深，保证对比度）
+     --v9-grad-2  = accent-ink 与墨色混合（更深）
+   所以金色/黄色主题也不会出现浅到看不清的渐变。
+   =================================================================== */
+:root {
+  /* 渐变两端都用主题色派生：亮端 45%、暗端 18%，
+     既看得出颜色变化，又保证在暖白底上 ≥4.5:1（标题是大字，阈值 3:1，留足余量） */
+  --v9-grad-1: color-mix(in srgb, var(--v9-accent) 45%, #14110f);
+  --v9-grad-2: color-mix(in srgb, var(--v9-accent) 16%, #14110f);
+}
+
+@keyframes v9GradFlow {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* 标题里的彩色词 + 首屏强调词，都用流动渐变 */
+.section-title .grad,
+.hero-title .hero-em {
+  background-image: linear-gradient(100deg,
+      var(--v9-grad-1) 0%,
+      var(--v9-grad-2) 28%,
+      var(--v9-grad-1) 55%,
+      var(--v9-grad-2) 82%,
+      var(--v9-grad-1) 100%) !important;
+  background-size: 260% 100% !important;
+  background-repeat: repeat !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  color: transparent !important;
+  animation: v9GradFlow 11s ease-in-out infinite !important;
+}
+/* 极少数不支持 background-clip:text 的环境下退回实色，避免文字消失 */
+@supports not ((-webkit-background-clip: text) or (background-clip: text)) {
+  .section-title .grad,
+  .hero-title .hero-em {
+    -webkit-text-fill-color: currentColor !important;
+    color: var(--v9-accent-ink) !important;
+    background: none !important;
+    animation: none !important;
+  }
+}
+
+/* ---------- 按钮：hover 时一道高光扫过 ---------- */
+.btn { position: relative !important; overflow: hidden !important; }
+.btn::after {
+  content: "";
+  position: absolute; inset: 0;
+  background: linear-gradient(105deg, transparent 30%, rgba(255,255,255,.55) 50%, transparent 70%);
+  transform: translateX(-120%);
+  transition: transform .62s cubic-bezier(.22,.61,.36,1);
+  pointer-events: none;
+}
+.btn:hover::after { transform: translateX(120%); }
+.btn-ghost::after {
+  background: linear-gradient(105deg, transparent 30%, color-mix(in srgb, var(--v9-accent) 22%, transparent) 50%, transparent 70%);
+}
+
+/* ---------- 卡片：hover 抬升 + 图标轻弹 + 跟随指针的光晕 ---------- */
+.card {
+  --mx: 50%; --my: 50%;
+  position: relative !important;
+  isolation: isolate;
+}
+.card::before {
+  content: "";
+  position: absolute; inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(180px circle at var(--mx) var(--my),
+              color-mix(in srgb, var(--v9-accent) 14%, transparent), transparent 65%);
+  opacity: 0;
+  transition: opacity .35s;
+  pointer-events: none;
+  z-index: 0;
+}
+.card:hover::before { opacity: 1; }
+.card:hover { border-color: color-mix(in srgb, var(--v9-accent) 42%, var(--v9-line)) !important; }
+.card > * { position: relative; z-index: 1; }
+.card:hover .card-icon { transform: translateY(-2px) scale(1.1); }
+.card-icon { transition: transform .3s cubic-bezier(.22,.61,.36,1); }
+
+/* ---------- 画廊：hover 放大 + 主题色描边 ---------- */
+.gallery-item { transition: border-color .25s, box-shadow .25s, transform .25s; }
+.gallery-item:hover {
+  border-color: color-mix(in srgb, var(--v9-accent) 45%, var(--v9-line)) !important;
+  box-shadow: 0 10px 28px color-mix(in srgb, var(--v9-accent) 16%, transparent) !important;
+  transform: translateY(-2px);
+}
+.gallery-item:hover img { transform: scale(1.05) !important; }
+
+/* ---------- 首屏主视觉：轻微悬浮 + hover 光边 ---------- */
+@keyframes v9Float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-8px); }
+}
+.hero-inner::after {
+  animation: v9Float 9s ease-in-out infinite;
+  transition: box-shadow .35s, border-color .35s;
+}
+.hero-inner:hover::after {
+  border-color: color-mix(in srgb, var(--v9-accent) 40%, var(--v9-line)) !important;
+  box-shadow: 0 18px 48px color-mix(in srgb, var(--v9-accent) 20%, transparent) !important;
+}
+
+/* ---------- 交替分区：两团很淡的主题色光晕，避免大片纯色 ---------- */
+.section-alt {
+  background-image:
+    radial-gradient(620px 300px at 12% 0%, color-mix(in srgb, var(--v9-accent) 7%, transparent), transparent 70%),
+    radial-gradient(520px 280px at 88% 100%, color-mix(in srgb, var(--v9-accent) 5%, transparent), transparent 72%) !important;
+}
+
+/* ---------- 区段标签：短线改为渐隐光条 ---------- */
+.section-label::after {
+  background: linear-gradient(90deg,
+      color-mix(in srgb, var(--v9-accent) 70%, transparent),
+      transparent) !important;
+}
+
+/* ---------- 数据数字：和标题同一套渐变 ---------- */
+.hero-stats .stat strong {
+  background-image: linear-gradient(100deg, var(--v9-grad-1), var(--v9-grad-2)) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  color: transparent !important;
+}
+@supports not ((-webkit-background-clip: text) or (background-clip: text)) {
+  .hero-stats .stat strong {
+    -webkit-text-fill-color: currentColor !important;
+    color: var(--v9-accent-ink) !important;
+    background: none !important;
+  }
+}
+
+/* ---------- 尊重「减少动态效果」 ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .section-title .grad,
+  .hero-title .hero-em,
+  .hero-inner::after { animation: none !important; }
+  .section-title .grad,
+  .hero-title .hero-em { background-position: 0% 50% !important; }
+  .btn::after { display: none; }
+  .card:hover, .gallery-item:hover { transform: none; }
+}
+
+/* 运势出处：《书名》那一行原来是 --text-dim(#8888a0)，在米色底上只有约 3.2:1，
+   和不透明的背景几乎融在一起。改成墨色次级色，仍保留字号层级。 */
+#daily-acg-author {
+  color: var(--v9-ink-2) !important;
+  font-size: .82rem !important;
+}
+
+/* ===================================================================
+   ♿ 对比度修正（全站文字审计发现）
+   -------------------------------------------------------------------
+   1. logo 方块与音乐页签：底色是主题强调色，文字却写死 #fff。
+      金色(#ffcc00)/黄色(#fcee0a)主题下白字对比度只有 1.2~1.5，几乎看不见。
+      → 改用主题自带的 --on-primary（各主题已按对比度配好）。
+   2. 活动年份沿用了 --text-dim(#8888a0)，在暖白底上仅 3.14。
+   3. 「进行中」绿字在淡青底上 4.27，「社团档案」小字 3.8，均差一点。
+   =================================================================== */
+.logo-mark { color: var(--on-primary, #fff) !important; }
+.ms-tab { color: var(--on-primary, #fff) !important; }
+
+.activity-date span { color: var(--v9-ink-3) !important; }
+.activity-date strong { color: var(--v9-ink) !important; }
+
+.status-进行中 {
+  color: #0d6b4f !important;
+  border-color: rgba(13,107,79,.32) !important;
+}
+.status-计划中 { color: #7a4e06 !important; }
+.status-已结束 { color: var(--v9-ink-3) !important; }
+
+.v8-plate-kicker { color: var(--v9-ink-2) !important; }
 
 /* ===== 视觉方案 v0.9 结束 ===== */

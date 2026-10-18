@@ -1693,3 +1693,34 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
 
   drawIdle();   // 初始先画一帧“安静”状态
 })();
+
+// ===== 27. ✨ 卡片跟随指针的光晕（只改 CSS 变量，rAF 节流） =====
+// 触屏没有 hover、或系统开了"减少动态效果"时不启用。
+(function () {
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (window.matchMedia && window.matchMedia('(hover: none)').matches) return;
+
+  var pending = null;
+  var raf = 0;
+
+  function apply() {
+    raf = 0;
+    if (!pending) return;
+    var el = pending.el, x = pending.x, y = pending.y;
+    pending = null;
+    var r = el.getBoundingClientRect();
+    if (!r.width || !r.height) return;
+    el.style.setProperty('--mx', (((x - r.left) / r.width) * 100).toFixed(1) + '%');
+    el.style.setProperty('--my', (((y - r.top) / r.height) * 100).toFixed(1) + '%');
+  }
+
+  document.addEventListener('pointermove', function (e) {
+    if (e.pointerType === 'touch') return;
+    var t = e.target;
+    if (!t || !t.closest) return;
+    var card = t.closest('.card');
+    if (!card) return;
+    pending = { el: card, x: e.clientX, y: e.clientY };
+    if (!raf) raf = requestAnimationFrame(apply);
+  }, { passive: true });
+})();
