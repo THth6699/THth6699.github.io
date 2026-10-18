@@ -1714,6 +1714,10 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
     finished = true;
     clearAll();
     awaiting = false;
+    // ⚠️ 关键：跳过（SKIP / Esc）也要放行首屏。
+    // 之前只有 reveal() 会写 data-acg-loaded，而跳过走的是 end()，
+    // 于是首屏文字永远停在 opacity:0 —— 就是"跳过开屏后一片空白"的原因。
+    root.setAttribute('data-acg-loaded', '1');
     el.classList.add('acgb-out');
     setTimeout(function () {
       if (el.parentNode) el.parentNode.removeChild(el);
@@ -1984,4 +1988,36 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
     pending = { el: card, x: e.clientX, y: e.clientY };
     if (!raf) raf = requestAnimationFrame(apply);
   }, { passive: true });
+})();
+
+// ===== 28. 🛟 首屏守护：开屏以任何方式消失，都要把首屏放出来 =====
+// 背景：首屏元素默认 opacity:0，等 <html data-acg-loaded="1"> 才浮现。
+// 只要有任何一条路径（跳过 / 脚本异常 / 未来改动）漏了写这个属性，
+// 首屏就会永久空白。这里做一道兜底，避免"内容凭空消失"这种致命故障。
+(function () {
+  var root = document.documentElement;
+  var done = false;
+
+  function tryRelease() {
+    if (done) return true;
+    if (root.getAttribute('data-acg-loaded') === '1') { done = true; return true; }
+    // 开屏还在场说明是正常流程，别抢
+    if (document.getElementById('acgBoot')) return false;
+    root.setAttribute('data-acg-loaded', '1');
+    done = true;
+    if (window.__acgDebug) console.log('[ACG] 开屏已消失但未放行首屏，守护逻辑已接管');
+    return true;
+  }
+
+  var iv = setInterval(function () { if (tryRelease()) clearInterval(iv); }, 350);
+
+  // 页面加载完再兜一层：正常开屏这时一定还在，不会误触发
+  window.addEventListener('load', function () {
+    setTimeout(function () { tryRelease(); }, 1500);
+  });
+
+  // 页面切到后台再回来时也检查一次（有些浏览器会中断定时器）
+  document.addEventListener('visibilitychange', function () {
+    if (!document.hidden) tryRelease();
+  });
 })();
