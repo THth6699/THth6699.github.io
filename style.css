@@ -2975,7 +2975,7 @@ html[data-theme="cyber"]   { --v9-accent-ink: color-mix(in srgb, var(--v9-accent
 
 /* ---------- 播放器收尾微调 ---------- */
 /* 列表默认能完整放下 3 首，不出现半截行 */
-.ms-list { max-height: 168px; }
+.ms-list { max-height: 224px; }
 
 /* 抽屉展开时把右侧页签淡出，避免留一条红色残边 */
 @media (min-width: 820px) {
@@ -2990,6 +2990,116 @@ html[data-theme="cyber"]   { --v9-accent-ink: color-mix(in srgb, var(--v9-accent
   .ms-meta { margin-bottom: 8px !important; }
   .ms-bar { margin-bottom: 10px !important; }
   .ms-controls { margin-bottom: 10px !important; }
+}
+
+/* ---------- 歌单计数 / 错误条 / 坏曲标记 ---------- */
+.ms-count {
+  display: inline-grid;
+  place-items: center;
+  min-width: 18px; height: 16px;
+  padding: 0 5px;
+  margin-left: 6px;
+  border-radius: 999px;
+  background: var(--v9-band);
+  border: 1px solid var(--v9-line);
+  color: var(--v9-ink-3);
+  font-size: .62rem;
+  letter-spacing: 0;
+}
+.ms-error {
+  margin: 0 0 10px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: color-mix(in srgb, #d93025 8%, #fff);
+  border: 1px solid color-mix(in srgb, #d93025 32%, #fff);
+  color: #8c1d18;
+  font-size: .72rem;
+  line-height: 1.5;
+  word-break: break-word;
+}
+.ms-error[hidden] { display: none !important; }
+
+.ms-item.bad .ms-item-title { color: #8c1d18; }
+.ms-item.bad .ms-item-state::before { content: '!'; color: #d93025; font-weight: 700; }
+.ms-item.bad .ms-item-state { color: #d93025; }
+
+
+/* ===================================================================
+   📱 手机端弹层滚动修复
+   -------------------------------------------------------------------
+   旧结构：居中卡片 + max-height:88vh + 卡片自己 overflow:auto。
+   手机上 vh 取"大视口"，卡片常比可见区域高；上下两端都被切，
+   手指一旦滑到卡片外的遮罩上（那里不滚），就表现为「滑不动」。
+
+   现在：
+     · 所有弹层：卡片可滚、overscroll 不传染、touch-action 明确允许纵向拖动
+     · 开发者中心 / 开发者名单（内容长）：做成整屏面板，关闭按钮 sticky 常驻
+     · 部门介绍、登录等短弹层：保持居中卡片，不会变成一大片空白
+   =================================================================== */
+@media (max-width: 819px) {
+  .modal-overlay {
+    align-items: center !important;
+    padding: 14px !important;
+  }
+
+  .modal-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    max-height: 92dvh !important;
+    margin: auto !important;
+    border-radius: 18px !important;
+    transform: none !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    touch-action: pan-y;
+  }
+  .modal-overlay.active .modal-card { transform: none !important; }
+
+  /* 关闭按钮常驻，滚动时也点得到 */
+  .modal-close {
+    position: sticky !important;
+    top: 0 !important;
+    float: right;
+    margin: -10px -8px 0 0 !important;
+    width: 40px; height: 40px;
+    display: grid; place-items: center;
+    border-radius: 12px;
+    background: var(--v9-surface, #fff) !important;
+    border: 1px solid var(--v9-line, #e6e0d4) !important;
+    z-index: 30;
+  }
+
+  /* ---- 内容长的两个弹层：整屏面板 ---- */
+  #devCenterModal,
+  #developerModal {
+    align-items: stretch !important;
+    padding: 0 !important;
+  }
+  #devCenterModal .modal-card,
+  #developerModal .modal-card {
+    height: 100vh !important;
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    border: 0 !important;
+    padding: 22px 18px calc(28px + env(safe-area-inset-bottom)) !important;
+  }
+
+  /* 开发者中心内部：单列排布 */
+  .dev-center-card { max-width: 100% !important; max-height: none !important; }
+  .dev-center-grid { grid-template-columns: 1fr !important; gap: 12px !important; margin-top: 18px !important; }
+  .dev-panel { padding: 15px !important; }
+  .dev-panel-wide { grid-column: auto !important; }
+  .changelog-item { grid-template-columns: 1fr !important; gap: 3px !important; }
+  .changelog-item strong { font-size: .74rem; letter-spacing: .04em; }
+  .debug-output { grid-template-columns: 1fr !important; }
+
+  /* 开发者名单 */
+  .developer-card { max-width: 100% !important; }
+  .developer-grid { grid-template-columns: 1fr !important; }
 }
 
 /* ===== 视觉方案 v0.9 结束 ===== */

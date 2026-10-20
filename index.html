@@ -315,7 +315,7 @@
   </footer>
 
   <!-- 网站开发者中心 -->
-  <div class="modal-overlay" id="devCenterModal" role="dialog" aria-modal="true" aria-labelledby="devCenterTitle">
+  <div class="modal-overlay" data-lenis-prevent data-lenis-prevent-touch id="devCenterModal" role="dialog" aria-modal="true" aria-labelledby="devCenterTitle">
     <div class="modal-card dev-center-card">
       <button class="modal-close" id="devCenterClose" aria-label="关闭网站开发者中心">✕</button>
       <div class="modal-header">
@@ -367,7 +367,7 @@
   </div>
 
   <!-- 次元名片 -->
-  <div class="modal-overlay" id="authModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal-overlay" data-lenis-prevent data-lenis-prevent-touch id="authModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
     <div class="modal-card">
       <button class="modal-close" id="modalClose" aria-label="关闭名片窗口">✕</button>
       <div class="modal-header"><h2 id="modalTitle">我的次元名片</h2><p class="modal-subtitle">仅保存在你的浏览器本地，不需要账号或密码</p></div>
@@ -387,7 +387,7 @@
   </div>
 
   <!-- 网站贡献者 -->
-  <div class="modal-overlay" id="developerModal" role="dialog" aria-modal="true" aria-labelledby="developerModalTitle">
+  <div class="modal-overlay" data-lenis-prevent data-lenis-prevent-touch id="developerModal" role="dialog" aria-modal="true" aria-labelledby="developerModalTitle">
     <div class="modal-card developer-card">
       <button class="modal-close" id="developerModalClose" aria-label="关闭网站贡献者">✕</button>
       <div class="modal-header"><p class="section-label">CONTRIBUTORS</p><h2 id="developerModalTitle">网站贡献者</h2><p class="modal-subtitle">感谢每一位为次元整研社网站建设提供支持的人。</p></div>
@@ -402,7 +402,7 @@
   </div>
 
   <!-- 部门详情 -->
-  <div class="modal-overlay" id="deptModal">
+  <div class="modal-overlay" data-lenis-prevent data-lenis-prevent-touch id="deptModal">
     <div class="modal-card" style="max-width: 600px; text-align: left;">
       <button class="modal-close" id="deptModalClose" aria-label="关闭部门详情">✕</button>
       <div class="modal-header" style="text-align: center;">
@@ -425,9 +425,10 @@
       <div class="ms-grab" aria-hidden="true"></div>
 
       <div class="ms-head">
-        <span class="ms-head-title"><span class="ms-live" aria-hidden="true"></span>次元电台</span>
+        <span class="ms-head-title"><span class="ms-live" aria-hidden="true"></span>次元电台<span class="ms-count" id="msCount">0</span></span>
         <button class="ms-close" id="msClose" aria-label="收起播放器">✕</button>
       </div>
+      <p class="ms-error" id="msError" hidden></p>
 
       <div class="ms-cover">
         <span class="ms-cover-emoji" id="msCover">🎧</span>

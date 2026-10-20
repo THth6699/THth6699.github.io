@@ -1120,7 +1120,11 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
 
   const read = () => {
     try {
-      const saved = Number(localStorage.getItem(STORAGE_KEY));
+      const raw = localStorage.getItem(STORAGE_KEY);
+      // ⚠️ 不能直接 Number(getItem())：没存过时它返回 null，而 Number(null) === 0，
+      // 0 又是有限数，于是 clamp(0) 得到 80 —— 所有首次访问的人都被缩到 80%。
+      if (raw === null || raw === '') return 100;
+      const saved = Number(raw);
       return Number.isFinite(saved) ? clamp(saved) : 100;
     } catch (_) {
       return 100;
@@ -2020,4 +2024,26 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
   document.addEventListener('visibilitychange', function () {
     if (!document.hidden) tryRelease();
   });
+})();
+
+// ===== 29. 🖐️ 弹层滚动放行（Lenis 会吞掉弹层里的滚轮/触摸） =====
+// 现象：打开「开发者中心」后，弹层内容滚不动。
+// 原因：Lenis 在 window 上拦截滚轮并 preventDefault，把滚动交给它自己驱动；
+//       此时页面已被滚动锁按住，于是哪里都不动。
+// 解法：给所有弹层加 data-lenis-prevent（Lenis 官方放行标记），
+//       命中后它就不再接管，浏览器按原生方式滚动弹层内部。
+(function () {
+  function markAll() {
+    var list = document.querySelectorAll('.modal-overlay');
+    for (var i = 0; i < list.length; i++) {
+      if (!list[i].hasAttribute('data-lenis-prevent')) {
+        list[i].setAttribute('data-lenis-prevent', '');
+      }
+    }
+  }
+  markAll();
+  // 以后再动态加弹层也不会漏
+  if (window.MutationObserver) {
+    new MutationObserver(markAll).observe(document.body, { childList: true, subtree: true });
+  }
 })();
