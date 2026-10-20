@@ -7,7 +7,15 @@ const themes = {
   cyber: { name: '赛博朋克', vars: { '--primary': '#fcee0a', '--primary-rgb': '252, 238, 10', '--secondary': '#ff003c', '--secondary-rgb': '255, 0, 60', '--accent': '#00f0ff', '--accent-rgb': '0, 240, 255', '--bg-color': '#0a0a0a', '--bg-rgb': '10, 10, 10', '--modal-bg': '#161616', '--text-main': '#f5f5f5', '--text-muted': '#b0b0b0', '--text-dim': '#949494', '--primary-light': '#fff68f' } }
 };
 
-const THEME_COLORS = { eva: '#0b0b14', miku: '#071113', genshin: '#121020', sakura: '#1f1822', cyber: '#0a0a0a' };
+// theme-color 直接读页面实际底色（--v9-bg），不再维护第二份颜色表。
+// 之前这里写死了一套深色值，和暖白底对不上：手机上地址栏是深蓝黑、页面却是米白。
+function syncThemeColor() {
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (!meta) return;
+  let paper = '';
+  try { paper = getComputedStyle(document.documentElement).getPropertyValue('--v9-bg').trim(); } catch (_) {}
+  meta.setAttribute('content', paper || '#f7f4ec');
+}
 
 function applyTheme(themeKey) {
   const theme = themes[themeKey];
@@ -20,10 +28,7 @@ function applyTheme(themeKey) {
   // main.js 用内联 style 设置变量（优先级更高，会正确覆盖属性选择器），
   // 这里保留属性只是为了让 CSS 侧与 JS 侧始终指向同一套主题。
   root.setAttribute('data-theme', themeKey);
-  const themeColorMeta = document.querySelector('meta[name="theme-color"]');
-  if (themeColorMeta && THEME_COLORS[themeKey]) {
-    themeColorMeta.setAttribute('content', THEME_COLORS[themeKey]);
-  }
+  syncThemeColor();
   try { localStorage.setItem('acg_lab_theme', themeKey); } catch (_) {}
   document.querySelectorAll('.theme-option').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.theme === themeKey);

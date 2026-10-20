@@ -22,7 +22,7 @@
   <meta name="twitter:description" content="绘画、Cos、观影、技术共建，一个属于我们的次元基地。" />
   <meta name="twitter:image" content="https://acg-lab.xyz/assets/images/bg.jpg" />
 
-  <meta name="theme-color" content="#0b0b14" />
+  <meta name="theme-color" content="#f7f4ec" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-title" content="次元整研社" />
@@ -46,8 +46,10 @@
   <!-- 主题首屏防闪：在绘制前同步套用已保存主题，避免非默认主题先闪一下 EVA 红黑 -->
   <script>
     (function () {
-      var THEME_COLORS = {
-        eva: '#0b0b14', miku: '#071113', genshin: '#121020', sakura: '#1f1822', cyber: '#0a0a0a'
+      // 站点已是暖白底，主题只换强调色；这里必须跟页面主色一致，
+      // 否则手机上地址栏是深蓝黑、页面却是米白，割裂明显。
+        var THEME_COLORS = {
+          eva: '#f7f4ec', miku: '#f7f4ec', genshin: '#f7f4ec', sakura: '#f7f4ec', cyber: '#f7f4ec'
       };
       var key = 'eva';
       try { key = localStorage.getItem('acg_lab_theme') || 'eva'; } catch (_) {}
