@@ -804,7 +804,7 @@ html.acg-boot-lock, html.acg-boot-lock body { overflow: hidden !important; }
 }
 
 /* —— 幕 3：暖白「技术档案」底板 —— */
-.acgb-s3 { background: var(--acgb-bg); }
+.acgb-s3 { background: var(--v9-bg, #f7f4ec); }
 /* 极淡的方格网，给底板一点"档案纸"的质感 */
 .acgb-s3::before {
   content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .5;
@@ -3103,3 +3103,199 @@ html[data-theme="cyber"]   { --v9-accent-ink: color-mix(in srgb, var(--v9-accent
 }
 
 /* ===== 视觉方案 v0.9 结束 ===== */
+
+/* ===================================================================
+   ⚡ 开屏 · 融合终末地机制（2026-10-20）
+   -------------------------------------------------------------------
+   在原有「黑幕 → 洗白 → 技术档案底板 → 五步授权 → 色散揭幕」上，
+   并入 endfield-ui 的三处机械动效：
+     1. 幕 1 通电：一条强调色横线把屏幕点亮 + 扫描线扫过
+     2. 副标题乱码落定（JS 里 scrambleIn）
+     3. 退场快门：两块纸色面板合上再上下分开，露出首屏
+   曲线沿用终末地的 mech / snap，不用弹跳。
+   =================================================================== */
+
+:root {
+  --acgb-mech: cubic-bezier(.7, 0, .2, 1);
+  --acgb-snap: cubic-bezier(.16, 1, .3, 1);
+}
+
+/* ---------- 幕 1：通电 ---------- */
+/* 用 scaleX 而不是 width：不动布局属性，曲线也更顺 */
+.acgb-pw {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  height: 2px;
+  width: min(46%, 520px);
+  background: var(--acgb-accent);
+  transform: translate(-50%, -50%) scaleX(0);
+  transform-origin: 50% 50%;
+  box-shadow: 0 0 18px color-mix(in srgb, var(--acgb-accent) 65%, transparent);
+  animation: acgbPw 430ms var(--acgb-mech) forwards, acgbPwOut 260ms var(--acgb-mech) 1150ms forwards;
+}
+@keyframes acgbPw {
+  0%   { transform: translate(-50%, -50%) scaleX(0); }
+  100% { transform: translate(-50%, -50%) scaleX(1); }
+}
+@keyframes acgbPwOut {
+  to { opacity: 0; }
+}
+
+/* 通电后那条缝留在原地，作为后面内容的中轴 */
+.acgb-scan {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  top: 50%;
+  background: linear-gradient(90deg, transparent, var(--acgb-accent), transparent);
+  opacity: 0;
+  animation: acgbScan 620ms var(--acgb-mech) 260ms forwards;
+}
+@keyframes acgbScan {
+  0%   { top: 50%; opacity: 0; }
+  15%  { opacity: .85; }
+  100% { top: 0; opacity: 0; }
+}
+
+/* 幕 1 的标识改为「被通电点亮」：更快、更硬，不再软软地飘上来 */
+.acgb-s1-logo {
+  animation: acgbLogoIn .44s var(--acgb-snap) .30s forwards !important;
+  /* 垫一层纯黑遮住通电线，形成"线撞到标识就停"的观感 */
+  background: #000;
+  padding: 0 20px;
+}
+
+/* ---------- 退场：快门 ---------- */
+.acgb-shutter {
+  position: absolute;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  display: none;
+}
+.acgb-shutter.go { display: block; }
+.acgb-shutter i {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 50.5%;
+  background: var(--v9-bg, #f7f4ec);
+  display: block;
+}
+.acgb-shutter i:nth-child(1) { top: 0; }
+.acgb-shutter i:nth-child(2) { bottom: 0; }
+/* 中缝一道强调色细线，分开瞬间收掉 */
+.acgb-shutter::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  background: var(--acgb-accent);
+  transform: scaleX(0);
+  transform-origin: 50% 50%;
+}
+.acgb-shutter.go::after {
+  animation: acgbSeam 380ms var(--acgb-snap) forwards;
+}
+.acgb-shutter.go i:nth-child(1) {
+  animation: acgbShutterUp 420ms var(--acgb-mech) 60ms forwards;
+}
+.acgb-shutter.go i:nth-child(2) {
+  animation: acgbShutterDown 420ms var(--acgb-mech) 60ms forwards;
+}
+@keyframes acgbSeam {
+  0%   { transform: scaleX(0); }
+  45%  { transform: scaleX(1); }
+  100% { transform: scaleX(1); opacity: 0; }
+}
+@keyframes acgbShutterUp { to { transform: translateY(-101%); } }
+@keyframes acgbShutterDown { to { transform: translateY(101%); } }
+
+/* ---------- 步骤编号：等宽数字，计数时不跳动 ---------- */
+.acgb-stepnow {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- 减少动态效果：一律不播，直接显示终态 ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .acgb-pw,
+  .acgb-scan,
+  .acgb-shutter,
+  .acgb-shutter i,
+  .acgb-shutter::after { display: none !important; animation: none !important; }
+  .acgb-s1-logo { animation: none !important; opacity: 1 !important; transform: none !important; }
+}
+
+/* ---------- 右上角：实时数据 + SKIP ---------- */
+.acgb-topright {
+  position: absolute;
+  top: clamp(18px, 3.5vh, 30px);
+  right: clamp(18px, 3vw, 30px);
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+/* 包进 flex 后，SKIP 不再自己绝对定位 */
+.acgb-topright .acgb-skip {
+  position: static;
+  top: auto;
+  right: auto;
+}
+
+.acgb-hud {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  /* 黑幕阶段先不显示：深色字压黑底等于看不见，等底板亮起再淡入 */
+  opacity: 0;
+  transition: opacity .42s ease;
+}
+.acgb-hud.on { opacity: 1; }
+.acgb-hud-i {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  white-space: nowrap;
+}
+.acgb-hud-i b {
+  font-family: var(--acgb-din);
+  font-size: 1.02rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+  color: var(--acgb-ink);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+.acgb-hud-i i {
+  font-style: normal;
+  font-family: var(--acgb-mono);
+  font-size: .6rem;
+  letter-spacing: .18em;
+  color: var(--acgb-muted);
+  line-height: 1;
+}
+.acgb-hud-sep {
+  width: 1px;
+  height: 13px;
+  background: var(--acgb-hair);
+  flex: none;
+}
+
+/* 窄屏：标签缩一号，避免和 SKIP 挤在一起 */
+@media (max-width: 620px) {
+  .acgb-topright { gap: 12px; }
+  .acgb-hud { gap: 8px; }
+  .acgb-hud-i { gap: 4px; }
+  .acgb-hud-i b { font-size: .9rem; }
+  .acgb-hud-i i { font-size: .52rem; letter-spacing: .1em; }
+}
+@media (max-width: 420px) {
+  /* 再窄就只留数字，标签让位给 SKIP */
+  .acgb-hud-i i { display: none; }
+  .acgb-hud-sep { height: 11px; }
+}

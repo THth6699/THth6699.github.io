@@ -1627,6 +1627,8 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
     '</div>' +
     '<div class="acgb-scene acgb-s2"></div>' +
     '<div class="acgb-scene acgb-s1">' +
+    '<div class="acgb-pw" aria-hidden="true"></div>' +
+    '<div class="acgb-scan" aria-hidden="true"></div>' +
       '<div class="acgb-s1-logo">' +
         '<span class="acgb-s1-mark"><svg class="acg-mark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" aria-hidden="true" focusable="false"><g transform="translate(32 32) scale(0.1404) translate(-256 -228)"><path transform="translate(97.59 150.74)" fill="currentColor" d="M1.72,139.73 L49.5,14.78 L64.45,14.78 L112.23,139.73 L86.88,139.73 L56.98,54.4 L27.07,139.73 Z M24.66,119.71 L24.66,97.02 L90.41,97.02 L90.41,119.71 Z M172.89,141.02 C163.32,141.02 155.17,139.2 148.44,135.57 C141.71,131.93 136.57,126.63 133.02,119.67 C129.46,112.71 127.69,104.3 127.69,94.45 L127.69,60.16 C127.69,50.24 129.46,41.82 133.02,34.89 C136.57,27.96 141.71,22.66 148.44,18.99 C155.17,15.33 163.32,13.49 172.89,13.49 C180.8,13.49 187.83,15.18 193.99,18.56 C200.15,21.94 205.25,26.84 209.29,33.26 C213.32,39.67 216.12,47.47 217.66,56.63 L217.66,56.63 L193.26,56.63 L193.26,56.63 C192.34,52.45 190.92,48.91 189,46.02 C187.08,43.13 184.76,40.91 182.04,39.36 C179.32,37.81 176.27,37.04 172.89,37.04 C166.3,37.04 161.19,39.06 157.55,43.1 C153.91,47.14 152.09,52.82 152.09,60.16 L152.09,94.45 C152.09,101.78 153.91,107.45 157.55,111.46 C161.19,115.47 166.3,117.48 172.89,117.48 C178.05,117.48 182.4,115.77 185.95,112.36 C189.51,108.95 191.94,104.13 193.26,97.88 L193.26,97.88 L217.66,97.88 L217.66,97.88 C216.06,106.99 213.24,114.77 209.2,121.21 C205.16,127.66 200.08,132.57 193.95,135.95 C187.82,139.33 180.8,141.02 172.89,141.02 Z M271.79,69.87 L315.1,69.87 L315.1,94.27 C315.1,103.67 313.21,111.88 309.43,118.89 C305.65,125.91 300.36,131.36 293.57,135.22 C286.79,139.09 278.81,141.02 269.64,141.02 C260.47,141.02 252.42,139.2 245.49,135.57 C238.56,131.93 233.19,126.8 229.38,120.18 C225.57,113.57 223.66,105.85 223.66,97.02 L223.66,60.16 C223.66,50.76 225.57,42.57 229.38,35.58 C233.19,28.59 238.49,23.16 245.28,19.29 C252.07,15.43 260.02,13.49 269.13,13.49 C276.69,13.49 283.58,15.04 289.79,18.13 C296.01,21.23 301.24,25.55 305.48,31.11 C309.72,36.67 312.58,43.17 314.07,50.62 L314.07,50.62 L288.63,50.62 L288.63,50.62 C287.37,46.55 284.88,43.41 281.16,41.21 C277.43,39 273.42,37.9 269.13,37.9 C262.71,37.9 257.6,39.93 253.79,44 C249.98,48.07 248.07,53.45 248.07,60.16 L248.07,97.02 C248.07,102.98 250.03,107.74 253.96,111.29 C257.88,114.84 263.11,116.62 269.64,116.62 C276,116.62 281.1,114.68 284.94,110.82 C288.78,106.95 290.7,101.55 290.7,94.62 L290.7,92.55 L271.79,92.55 Z"/></g></svg></span>' +
         '<span class="acgb-s1-text">次元整研社 · ACG LAB</span>' +
@@ -1634,7 +1636,15 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
     '</div>' +
     '<div class="acgb-glitch">' + barsHtml + '</div>' +
     '<div class="acgb-box">' + BOX_TEXT + '</div>' +
-    '<button class="acgb-skip" type="button">跳过 SKIP</button>';
+    '<div class="acgb-shutter" aria-hidden="true"><i></i><i></i></div>' +
+    '<div class="acgb-topright">' +
+      '<div class="acgb-hud" aria-label="站点实时数据">' +
+        '<span class="acgb-hud-i"><b data-hud="members">0</b><i>在册同好</i></span>' +
+        '<span class="acgb-hud-sep" aria-hidden="true"></span>' +
+        '<span class="acgb-hud-i"><b data-hud="works">0</b><i>作品投稿</i></span>' +
+      '</div>' +
+      '<button class="acgb-skip" type="button">跳过 SKIP</button>' +
+    '</div>';
 
   document.body.appendChild(el);
   root.classList.add('acg-boot-lock');
@@ -1652,6 +1662,85 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
   var barEl = el.querySelector('.acgb-progress i');
   var skipBtn = el.querySelector('.acgb-skip');
 
+  // ── 融合 1/3：乱码落定（终末地式，见 endfield-demo）──
+  // 英文副标题不再逐字淡入，而是先跳乱码、再逐位锁定成真字。
+  var SCRAMBLE_GLYPHS = 'ABCDEFGHJKLMNPQRSTUVWXYZ0123456789#/\\-_';
+  function scrambleIn(node, text, dur) {
+    if (!node) return;
+    node.innerHTML = '';                       // 清掉逐字 span，避免两套机制打架
+    var t0 = performance.now();
+    var n = text.length;
+    function frame(now) {
+      if (finished) { node.textContent = text; return; }
+      var p = Math.min(1, Math.max(0, (now - t0) / dur));
+      var locked = Math.floor(n * p);
+      var out = '';
+      for (var i = 0; i < n; i++) {
+        var c = text.charAt(i);
+        if (c === ' ') { out += ' '; continue; }
+        out += (i < locked) ? c : SCRAMBLE_GLYPHS.charAt((Math.random() * SCRAMBLE_GLYPHS.length) | 0);
+      }
+      node.textContent = out;
+      if (p < 1) requestAnimationFrame(frame); else node.textContent = text;
+    }
+    requestAnimationFrame(frame);
+  }
+
+  // ── 融合 2/3：步骤编号滚动计数（No.01 → No.02 不是硬切）──
+  function countStep(from, to, dur) {
+    if (!stepNow) return;
+    var t0 = performance.now();
+    function frame(now) {
+      var p = Math.min(1, Math.max(0, (now - t0) / dur));
+      var ease = 1 - Math.pow(1 - p, 3);
+      var v = Math.round(from + (to - from) * ease);
+      stepNow.textContent = ('0' + v).slice(-2);
+      if (p < 1) requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  }
+  // ── 右上角实时数据：读页面里的真实数字，不另写一份 ──
+  // 在册同好：取首屏数据行里 label 含"在册"那条的 data-count
+  // 作品投稿：直接数画廊条目（作品加了数字自动跟上；画廊为空时才退回数据行）
+  function readRealCounts() {
+    var out = { members: null, works: null };
+    var stats = document.querySelectorAll('.hero-stats .stat');
+    for (var i = 0; i < stats.length; i++) {
+      var st = stats[i].querySelector('strong');
+      if (!st) continue;
+      var label = (stats[i].textContent || '').replace(/\d/g, '');
+      var n = parseInt(st.getAttribute('data-count'), 10);
+      if (!isFinite(n)) continue;
+      if (label.indexOf('在册') > -1) out.members = n;
+      else if (label.indexOf('作品') > -1) out.works = n;
+    }
+    var g = document.querySelectorAll('.gallery-item').length;
+    if (g > 0) out.works = g;
+    return out;
+  }
+
+  function fillHud() {
+    var hud = el.querySelector('.acgb-hud');
+    if (!hud) return;
+    var c = readRealCounts();
+    var mEl = hud.querySelector('[data-hud="members"]');
+    var wEl = hud.querySelector('[data-hud="works"]');
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    function run(node, target) {
+      if (!node || !isFinite(target)) { if (node) node.textContent = '--'; return; }
+      if (reduce) { node.textContent = String(target); return; }
+      var t0 = performance.now(), dur = 900;
+      (function frame(now) {
+        var p = Math.min(1, Math.max(0, (now - t0) / dur));
+        var ease = 1 - Math.pow(1 - p, 3);
+        node.textContent = String(Math.round(target * ease));
+        if (p < 1 && !finished) requestAnimationFrame(frame);
+        else node.textContent = String(target);
+      })(t0);
+    }
+    run(mEl, c.members);
+    run(wEl, c.works);
+  }
   // 实时时钟，给底板一点"正在运行"的感觉
   function tickClock() {
     var d = new Date(), p = function (n) { return n < 10 ? '0' + n : '' + n; };
@@ -1676,7 +1765,9 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
     var en = st.en.replace('{name}', name.toUpperCase());
 
     askEl.hidden = !st.ask;
-    if (stepNow) stepNow.textContent = ('0' + (i + 1)).slice(-2);
+    // 融合 2/3：编号滚动到新值，而不是硬切
+    var prevStep = parseInt(stepNow ? stepNow.textContent : '0', 10) || 0;
+    if (stepNow) countStep(prevStep, i + 1, 260);
     if (barEl) barEl.style.width = Math.round(((i + 1) / STEPS.length) * 100) + '%';
 
     if (i > 0) Audio_.step();
@@ -1686,7 +1777,10 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
     statusEl.classList.remove('on');
     var d1 = typeDelay(subEl, en.length, Math.min(1200, 520 + en.length * 16));
     var d2 = typeDelay(statusEl, zh.length, 420);
-    typeIn(subEl, en, d1);
+    // 融合 1/3：英文副标题走乱码落定；中文仍保留逐字渐显
+    // 注意 d1 是「每字间隔」，不是总时长，不能直接当 duration 用
+    subEl.classList.add('on');
+    scrambleIn(subEl, en, Math.min(560, 260 + en.length * 14));
     typeIn(statusEl, zh, d2);
 
     if (st.ask) {
@@ -1722,11 +1816,32 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
     // 之前只有 reveal() 会写 data-acg-loaded，而跳过走的是 end()，
     // 于是首屏文字永远停在 opacity:0 —— 就是"跳过开屏后一片空白"的原因。
     root.setAttribute('data-acg-loaded', '1');
-    el.classList.add('acgb-out');
-    setTimeout(function () {
-      if (el.parentNode) el.parentNode.removeChild(el);
-      root.classList.remove('acg-boot-lock');
-    }, 460);
+
+    // 融合 3/3：退场用快门 —— 两块纸色面板合上再向上下分开，
+    // 分开的过程正好把首屏露出来（比整块淡出更有"揭幕"的手感）。
+    var shutter = el.querySelector('.acgb-shutter');
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (shutter && !reduce) {
+      el.style.background = 'transparent';
+      el.classList.remove('acgb-out');
+      // 先把底板内容瞬间撤掉，只留快门两块
+      var hideList = el.querySelectorAll('.acgb-board, .acgb-scene, .acgb-glitch, .acgb-box, .acgb-skip');
+      for (var hi = 0; hi < hideList.length; hi++) {
+        hideList[hi].style.opacity = '0';
+        hideList[hi].style.visibility = 'hidden';
+      }
+      shutter.classList.add('go');
+      setTimeout(function () {
+        if (el.parentNode) el.parentNode.removeChild(el);
+        root.classList.remove('acg-boot-lock');
+      }, 520);
+    } else {
+      el.classList.add('acgb-out');
+      setTimeout(function () {
+        if (el.parentNode) el.parentNode.removeChild(el);
+        root.classList.remove('acg-boot-lock');
+      }, 460);
+    }
   }
 
   // ── 用户操作 ──
@@ -1756,7 +1871,14 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
   // 幕 1（黑幕标识）→ 幕 2（过曝洗白）→ 幕 3（底板 + 第一步）
   later(function () { if (s1) s1.style.display = 'none'; }, 1750);
   later(function () { if (s2) s2.classList.add('on'); Audio_.flash(); }, 1800);
-  later(function () { if (s2) s2.style.display = 'none'; goto(0); }, 2900);
+  later(function () {
+    if (s2) s2.style.display = 'none';
+    // 底板亮起时才显示右上角数据：黑幕阶段它是黑字压黑底，看不见也没意义
+    var hud = el.querySelector('.acgb-hud');
+    if (hud) hud.classList.add('on');
+    fillHud();
+    goto(0);
+  }, 2900);
 
   // 保险：无论中途发生什么，25 秒内一定消失并解锁滚动
   setTimeout(function () { end(); }, 25000);
